@@ -9,14 +9,14 @@ import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
   const { designManager } = useMainContext();
-  const { viewManager } = designManager;
+  const { productManager } = designManager;
 
-  const { data: meshInfoJson, loading } = useJsonParser(viewManager.jsonUrl);
+  const { data: meshInfoJson, loading } = useJsonParser(productManager.jsonUrl);
   useEffect(() => {
     if (meshInfoJson && !loading) {
-      viewManager.setMeshInfoJson(meshInfoJson);
+      productManager.setMeshInfoJson(meshInfoJson);
     }
-  }, [meshInfoJson, viewManager, loading]);
+  }, [meshInfoJson, productManager, loading]);
 
   return (
     <Box sx={{ bgcolor: 'white', height: '100vh', width: '100%' }}>
