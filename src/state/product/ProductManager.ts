@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx';
 
-import { MeshInfoJson } from '../../types';
 import { BuckleManager } from './managers/BuckleManager';
 import { EngravingManager } from './managers/EngravingManager';
 import { MaterialManager } from './managers/MaterialManager';
@@ -10,8 +9,6 @@ import { defaultProductId, productConfigs } from './productConfig';
 import { ProductId } from './types';
 
 export class ProductManager {
-  private _jsonUrl = './init.json';
-  private _meshInfoJson: MeshInfoJson | null = null;
   private _productId: ProductId = defaultProductId;
   private _size = new SizeManager();
   private _buckle = new BuckleManager();
@@ -59,7 +56,7 @@ export class ProductManager {
   }
 
   get resolvedModelPath() {
-    return this.getModelPath() || this.glbUrl || null;
+    return this.getModelPath();
   }
 
   canUseEngraving() {
@@ -100,33 +97,5 @@ export class ProductManager {
     this._engraving.reset();
     this._text.reset();
     this._material.reset();
-  }
-
-  get meshInfoJson() {
-    return this._meshInfoJson;
-  }
-
-  setMeshInfoJson(meshInfoJson: MeshInfoJson) {
-    this._meshInfoJson = meshInfoJson;
-  }
-
-  setGlbUrl(glbUrl: string) {
-    const nextMeshInfoJson: MeshInfoJson = {
-      ...(this._meshInfoJson || { availableColors: [] }),
-      glbUrl,
-    };
-    this.setMeshInfoJson(nextMeshInfoJson);
-  }
-
-  get glbUrl() {
-    return this._meshInfoJson?.glbUrl;
-  }
-
-  get jsonUrl() {
-    return this._jsonUrl;
-  }
-
-  setJsonUrl(jsonUrl: string) {
-    this._jsonUrl = jsonUrl;
   }
 }

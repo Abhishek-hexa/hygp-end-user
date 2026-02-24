@@ -5,11 +5,6 @@ export const enum Role {
   Developer = 'developer',
 }
 
-export type MeshInfoJson = {
-  glbUrl: string;
-  availableColors: string[];
-};
-
 export type MeshHighlightOptions = {
   highlight: {
     color: string;

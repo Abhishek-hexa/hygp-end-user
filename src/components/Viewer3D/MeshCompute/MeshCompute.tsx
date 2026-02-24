@@ -10,7 +10,9 @@ export const MeshCompute = observer(() => {
   const { meshManager, cameraManager } = design3DManager;
   const { productManager } = designManager;
 
-  const { isLoaded, meshInfo } = useMeshParser(productManager.glbUrl);
+  const { isLoaded, meshInfo } = useMeshParser(
+    productManager.resolvedModelPath,
+  );
 
   useEffect(() => {
     if (isLoaded) {

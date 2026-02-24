@@ -16,7 +16,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
       },
     },
     id: 'catCollar',
-    model: (_size) => '/glbs/TShirt.glb',
+    model: (_size) => '',
     sizes: ['SMALL', 'LARGE'],
   },
   dogCollar: {
@@ -36,7 +36,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
       },
     },
     id: 'dogCollar',
-    model: (_size) => '/glbs/TShirt.glb',
+    model: (_size) => '',
     sizes: ['EXTRA SMALL', 'SMALL', 'MEDIUM NARROW', 'MEDIUM WIDE'],
   },
 };
