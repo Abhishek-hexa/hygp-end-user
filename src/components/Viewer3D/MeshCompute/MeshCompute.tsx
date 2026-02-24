@@ -8,9 +8,9 @@ import { MeshView } from '../MeshView/MeshView';
 export const MeshCompute = observer(() => {
   const { design3DManager, designManager } = useMainContext();
   const { meshManager, cameraManager } = design3DManager;
-  const { viewManager } = designManager;
+  const { productManager } = designManager;
 
-  const { isLoaded, meshInfo } = useMeshParser(viewManager.glbUrl);
+  const { isLoaded, meshInfo } = useMeshParser(productManager.glbUrl);
 
   useEffect(() => {
     if (isLoaded) {

@@ -7,12 +7,12 @@ import { Logger } from '../../../utils/Logger';
 
 export const NavBar = observer(() => {
   const { designManager } = useMainContext();
-  const { viewManager } = designManager;
+  const { productManager } = designManager;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previousBlobUrlRef = useRef<string | null>(null);
 
   const handleExportJson = () => {
-    const meshInfoJson = viewManager.meshInfoJson;
+    const meshInfoJson = productManager.meshInfoJson;
 
     if (!meshInfoJson) {
       Logger.warn('No mesh info JSON to export');
@@ -52,7 +52,7 @@ export const NavBar = observer(() => {
 
       const blobUrl = URL.createObjectURL(file);
       previousBlobUrlRef.current = blobUrl;
-      viewManager.setGlbUrl(blobUrl);
+      productManager.setGlbUrl(blobUrl);
     }
     // Reset input so same file can be selected again
     if (fileInputRef.current) {

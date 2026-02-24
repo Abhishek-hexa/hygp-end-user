@@ -1,11 +1,11 @@
-import { MeshProps } from '@react-three/fiber';
+import { ThreeElements } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
 export const SingleMesh = observer(
   (
-    props: MeshProps & {
+    props: ThreeElements['mesh'] & {
       ukey: string;
       mainMeshVisible: boolean;
     },

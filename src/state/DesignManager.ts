@@ -1,19 +1,19 @@
 import { makeAutoObservable } from 'mobx';
 
+import { ProductManager } from './product/ProductManager';
 import { StateManager } from './StateManager';
-import { ViewManager } from './ViewManager';
 
 export class DesignManager {
   private _libState: StateManager;
-  private _viewManager: ViewManager;
+  private _productManager: ProductManager;
 
   constructor(libState: StateManager) {
     this._libState = libState;
-    this._viewManager = new ViewManager(libState);
+    this._productManager = new ProductManager();
     makeAutoObservable(this);
   }
 
-  get viewManager() {
-    return this._viewManager;
+  get productManager() {
+    return this._productManager;
   }
 }
