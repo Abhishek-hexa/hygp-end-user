@@ -4,6 +4,13 @@ export const defaultProductId: ProductId = 'dogCollar';
 
 export const productConfigs: Record<ProductId, ProductConfig> = {
   catCollar: {
+    availableFeatures: [
+      'size', 
+      'design', 
+      'hardware', 
+      'collar text', 
+      'buckle'
+    ],
     features: {
       buckle: {
         types: ['BREAKAWAY', 'PLASTIC'],
@@ -20,6 +27,14 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
     sizes: ['SMALL', 'LARGE'],
   },
   dogCollar: {
+    availableFeatures: [
+      'size',
+      'design',
+      'hardware',
+      'collar text',
+      'buckle',
+      'engraving',
+    ],
     features: {
       buckle: {
         types: ['METAL', 'PLASTIC'],

@@ -30,9 +30,19 @@ export type ProductConfig = {
   id: ProductId;
   sizes: ProductSize[];
   model: (size: ProductSize) => string;
+  availableFeatures: Features[];
   features: {
     engraving: EngravingRule;
     buckle: BuckleRule;
     text: TextRule;
   };
 };
+
+export type Features =
+  | 'size'
+  | 'design'
+  | 'hardware'
+  | 'collar text'
+  | 'buckle'
+  | 'engraving'
+  | 'harness text';

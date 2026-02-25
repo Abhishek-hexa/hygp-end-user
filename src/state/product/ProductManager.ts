@@ -70,14 +70,6 @@ export class ProductManager {
     return true;
   }
 
-  getValidEngravingLines() {
-    if (!this.canUseEngraving()) {
-      return [];
-    }
-    const max = this.config.features.engraving.maxLines ?? 0;
-    return this._engraving.lines.slice(0, max);
-  }
-
   canUseText() {
     return this.config.features.text.enabled;
   }
@@ -89,6 +81,10 @@ export class ProductManager {
   setProduct(productId: ProductId) {
     this._productId = productId;
     this.resetAll();
+  }
+
+  getAllFeatures() {
+    return this.config.availableFeatures;
   }
 
   resetAll() {
