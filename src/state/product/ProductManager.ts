@@ -48,6 +48,10 @@ export class ProductManager {
     return productConfigs[this._productId];
   }
 
+  get capabilities() {
+    return this.config.capabilities;
+  }
+
   getModelPath() {
     if (!this._size.selectedSize) {
       return null;
@@ -60,6 +64,10 @@ export class ProductManager {
   }
 
   canUseEngraving() {
+    if (!this.capabilities.hasEngraving) {
+      return false;
+    }
+
     const engravingConfig = this.config.features.engraving;
     if (!engravingConfig.enabled) {
       return false;
@@ -76,6 +84,34 @@ export class ProductManager {
 
   canMoveText() {
     return this.config.features.text.positionable ?? false;
+  }
+
+  canResizeText() {
+    if (!this.canUseText()) {
+      return false;
+    }
+
+    if (!this.capabilities.hasFabricTextResizeUI) {
+      return false;
+    }
+
+    return this.config.features.text.scalable ?? false;
+  }
+
+  hasBuckle() {
+    return this.capabilities.hasBuckle;
+  }
+
+  hasHardware() {
+    return this.capabilities.hasHardware;
+  }
+
+  hasMatchingLeash() {
+    return this.capabilities.hasMatchingLeash;
+  }
+
+  hasDualCheckout() {
+    return this.capabilities.hasDualCheckout;
   }
 
   setProduct(productId: ProductId) {
