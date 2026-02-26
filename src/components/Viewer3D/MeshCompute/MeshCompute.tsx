@@ -2,23 +2,11 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { useMeshParser } from '../../../hooks/useMeshParser';
 import { MeshView } from '../MeshView/MeshView';
 
 export const MeshCompute = observer(() => {
-  const { design3DManager, designManager } = useMainContext();
+  const { design3DManager } = useMainContext();
   const { meshManager, cameraManager } = design3DManager;
-  const { productManager } = designManager;
-
-  const { isLoaded, meshInfo } = useMeshParser(
-    productManager.resolvedModelPath,
-  );
-
-  useEffect(() => {
-    if (isLoaded) {
-      meshManager.setMeshInfos(meshInfo);
-    }
-  }, [isLoaded, meshInfo, meshManager]);
 
   useEffect(() => {
     if (meshManager.groupRef) {
@@ -26,19 +14,18 @@ export const MeshCompute = observer(() => {
     }
   }, [cameraManager, meshManager.groupRef]);
 
+  if (!meshManager.meshInfos.length) {
+    return null;
+  }
+
   return (
-    (isLoaded && (
-      <group
-        ref={(ref) => {
-          if (ref) {
-            meshManager.setGroupRef(ref);
-          }
-        }}>
-        {meshManager.meshInfos.map((mesh) => (
-          <MeshView key={mesh.name} meshInfo={mesh} />
-        ))}
-      </group>
-    )) ||
-    null
+    <group
+      ref={(ref) => {
+        meshManager.setGroupRef(ref);
+      }}>
+      {meshManager.meshInfos.map((mesh) => (
+        <MeshView key={mesh.name} meshInfo={mesh} />
+      ))}
+    </group>
   );
 });

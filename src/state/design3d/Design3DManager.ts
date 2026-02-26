@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 
-import { CameraManager } from './CameraManager';
-import { EnvManager } from './EnvManager';
-import { MeshManager } from './MeshManager';
-import { StateManager } from './StateManager';
+import { StateManager } from '../StateManager';
+import { CameraManager } from './managers/CameraManager';
+import { EnvManager } from './managers/EnvManager';
+import { MeshManager } from './managers/MeshManager';
 
 export class Design3DManager {
   private _libState: StateManager;
@@ -30,4 +30,5 @@ export class Design3DManager {
   get envManager() {
     return this._envManager;
   }
+
 }
