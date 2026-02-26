@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 
 import { BuckleManager } from './managers/BuckleManager';
 import { EngravingManager } from './managers/EngravingManager';
-import { MaterialManager } from './managers/MaterialManager';
+import { TextureManager } from './managers/MaterialManager';
 import { SizeManager } from './managers/SizeManager';
 import { TextManager } from './managers/TextManager';
 import { defaultProductId, productConfigs } from './productConfig';
@@ -14,7 +14,7 @@ export class ProductManager {
   private _buckle = new BuckleManager();
   private _engraving = new EngravingManager();
   private _text = new TextManager();
-  private _material = new MaterialManager();
+  private _material = new TextureManager();
 
   constructor() {
     makeAutoObservable(this);
