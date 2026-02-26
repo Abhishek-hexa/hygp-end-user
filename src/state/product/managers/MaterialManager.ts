@@ -1,21 +1,21 @@
 import { makeAutoObservable } from 'mobx';
 
-export class MaterialManager {
-  private _material: string | null = null;
+export class TextureManager {
+  private _texture: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
 
   get material() {
-    return this._material;
+    return this._texture;
   }
 
   setMaterial(material: string) {
-    this._material = material;
+    this._texture = material;
   }
 
   reset() {
-    this._material = null;
+    this._texture = null;
   }
 }
