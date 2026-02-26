@@ -2,8 +2,8 @@ import { CameraControls } from '@react-three/drei';
 import { makeAutoObservable } from 'mobx';
 import * as THREE from 'three';
 
-import { Utils3D } from '../utils/Utils3D';
-import { StateManager } from './StateManager';
+import { Utils3D } from '../../../utils/Utils3D';
+import { StateManager } from '../../StateManager';
 
 export class CameraManager {
   private _libState: StateManager;

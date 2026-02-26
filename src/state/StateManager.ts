@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 
-import { Design3DManager } from './Design3DManager';
-import { DesignManager } from './DesignManager';
+import { DesignManager } from './design/DesignManager';
+import { Design3DManager } from './design3d/Design3DManager';
 
 export class StateManager {
   constructor() {

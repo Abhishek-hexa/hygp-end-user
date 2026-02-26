@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import * as THREE from 'three';
 
-import { Logger } from '../utils/Logger';
-import { Utils3D } from '../utils/Utils3D';
+import { Logger } from '../../../utils/Logger';
+import { Utils3D } from '../../../utils/Utils3D';
 
 export class EnvManager {
   private _envVisibility = false;

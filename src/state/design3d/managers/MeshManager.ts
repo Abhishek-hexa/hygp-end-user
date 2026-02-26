@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import * as THREE from 'three';
 
-import { MeshInfo } from '../core/MeshInfo';
-import { StateManager } from './StateManager';
+import { MeshInfo } from '../../../core/MeshInfo';
+import { StateManager } from '../../StateManager';
 
 export class MeshManager {
   private _libState: StateManager;
@@ -21,7 +21,7 @@ export class MeshManager {
     this._meshInfos = meshInfos;
   }
 
-  setGroupRef(group: THREE.Group) {
+  setGroupRef(group: THREE.Group | null) {
     this._groupRef = group;
   }
 
