@@ -89,12 +89,58 @@ const extractBuckleColors = (option: Record<string, unknown>): string[] => {
   return Array.from(new Set(derived));
 };
 
+const normalizeCollectionName = (collection: Record<string, unknown>, index: number) => {
+  const rawName = collection.name ?? collection.title ?? '';
+  const name = String(rawName).trim();
+  return name || `Collection ${index + 1}`;
+};
+
+const parseNumber = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number(value.trim());
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+};
+
+const resolveVariantPrice = (
+  productId: ProductId,
+  variant: Record<string, unknown>,
+): number => {
+  const commonCandidates = [
+    variant.price,
+    variant.finalPrice,
+    variant.salePrice,
+    variant.sellingPrice,
+  ];
+
+  if (productId === 'catCollar') {
+    commonCandidates.unshift(variant.withoutBellPrice, variant.withBellPrice);
+  }
+
+  for (const candidate of commonCandidates) {
+    const value = parseNumber(candidate);
+    if (value !== null) {
+      return value;
+    }
+  }
+
+  return 0;
+};
+
 const buckleRouteByProductId: Record<ProductId, string | null> = {
   bandana: null,
   catCollar: apiRoutes.catBuckle,
   dogCollar: apiRoutes.buckle,
   harness: apiRoutes.harnessBuckle,
-  leash: null,
+  leash: apiRoutes.buckle,
   martingale: null,
 };
 
@@ -140,7 +186,7 @@ export const productService = {
 
     return collections.map((collection, index) => ({
       id: String(collection.id ?? collection._id ?? `collection-${index}`),
-      name: String(collection.name ?? collection.title ?? `Collection ${index + 1}`),
+      name: normalizeCollectionName(collection, index),
     }));
   },
 
@@ -164,6 +210,10 @@ export const productService = {
   },
 
   async getPatterns(webbingId: string): Promise<ApiPattern[]> {
+    if (!webbingId) {
+      return [];
+    }
+
     const { data } = await apiClient.get<unknown>(
       apiRoutes.collectionProducts(webbingId),
     );
@@ -211,7 +261,7 @@ export const productService = {
           variant.plasticModel ?? variant.plastic_model ?? '',
         ),
         prefix: String(variant.prefix ?? ''),
-        price: Number(variant.price ?? 0),
+        price: resolveVariantPrice(productId, variant),
         sizeImageUrl: String(
           variant.sizeImage ?? variant.size_image ?? variant.image ?? '',
         ),

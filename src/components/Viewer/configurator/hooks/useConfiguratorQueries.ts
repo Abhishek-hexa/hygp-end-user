@@ -13,7 +13,7 @@ export const useConfiguratorQueries = (
   const productId = productManager.productId;
   const variantsQuery = useProductVariantsQuery(productId);
   const buckleOptionsQuery = useBuckleOptionsQuery(productId, {
-    enabled: productManager.hasBuckle(),
+    enabled: productManager.hasBuckle() || productManager.hasHardware(),
   });
   const fontsQuery = useEngravingFontsQuery(false);
   const collectionsQuery = useCollectionsQuery();

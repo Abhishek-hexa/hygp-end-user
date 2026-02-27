@@ -5,6 +5,7 @@ export const defaultProductId: ProductId = 'dogCollar';
 export const productConfigs: Record<ProductId, ProductConfig> = {
   bandana: {
     availableFeatures: [],
+    tabs: ['size', 'select-design'],
     capabilities: {
       hasBuckle: false,
       hasDualCheckout: true,
@@ -15,7 +16,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
     },
     features: {
       buckle: {
-        types: [],
+        types: ['METAL', 'PLASTIC'],
       },
       engraving: {
         enabled: false,
@@ -30,6 +31,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
   },
   catCollar: {
     availableFeatures: ['size', 'design', 'hardware', 'collar text', 'buckle'],
+    tabs: ['size', 'select-design', 'buckle', 'collar-text'],
     capabilities: {
       hasBuckle: true,
       hasDualCheckout: false,
@@ -61,6 +63,14 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
       'collar text',
       'buckle',
       'engraving',
+    ],
+    tabs: [
+      'size',
+      'select-design',
+      'buckle',
+      'engraving',
+      'collar-text',
+      'fetch',
     ],
     capabilities: {
       hasBuckle: true,
@@ -102,6 +112,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
   },
   harness: {
     availableFeatures: [],
+    tabs: ['size', 'select-design'],
     capabilities: {
       hasBuckle: false,
       hasDualCheckout: false,
@@ -126,7 +137,8 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
     sizes: [],
   },
   leash: {
-    availableFeatures: [],
+    availableFeatures: ['size', 'design', 'hardware', 'harness text'],
+    tabs: ['size', 'select-design', 'collar-text', 'hardware'],
     capabilities: {
       hasBuckle: false,
       hasDualCheckout: false,
@@ -152,6 +164,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
   },
   martingale: {
     availableFeatures: [],
+    tabs: ['size', 'select-design'],
     capabilities: {
       hasBuckle: false,
       hasDualCheckout: false,

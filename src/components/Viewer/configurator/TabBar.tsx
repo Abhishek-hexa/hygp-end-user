@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { tabs } from './constants';
+import { resolveTabsForProduct } from './constants';
 
 export const TabBar = observer(() => {
   const { designManager } = useMainContext();
   const { productManager } = designManager;
+  const tabs = resolveTabsForProduct(productManager);
 
   return (
     <div className="flex min-w-max flex-row gap-1">

@@ -21,6 +21,7 @@ export type ConfiguratorTab =
   | 'size'
   | 'select-design'
   | 'buckle'
+  | 'hardware'
   | 'engraving'
   | 'collar-text'
   | 'fetch';
@@ -59,6 +60,7 @@ export type ProductConfig = {
   id: ProductId;
   sizes: ProductSize[];
   model: (size: ProductSize) => string;
+  tabs: ConfiguratorTab[];
   availableFeatures: Features[];
   capabilities: ProductCapabilities;
   checkout?: CheckoutConfig;

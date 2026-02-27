@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { ProductManager } from '../../../../state/product/ProductManager';
+import { resolveTabsForProduct } from '../constants';
 import { useConfiguratorQueries } from './useConfiguratorQueries';
 
 type Params = {
@@ -19,14 +20,36 @@ export const useSyncProductManager = ({
     patternsQuery,
     variantsQuery,
   } = queries;
+  const previousProductIdRef = useRef(productManager.productId);
+  const productId = productManager.productId;
 
   useEffect(() => {
-    if (productManager.productId !== 'dogCollar') {
-      productManager.setProduct('dogCollar');
-      productManager.setActiveTab('size');
-      productManager.setSelectedCollectionId('');
+    if (previousProductIdRef.current === productId) {
+      return;
     }
-  }, [productManager]);
+
+    previousProductIdRef.current = productId;
+
+    void variantsQuery.refetch();
+    void buckleOptionsQuery.refetch();
+    void fontsQuery.refetch();
+    void collectionsQuery.refetch();
+  }, [
+    buckleOptionsQuery,
+    collectionsQuery,
+    fontsQuery,
+    productId,
+    variantsQuery,
+  ]);
+
+  useEffect(() => {
+    const tabs = resolveTabsForProduct(productManager);
+    const activeTabExists = tabs.some((tab) => tab.id === productManager.activeTab);
+
+    if (!activeTabExists && tabs.length > 0) {
+      productManager.setActiveTab(tabs[0].id);
+    }
+  }, [productId, productManager]);
 
   useEffect(() => {
     const variants = variantsQuery.data?.variants ?? [];
@@ -50,10 +73,15 @@ export const useSyncProductManager = ({
   useEffect(() => {
     const collections = collectionsQuery.data ?? [];
     productManager.setBackendCollections(collections);
-    if (!productManager.selectedCollectionId && collections.length > 0) {
+
+    const hasSelectedCollection = collections.some(
+      (collection) => collection.id === productManager.selectedCollectionId,
+    );
+
+    if ((!productManager.selectedCollectionId || !hasSelectedCollection) && collections.length > 0) {
       productManager.setSelectedCollectionId(collections[0].id);
     }
-  }, [collectionsQuery.data, productManager]);
+  }, [collectionsQuery.data, productId, productManager]);
 
   useEffect(() => {
     productManager.setBackendPatterns(patternsQuery.data ?? []);

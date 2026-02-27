@@ -3,15 +3,15 @@ import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../../hooks/useMainContext';
 import { toTitleCase } from '../utils';
 
-export const BuckleTab = observer(() => {
+export const HardwareTab = observer(() => {
   const { designManager } = useMainContext();
   const { productManager } = designManager;
   const availableTypes = productManager.config.features.buckle.types;
 
   return (
     <>
-      <h2 className="mb-2 text-[32px] font-bold">Buckle</h2>
-      <p className="mb-1.5 font-bold text-[#6E8D84]">Buckle Material</p>
+      <h2 className="mb-2 text-[32px] font-bold">Hardware</h2>
+      <p className="mb-1.5 font-bold text-[#6E8D84]">Hardware Material</p>
       <div className="mb-2.5 flex flex-row gap-1">
         {availableTypes.map((type) => {
           const selected = productManager.buckle.type === type;
@@ -30,7 +30,7 @@ export const BuckleTab = observer(() => {
           );
         })}
       </div>
-      <p className="mb-1.5 font-bold text-[#6E8D84]">Buckle Finish</p>
+      <p className="mb-1.5 font-bold text-[#6E8D84]">Hardware Finish</p>
       <div className="flex flex-row gap-1.5">
         {productManager.buckle.finishColors.map((color) => {
           const selected = productManager.buckle.finishColor === color;
