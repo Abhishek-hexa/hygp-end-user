@@ -21,7 +21,7 @@ export const App = observer(() => {
         maxSnack={3}
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
         <MainContextProvider>
-          <Router />;
+          <Router />
         </MainContextProvider>
       </SnackbarProvider>
     </QueryClientProvider>
