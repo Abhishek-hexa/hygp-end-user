@@ -11,10 +11,19 @@ export type ProductSize =
   | 'SMALL'
   | 'MEDIUM'
   | 'LARGE'
+  | 'XLARGE'
+  | 'XXLARGE'
   | 'MEDIUM WIDE'
   | 'MEDIUM NARROW';
 export type BuckleType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
 export type TextSize = 'small' | 'medium' | 'large';
+export type ConfiguratorTab =
+  | 'size'
+  | 'select-design'
+  | 'buckle'
+  | 'engraving'
+  | 'collar-text'
+  | 'fetch';
 
 type EngravingRule = {
   enabled: boolean;

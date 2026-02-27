@@ -90,7 +90,15 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
     },
     id: 'dogCollar',
     model: (_size) => '',
-    sizes: ['EXTRA SMALL', 'SMALL', 'MEDIUM NARROW', 'MEDIUM WIDE'],
+    sizes: [
+      'EXTRA SMALL',
+      'SMALL',
+      'MEDIUM NARROW',
+      'MEDIUM WIDE',
+      'LARGE',
+      'XLARGE',
+      'XXLARGE',
+    ],
   },
   harness: {
     availableFeatures: [],

@@ -30,5 +30,4 @@ export class Design3DManager {
   get envManager() {
     return this._envManager;
   }
-
 }
