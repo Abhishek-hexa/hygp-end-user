@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
-import { Viewer3D } from '../Viewer3D/Viewer3D';
 import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
@@ -9,8 +8,16 @@ export const Viewer = observer(() => {
     <Box sx={{ bgcolor: 'white', height: '100vh', width: '100%' }}>
       <NavBar />
       <Box
-        sx={{ height: 'calc(100vh - 64px)', marginTop: '64px', width: '100%' }}>
-        <Viewer3D />
+        sx={{
+          alignItems: 'center',
+          color: '#444',
+          display: 'flex',
+          height: 'calc(100vh - 64px)',
+          justifyContent: 'center',
+          marginTop: '64px',
+          width: '100%',
+        }}>
+        3D rendering is temporarily disabled.
       </Box>
     </Box>
   );
