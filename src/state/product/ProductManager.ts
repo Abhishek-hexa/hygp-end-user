@@ -14,7 +14,7 @@ export class ProductManager {
   private _buckle = new BuckleManager();
   private _engraving = new EngravingManager();
   private _text = new TextManager();
-  private _material = new TextureManager();
+  private _texture = new TextureManager();
   private _activeTab: ConfiguratorTab = 'size';
   private _matchingLeash = 'No Leash';
 
@@ -42,8 +42,8 @@ export class ProductManager {
     return this._text;
   }
 
-  get material() {
-    return this._material;
+  get texture() {
+    return this._texture;
   }
 
   get activeTab() {
@@ -146,7 +146,7 @@ export class ProductManager {
     this._buckle.reset();
     this._engraving.reset();
     this._text.reset();
-    this._material.reset();
+    this._texture.reset();
     this._activeTab = 'size';
     this._matchingLeash = 'No Leash';
   }

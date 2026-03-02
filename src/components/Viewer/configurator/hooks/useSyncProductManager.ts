@@ -71,23 +71,23 @@ export const useSyncProductManager = ({ productManager, queries }: Params) => {
 
   useEffect(() => {
     const collections = collectionsQuery.data ?? [];
-    productManager.material.setBackendCollections(collections);
+    productManager.texture.setBackendCollections(collections);
 
     const hasSelectedCollection = collections.some(
       (collection) =>
-        collection.id === productManager.material.selectedCollectionId,
+        collection.id === productManager.texture.selectedCollectionId,
     );
 
     if (
-      (!productManager.material.selectedCollectionId ||
+      (!productManager.texture.selectedCollectionId ||
         !hasSelectedCollection) &&
       collections.length > 0
     ) {
-      productManager.material.setSelectedCollectionId(collections[0].id);
+      productManager.texture.setSelectedCollectionId(collections[0].id);
     }
   }, [collectionsQuery.data, productId, productManager]);
 
   useEffect(() => {
-    productManager.material.setBackendPatterns(patternsQuery.data ?? []);
+    productManager.texture.setBackendPatterns(patternsQuery.data ?? []);
   }, [patternsQuery.data, productManager]);
 };

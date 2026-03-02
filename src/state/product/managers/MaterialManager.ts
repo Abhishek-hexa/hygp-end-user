@@ -12,7 +12,7 @@ export class TextureManager {
     makeAutoObservable(this);
   }
 
-  get material() {
+  get texture() {
     return this._texture;
   }
 
@@ -28,8 +28,8 @@ export class TextureManager {
     return this._selectedCollectionId;
   }
 
-  setMaterial(material: string) {
-    this._texture = material;
+  setTexture(texture: string) {
+    this._texture = texture;
   }
 
   setBackendCollections(collections: ApiCollection[]) {

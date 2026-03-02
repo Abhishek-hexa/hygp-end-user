@@ -6,19 +6,19 @@ import { resolvePatternPreview } from '../utils';
 export const DesignTab = observer(() => {
   const { designManager } = useMainContext();
   const { productManager } = designManager;
-  const { material } = productManager;
+  const { texture } = productManager;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <h2 className="mb-2 text-[32px] font-bold">Select Design</h2>
       <div className="grid h-full min-h-0 grid-cols-1 gap-2 overflow-hidden md:grid-cols-[190px_1fr]">
         <div className="min-h-0 overflow-y-auto pr-1 md:border-r md:border-[#d8ddd9]">
-          {material.backendCollections.map((collection) => {
-            const selected = material.selectedCollectionId === collection.id;
+          {texture.backendCollections.map((collection) => {
+            const selected = texture.selectedCollectionId === collection.id;
             return (
               <button
                 key={collection.id}
-                onClick={() => material.setSelectedCollectionId(collection.id)}
+                onClick={() => texture.setSelectedCollectionId(collection.id)}
                 className="mb-1 w-full rounded-lg border py-1.5 text-left px-2"
                 style={{
                   borderColor: selected ? '#7AA79A' : '#D5DEDB',
@@ -33,20 +33,20 @@ export const DesignTab = observer(() => {
         <div className="flex min-h-0 min-w-0 flex-col">
           <h3 className="mb-1.5 text-[24px] font-bold text-[#2d3d37]">
             {
-              material.backendCollections.find(
-                (collection) => collection.id === material.selectedCollectionId,
+              texture.backendCollections.find(
+                (collection) => collection.id === texture.selectedCollectionId,
               )?.name
             }
           </h3>
           <div className="grid min-h-0 flex-1 grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-1.5 overflow-y-auto overflow-x-hidden pr-0.5">
-            {material.backendPatterns.map((pattern) => {
-              const texture = pattern.textureUrl || pattern.image;
-              const selected = material.material === texture;
+            {texture.backendPatterns.map((pattern) => {
+              const textureUrl = pattern.textureUrl || pattern.image;
+              const selected = texture.texture === textureUrl;
               const preview = resolvePatternPreview(pattern);
               return (
                 <button
                   key={pattern.id}
-                  onClick={() => material.setMaterial(texture)}
+                  onClick={() => texture.setTexture(textureUrl)}
                   className="h-[78px] min-w-0 overflow-hidden rounded-lg border-2 p-0"
                   style={{
                     borderColor: selected ? '#EE8F90' : '#D4DEDA',

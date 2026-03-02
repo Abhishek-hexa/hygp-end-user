@@ -16,9 +16,9 @@ export const useConfiguratorQueries = (productManager: ProductManager) => {
   const fontsQuery = useEngravingFontsQuery(false);
   const collectionsQuery = useCollectionsQuery();
   const patternsQuery = usePatternsQuery(
-    productManager.material.selectedCollectionId,
+    productManager.texture.selectedCollectionId,
     {
-      enabled: !!productManager.material.selectedCollectionId,
+      enabled: !!productManager.texture.selectedCollectionId,
     },
   );
 
