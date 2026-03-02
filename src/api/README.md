@@ -9,9 +9,8 @@
 - `httpClient.ts`: shared axios instance + interceptors.
 - `routes.ts`: endpoint paths and path builders.
 - `services/*.ts`: raw API functions (no React hooks here).
-- `queries/*.ts`: `useQuery` hooks + query options.
+- `queries/*.ts`: `useQuery` hooks.
 - `mutations/*.ts`: `useMutation` hooks.
-- `queryKeys.ts`: centralized query keys.
 
 ## Usage Pattern
 1. Add endpoint in `routes.ts`.
@@ -23,4 +22,3 @@
 ## Important Separation
 - Do not store backend list responses in MobX.
 - Use MobX only for selection/configuration state (size, buckle type, text, etc.).
-

@@ -10,130 +10,209 @@ import {
   ProductVariantsResponse,
 } from '../types';
 
-const toArray = <T>(value: unknown, preferredKeys: string[] = []): T[] => {
-  if (Array.isArray(value)) {
-    return value as T[];
-  }
+type RawObject = Record<string, unknown>;
 
-  if (!value || typeof value !== 'object') {
+const readArray = (payload: unknown, keys: string[]): RawObject[] => {
+  if (Array.isArray(payload)) {
+    return payload as RawObject[];
+  }
+  if (!payload || typeof payload !== 'object') {
     return [];
   }
 
-  const obj = value as Record<string, unknown>;
+  const obj = payload as RawObject;
 
-  for (const key of preferredKeys) {
-    const candidate = obj[key];
-    if (Array.isArray(candidate)) {
-      return candidate as T[];
+  for (const key of keys) {
+    if (Array.isArray(obj[key])) {
+      return obj[key] as RawObject[];
     }
   }
 
-  for (const candidate of Object.values(obj)) {
-    if (Array.isArray(candidate)) {
-      return candidate as T[];
+  for (const value of Object.values(obj)) {
+    if (Array.isArray(value)) {
+      return value as RawObject[];
     }
   }
 
   return [];
 };
 
-const normalizeSize = (size: unknown): ApiProductVariant['size'] => {
-  const normalized = String(size ?? '')
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, ' ');
+const text = (value: unknown, fallback = ''): string =>
+  typeof value === 'string' ? value : fallback;
 
-  const sizeMap: Record<string, ApiProductVariant['size']> = {
-    'EXTRA SMALL': 'EXTRA SMALL',
-    XSMALL: 'EXTRA SMALL',
-    'X SMALL': 'EXTRA SMALL',
-    SMALL: 'SMALL',
-    MEDIUM: 'MEDIUM',
-    'MEDIUM WIDE': 'MEDIUM WIDE',
-    'MEDIUM NARROW': 'MEDIUM NARROW',
-    LARGE: 'LARGE',
-    XLARGE: 'XLARGE',
-    'X LARGE': 'XLARGE',
-    XXLARGE: 'XXLARGE',
-    'XX LARGE': 'XXLARGE',
-  };
-
-  return sizeMap[normalized] ?? 'MEDIUM';
-};
-
-const normalizeBuckleType = (type: unknown): ApiBuckleOption['type'] => {
-  const normalized = String(type ?? '').toUpperCase();
-
-  if (
-    normalized === 'METAL' ||
-    normalized === 'PLASTIC' ||
-    normalized === 'BREAKAWAY'
-  ) {
-    return normalized;
+const textOrNumber = (value: unknown, fallback = ''): string => {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value);
   }
-
-  return 'PLASTIC';
+  return fallback;
 };
 
-const extractBuckleColors = (option: Record<string, unknown>): string[] => {
-  if (Array.isArray(option.colors)) {
-    return option.colors.map((color) => String(color));
+const idText = (...values: unknown[]): string => {
+  for (const value of values) {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return String(value);
+    }
   }
-
-  const derived = [
-    option.preview,
-    option.plastic_color,
-    option.metal_color,
-  ].filter((color): color is string => typeof color === 'string' && !!color);
-
-  return Array.from(new Set(derived));
+  return '';
 };
 
-const normalizeCollectionName = (collection: Record<string, unknown>, index: number) => {
-  const rawName = collection.name ?? collection.title ?? '';
-  const name = String(rawName).trim();
-  return name || `Collection ${index + 1}`;
-};
-
-const parseNumber = (value: unknown): number | null => {
+const numberValue = (value: unknown): number | null => {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
   }
-
   if (typeof value === 'string') {
     const parsed = Number(value.trim());
-    if (Number.isFinite(parsed)) {
-      return parsed;
-    }
+    return Number.isFinite(parsed) ? parsed : null;
   }
-
   return null;
+};
+
+const normalizeSize = (value: unknown): ApiProductVariant['size'] => {
+  const input = textOrNumber(value).trim().toUpperCase().replace(/\s+/g, ' ');
+
+  const sizeMap: Record<string, ApiProductVariant['size']> = {
+    'EXTRA SMALL': 'EXTRA SMALL',
+    LARGE: 'LARGE',
+    MEDIUM: 'MEDIUM',
+    'MEDIUM NARROW': 'MEDIUM NARROW',
+    'MEDIUM WIDE': 'MEDIUM WIDE',
+    SMALL: 'SMALL',
+    'X LARGE': 'XLARGE',
+    'X SMALL': 'EXTRA SMALL',
+    XLARGE: 'XLARGE',
+    XSMALL: 'EXTRA SMALL',
+    'XX LARGE': 'XXLARGE',
+    XXLARGE: 'XXLARGE',
+  };
+
+  return sizeMap[input] ?? 'MEDIUM';
+};
+
+const normalizeBuckleType = (value: unknown): ApiBuckleOption['type'] => {
+  const type = textOrNumber(value).toUpperCase();
+  if (type === 'METAL' || type === 'PLASTIC' || type === 'BREAKAWAY') {
+    return type;
+  }
+  return 'PLASTIC';
 };
 
 const resolveVariantPrice = (
   productId: ProductId,
-  variant: Record<string, unknown>,
+  variant: RawObject,
 ): number => {
-  const commonCandidates = [
-    variant.price,
-    variant.finalPrice,
-    variant.salePrice,
-    variant.sellingPrice,
-  ];
+  const values =
+    productId === 'catCollar'
+      ? [
+          variant.withoutBellPrice,
+          variant.withBellPrice,
+          variant.price,
+          variant.finalPrice,
+          variant.salePrice,
+          variant.sellingPrice,
+        ]
+      : [
+          variant.price,
+          variant.finalPrice,
+          variant.salePrice,
+          variant.sellingPrice,
+        ];
 
-  if (productId === 'catCollar') {
-    commonCandidates.unshift(variant.withoutBellPrice, variant.withBellPrice);
-  }
-
-  for (const candidate of commonCandidates) {
-    const value = parseNumber(candidate);
-    if (value !== null) {
-      return value;
+  for (const value of values) {
+    const parsed = numberValue(value);
+    if (parsed !== null) {
+      return parsed;
     }
   }
-
   return 0;
 };
+
+const mapBuckleOption = (option: RawObject, index: number): ApiBuckleOption => {
+  const colors = Array.isArray(option.colors)
+    ? option.colors
+        .filter(
+          (color): color is string | number =>
+            typeof color === 'string' || typeof color === 'number',
+        )
+        .map((color) => String(color))
+    : [option.preview, option.plastic_color, option.metal_color]
+        .filter(
+          (color): color is string => typeof color === 'string' && !!color,
+        )
+        .filter(
+          (color, currentIndex, all) => all.indexOf(color) === currentIndex,
+        );
+
+  return {
+    colors,
+    id: idText(option.id, option._id, `buckle-${index}`),
+    metalColor: text(option.metal_color) || undefined,
+    name: text(option.name) || undefined,
+    plasticColor: text(option.plastic_color) || undefined,
+    previewColor: text(option.preview) || undefined,
+    type: normalizeBuckleType(option.type),
+  };
+};
+
+const mapCollection = (collection: RawObject, index: number): ApiCollection => {
+  const name =
+    text(collection.name) ||
+    text(collection.title) ||
+    `Collection ${index + 1}`;
+  return {
+    id: idText(collection.id, collection._id, `collection-${index}`),
+    name: name.trim(),
+  };
+};
+
+const mapFont = (font: RawObject, index: number): ApiFontOption => ({
+  family:
+    text(font.family) || text(font.name) || text(font.fontFamily) || 'Default',
+  fontUrl: text(font.font_path) || text(font.fontUrl) || '',
+  id: idText(font.id, font._id, `font-${index}`),
+  previewUrl:
+    text(font.preview) || text(font.previewUrl) || text(font.preview_url) || '',
+  useCases: Array.isArray(font.use_case)
+    ? font.use_case.map((entry) => String(entry))
+    : undefined,
+});
+
+const mapPattern = (pattern: RawObject, index: number): ApiPattern => ({
+  dataX: text(pattern.dataX) || text(pattern.data_x) || '',
+  id: idText(pattern.id, pattern._id, `pattern-${index}`),
+  image:
+    text(pattern.preview) ||
+    text(pattern.image) ||
+    text(pattern.thumbnail) ||
+    '',
+  name: text(pattern.name) || text(pattern.title) || `Pattern ${index + 1}`,
+  previewUrl: text(pattern.preview) || text(pattern.image) || '',
+  textureUrl:
+    text(pattern.png_image) ||
+    text(pattern.textureUrl) ||
+    text(pattern.texture_url) ||
+    text(pattern.image) ||
+    '',
+});
+
+const mapVariant = (
+  productId: ProductId,
+  variant: RawObject,
+  index: number,
+): ApiProductVariant => ({
+  id: idText(variant.id, variant.variantId, `variant-${index}`),
+  modelUrl: text(variant.model) || text(variant.modelUrl) || '',
+  name: text(variant.name) || text(variant.size) || `Variant ${index + 1}`,
+  plasticModelUrl:
+    text(variant.plasticModel) || text(variant.plastic_model) || '',
+  prefix: text(variant.prefix) || '',
+  price: resolveVariantPrice(productId, variant),
+  size: normalizeSize(variant.size),
+  sizeImageUrl:
+    text(variant.sizeImage) ||
+    text(variant.size_image) ||
+    text(variant.image) ||
+    '',
+});
 
 const buckleRouteByProductId: Record<ProductId, string | null> = {
   bandana: null,
@@ -152,61 +231,26 @@ export const productService = {
     }
 
     const { data } = await apiClient.get<unknown>(route);
-    const options = toArray<Record<string, unknown>>(data, [
-      'buckleOptions',
-      'buckles',
-      'data',
-      'results',
-    ]);
-
-    return options.map((option, index) => ({
-      colors: extractBuckleColors(option),
-      id: String(option.id ?? option._id ?? `buckle-${index}`),
-      metalColor:
-        typeof option.metal_color === 'string' ? option.metal_color : undefined,
-      name: typeof option.name === 'string' ? option.name : undefined,
-      plasticColor:
-        typeof option.plastic_color === 'string'
-          ? option.plastic_color
-          : undefined,
-      previewColor:
-        typeof option.preview === 'string' ? option.preview : undefined,
-      type: normalizeBuckleType(option.type),
-    }));
+    return readArray(data, ['buckleOptions', 'buckles', 'data', 'results']).map(
+      mapBuckleOption,
+    );
   },
 
   async getCollections(): Promise<ApiCollection[]> {
     const { data } = await apiClient.get<unknown>(apiRoutes.collections);
-    const collections = toArray<Record<string, unknown>>(data, [
+    return readArray(data, [
       'custom_collections',
       'collections',
       'data',
       'results',
-    ]);
-
-    return collections.map((collection, index) => ({
-      id: String(collection.id ?? collection._id ?? `collection-${index}`),
-      name: normalizeCollectionName(collection, index),
-    }));
+    ]).map(mapCollection);
   },
 
   async getEngravingFonts(isAdmin = false): Promise<ApiFontOption[]> {
-    const { data } = await apiClient.get<unknown>(apiRoutes.engravingFonts(isAdmin));
-    const fonts = toArray<Record<string, unknown>>(data, [
-      'fonts',
-      'data',
-      'results',
-    ]);
-
-    return fonts.map((font, index) => ({
-      family: String(font.family ?? font.name ?? font.fontFamily ?? 'Default'),
-      fontUrl: String(font.font_path ?? font.fontUrl ?? ''),
-      id: String(font.id ?? font._id ?? `font-${index}`),
-      previewUrl: String(font.preview ?? font.previewUrl ?? font.preview_url ?? ''),
-      useCases: Array.isArray(font.use_case)
-        ? font.use_case.map((entry) => String(entry))
-        : undefined,
-    }));
+    const { data } = await apiClient.get<unknown>(
+      apiRoutes.engravingFonts(isAdmin),
+    );
+    return readArray(data, ['fonts', 'data', 'results']).map(mapFont);
   },
 
   async getPatterns(webbingId: string): Promise<ApiPattern[]> {
@@ -217,27 +261,9 @@ export const productService = {
     const { data } = await apiClient.get<unknown>(
       apiRoutes.collectionProducts(webbingId),
     );
-    const patterns = toArray<Record<string, unknown>>(data, [
-      'patterns',
-      'data',
-      'results',
-      'products',
-    ]);
-
-    return patterns.map((pattern, index) => ({
-      dataX: String(pattern.dataX ?? pattern.data_x ?? ''),
-      id: String(pattern.id ?? pattern._id ?? `pattern-${index}`),
-      image: String(pattern.preview ?? pattern.image ?? pattern.thumbnail ?? ''),
-      name: String(pattern.name ?? pattern.title ?? `Pattern ${index + 1}`),
-      previewUrl: String(pattern.preview ?? pattern.image ?? ''),
-      textureUrl: String(
-        pattern.png_image ??
-          pattern.textureUrl ??
-          pattern.texture_url ??
-          pattern.image ??
-          '',
-      ),
-    }));
+    return readArray(data, ['patterns', 'data', 'results', 'products']).map(
+      mapPattern,
+    );
   },
 
   async getProductVariants(
@@ -245,28 +271,11 @@ export const productService = {
   ): Promise<ProductVariantsResponse> {
     const route = resolveProductVariantsRoute(productId);
     const { data } = await apiClient.get<unknown>(route);
-    const variants = toArray<Record<string, unknown>>(data, [
-      'variants',
-      'data',
-      'results',
-      'items',
-    ]);
 
     return {
-      variants: variants.map((variant, index) => ({
-        id: String(variant.id ?? variant.variantId ?? `variant-${index}`),
-        modelUrl: String(variant.model ?? variant.modelUrl ?? ''),
-        name: String(variant.name ?? variant.size ?? `Variant ${index + 1}`),
-        plasticModelUrl: String(
-          variant.plasticModel ?? variant.plastic_model ?? '',
-        ),
-        prefix: String(variant.prefix ?? ''),
-        price: resolveVariantPrice(productId, variant),
-        sizeImageUrl: String(
-          variant.sizeImage ?? variant.size_image ?? variant.image ?? '',
-        ),
-        size: normalizeSize(variant.size),
-      })),
+      variants: readArray(data, ['variants', 'data', 'results', 'items']).map(
+        (variant, index) => mapVariant(productId, variant, index),
+      ),
     };
   },
 };

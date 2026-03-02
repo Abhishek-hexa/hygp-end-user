@@ -1,91 +1,36 @@
-import {
-  queryOptions,
-  useQuery,
-  UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { ProductId } from '../../state/product/types';
-import { queryKeys } from '../queryKeys';
 import { productService } from '../services/productService';
-import {
-  ApiBuckleOption,
-  ApiCollection,
-  ApiFontOption,
-  ApiPattern,
-  ProductVariantsResponse,
-} from '../types';
 
-type ProductVariantsQueryKey = ReturnType<typeof queryKeys.productVariants>;
-type ProductVariantsQueryOptions = Omit<
-  UseQueryOptions<
-    ProductVariantsResponse,
-    Error,
-    ProductVariantsResponse,
-    ProductVariantsQueryKey
-  >,
-  'queryFn' | 'queryKey'
->;
-
-export const productVariantsQueryOptions = (productId: ProductId) =>
-  queryOptions({
+export const useProductVariantsQuery = (productId: ProductId) =>
+  useQuery({
     queryFn: () => productService.getProductVariants(productId),
-    queryKey: queryKeys.productVariants(productId),
+    queryKey: ['product-variants', productId],
   });
 
-export const useProductVariantsQuery = (
-  productId: ProductId,
-  options?: ProductVariantsQueryOptions,
-): UseQueryResult<ProductVariantsResponse, Error> =>
+export const useBuckleOptionsQuery = (productId: ProductId, enabled = true) =>
   useQuery({
-    ...productVariantsQueryOptions(productId),
-    ...options,
-  });
-
-export const useBuckleOptionsQuery = (
-  productId: ProductId,
-  options?: Omit<
-    UseQueryOptions<ApiBuckleOption[], Error>,
-    'queryFn' | 'queryKey'
-  >,
-): UseQueryResult<ApiBuckleOption[], Error> =>
-  useQuery({
+    enabled,
     queryFn: () => productService.getBuckleOptions(productId),
-    queryKey: queryKeys.buckleOptions(productId),
-    ...options,
+    queryKey: ['buckle-options', productId],
   });
 
-export const useEngravingFontsQuery = (
-  isAdmin = false,
-  options?: Omit<
-    UseQueryOptions<ApiFontOption[], Error>,
-    'queryFn' | 'queryKey'
-  >,
-): UseQueryResult<ApiFontOption[], Error> =>
+export const useEngravingFontsQuery = (isAdmin = false) =>
   useQuery({
     queryFn: () => productService.getEngravingFonts(isAdmin),
-    queryKey: queryKeys.engravingFonts(isAdmin),
-    ...options,
+    queryKey: ['engraving-fonts', isAdmin],
   });
 
-export const useCollectionsQuery = (
-  options?: Omit<
-    UseQueryOptions<ApiCollection[], Error>,
-    'queryFn' | 'queryKey'
-  >,
-): UseQueryResult<ApiCollection[], Error> =>
+export const useCollectionsQuery = () =>
   useQuery({
     queryFn: () => productService.getCollections(),
-    queryKey: queryKeys.collections,
-    ...options,
+    queryKey: ['collections'],
   });
 
-export const usePatternsQuery = (
-  webbingId: string,
-  options?: Omit<UseQueryOptions<ApiPattern[], Error>, 'queryFn' | 'queryKey'>,
-): UseQueryResult<ApiPattern[], Error> =>
+export const usePatternsQuery = (webbingId: string) =>
   useQuery({
+    enabled: !!webbingId,
     queryFn: () => productService.getPatterns(webbingId),
-    queryKey: queryKeys.patterns(webbingId),
-    ...options,
+    queryKey: ['patterns', webbingId],
   });
