@@ -7,9 +7,7 @@ import {
 } from '../../../../api';
 import { ProductManager } from '../../../../state/product/ProductManager';
 
-export const useConfiguratorQueries = (
-  productManager: ProductManager,
-) => {
+export const useConfiguratorQueries = (productManager: ProductManager) => {
   const productId = productManager.productId;
   const variantsQuery = useProductVariantsQuery(productId);
   const buckleOptionsQuery = useBuckleOptionsQuery(productId, {
@@ -17,9 +15,12 @@ export const useConfiguratorQueries = (
   });
   const fontsQuery = useEngravingFontsQuery(false);
   const collectionsQuery = useCollectionsQuery();
-  const patternsQuery = usePatternsQuery(productManager.selectedCollectionId, {
-    enabled: !!productManager.selectedCollectionId,
-  });
+  const patternsQuery = usePatternsQuery(
+    productManager.material.selectedCollectionId,
+    {
+      enabled: !!productManager.material.selectedCollectionId,
+    },
+  );
 
   return {
     buckleOptionsQuery,

@@ -1,10 +1,5 @@
 import { makeAutoObservable } from 'mobx';
 
-import {
-  ApiCollection,
-  ApiPattern,
-  ApiProductVariant,
-} from '../../api/types';
 import { BuckleManager } from './managers/BuckleManager';
 import { EngravingManager } from './managers/EngravingManager';
 import { TextureManager } from './managers/MaterialManager';
@@ -20,11 +15,7 @@ export class ProductManager {
   private _engraving = new EngravingManager();
   private _text = new TextManager();
   private _material = new TextureManager();
-  private _backendVariants: ApiProductVariant[] = [];
-  private _backendCollections: ApiCollection[] = [];
-  private _backendPatterns: ApiPattern[] = [];
   private _activeTab: ConfiguratorTab = 'size';
-  private _selectedCollectionId = '';
   private _matchingLeash = 'No Leash';
 
   constructor() {
@@ -55,24 +46,8 @@ export class ProductManager {
     return this._material;
   }
 
-  get backendVariants() {
-    return this._backendVariants;
-  }
-
-  get backendCollections() {
-    return this._backendCollections;
-  }
-
-  get backendPatterns() {
-    return this._backendPatterns;
-  }
-
   get activeTab() {
     return this._activeTab;
-  }
-
-  get selectedCollectionId() {
-    return this._selectedCollectionId;
   }
 
   get matchingLeash() {
@@ -154,24 +129,8 @@ export class ProductManager {
     this.resetAll();
   }
 
-  setBackendVariants(variants: ApiProductVariant[]) {
-    this._backendVariants = Array.isArray(variants) ? variants : [];
-  }
-
-  setBackendCollections(collections: ApiCollection[]) {
-    this._backendCollections = Array.isArray(collections) ? collections : [];
-  }
-
-  setBackendPatterns(patterns: ApiPattern[]) {
-    this._backendPatterns = Array.isArray(patterns) ? patterns : [];
-  }
-
   setActiveTab(tab: ConfiguratorTab) {
     this._activeTab = tab;
-  }
-
-  setSelectedCollectionId(collectionId: string) {
-    this._selectedCollectionId = collectionId;
   }
 
   setMatchingLeash(value: string) {
@@ -188,11 +147,7 @@ export class ProductManager {
     this._engraving.reset();
     this._text.reset();
     this._material.reset();
-    this._backendVariants = [];
-    this._backendCollections = [];
-    this._backendPatterns = [];
     this._activeTab = 'size';
-    this._selectedCollectionId = '';
     this._matchingLeash = 'No Leash';
   }
 }

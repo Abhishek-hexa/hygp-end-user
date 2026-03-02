@@ -6,7 +6,7 @@ export const FetchTab = observer(() => {
   const { designManager } = useMainContext();
   const { productManager } = designManager;
   const selectedVariant =
-    productManager.backendVariants.find(
+    productManager.size.backendVariants.find(
       (variant) => variant.size === productManager.size.selectedSize,
     ) ?? null;
   const totalAmount = selectedVariant?.price ?? 0;

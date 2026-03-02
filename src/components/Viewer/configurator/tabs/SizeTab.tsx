@@ -11,7 +11,7 @@ export const SizeTab = observer(() => {
     <>
       <h2 className="mb-2 text-[32px] font-bold">Select Collar Size</h2>
       <div className="grid grid-cols-2 gap-1.5">
-        {productManager.backendVariants.map((variant) => {
+        {productManager.size.backendVariants.map((variant) => {
           const isSelected = productManager.size.selectedSize === variant.size;
           return (
             <button

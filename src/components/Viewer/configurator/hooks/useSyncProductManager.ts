@@ -9,10 +9,7 @@ type Params = {
   queries: ReturnType<typeof useConfiguratorQueries>;
 };
 
-export const useSyncProductManager = ({
-  productManager,
-  queries,
-}: Params) => {
+export const useSyncProductManager = ({ productManager, queries }: Params) => {
   const {
     buckleOptionsQuery,
     collectionsQuery,
@@ -44,7 +41,9 @@ export const useSyncProductManager = ({
 
   useEffect(() => {
     const tabs = resolveTabsForProduct(productManager);
-    const activeTabExists = tabs.some((tab) => tab.id === productManager.activeTab);
+    const activeTabExists = tabs.some(
+      (tab) => tab.id === productManager.activeTab,
+    );
 
     if (!activeTabExists && tabs.length > 0) {
       productManager.setActiveTab(tabs[0].id);
@@ -53,7 +52,7 @@ export const useSyncProductManager = ({
 
   useEffect(() => {
     const variants = variantsQuery.data?.variants ?? [];
-    productManager.setBackendVariants(variants);
+    productManager.size.setBackendVariants(variants);
     if (!productManager.size.selectedSize && variants.length > 0) {
       productManager.size.setSize(variants[0].size);
     }
@@ -72,18 +71,23 @@ export const useSyncProductManager = ({
 
   useEffect(() => {
     const collections = collectionsQuery.data ?? [];
-    productManager.setBackendCollections(collections);
+    productManager.material.setBackendCollections(collections);
 
     const hasSelectedCollection = collections.some(
-      (collection) => collection.id === productManager.selectedCollectionId,
+      (collection) =>
+        collection.id === productManager.material.selectedCollectionId,
     );
 
-    if ((!productManager.selectedCollectionId || !hasSelectedCollection) && collections.length > 0) {
-      productManager.setSelectedCollectionId(collections[0].id);
+    if (
+      (!productManager.material.selectedCollectionId ||
+        !hasSelectedCollection) &&
+      collections.length > 0
+    ) {
+      productManager.material.setSelectedCollectionId(collections[0].id);
     }
   }, [collectionsQuery.data, productId, productManager]);
 
   useEffect(() => {
-    productManager.setBackendPatterns(patternsQuery.data ?? []);
+    productManager.material.setBackendPatterns(patternsQuery.data ?? []);
   }, [patternsQuery.data, productManager]);
 };

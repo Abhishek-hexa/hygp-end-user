@@ -149,7 +149,7 @@ export const productConfigs: Record<ProductId, ProductConfig> = {
     },
     features: {
       buckle: {
-        types: [],
+        types: ['METAL', 'PLASTIC'],
       },
       engraving: {
         enabled: false,
