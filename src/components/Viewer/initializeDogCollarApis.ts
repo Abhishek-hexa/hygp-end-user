@@ -1,10 +1,12 @@
-import axios from 'axios';
+import axios, { all } from 'axios';
 
 import { ProductManager } from '../../state/product/ProductManager';
 import { WebbingTextManager } from '../../state/product/managers/WebbingTextManager';
 import { EngravingManager } from '../../state/product/managers/EngravingManager';
 import { ProductSizeType } from '../../state/product/types';
 import { SizeDescription } from '../../state/product/managers/SizeManager';
+import { Collection, TextureManager } from '../../state/product/managers/TextureManager';
+import { text } from 'node:stream/consumers';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -53,13 +55,15 @@ export const initializeDogCollarApis = async (
       );
     }
     
-    // parseFonts(
-    //   engravingFonts, 
-    //   productManager.webbingText, 
-    //   productManager.engravingManager
-    // );
+    parseFonts(
+      engravingFonts, 
+      productManager.webbingText, 
+      productManager.engravingManager
+    );
 
     parseSizes(variants, productManager);
+
+    parseTextures(collections, productManager.textureManager);
 
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -127,3 +131,19 @@ const recordValue = (size: any): ProductSizeType | null => {
 
   return sizeLookup[normalized] ?? null;
 };
+
+const parseTextures = (collectionsResponse: any, textureManager: TextureManager) => {
+  console.log('collectionsResponse', collectionsResponse);
+  const allCollections = collectionsResponse.custom_collections;
+
+  const collections: Collection[] = [];
+  allCollections.map((collection: any) => {
+    const parsedCollection: Collection = {
+      id: parseInt(collection.id),
+      image: collection.image,
+      title: collection.title,
+    }
+    collections.push(parsedCollection);
+  });
+  textureManager.setAvailableCollections(collections);
+}

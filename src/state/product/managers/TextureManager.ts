@@ -1,11 +1,17 @@
 import { makeAutoObservable } from 'mobx';
-import { ApiCollection, ApiPattern } from '../types';
+import { ApiPattern } from '../types';
+
+export interface Collection {
+  id: number;
+  image: string;
+  title: string;
+}
 
 export class TextureManager {
   private _texture: string | null = null;
 
-  private _availableCollections: string[] = [];
-  private _selectedCollection: ApiCollection[] | null = null;
+  private _availableCollections: Map<number, Collection> = new Map();
+  private _selectedCollection: Collection | null = null;
 
   private _availablePatterns: ApiPattern[] = [];
   private _selectedPattern: string | null = null;
@@ -34,16 +40,19 @@ export class TextureManager {
     return this._selectedPattern;
   }
 
-  setMaterial(material: string) {
-    this._texture = material;
+  setMaterial(inTexture: string) {
+    this._texture = inTexture;
   }
 
-  setSelectedCollection(collection: ApiCollection[]) {
-    this._selectedCollection = collection;
+  setSelectedCollection(id: number) {
+    this._selectedCollection = this._availableCollections.get(id) ?? null;
   }
 
-  setAvailableCollections(collections: string[]) {
-    this._availableCollections = collections;
+  setAvailableCollections(collections: Collection[]) {
+    this._availableCollections = new Map();
+    collections.forEach(collection => {
+      this._availableCollections.set(collection.id, collection);
+    });
   }
 
   setSelectedPattern(pattern: string) {
