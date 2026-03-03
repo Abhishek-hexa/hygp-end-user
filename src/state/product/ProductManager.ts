@@ -49,10 +49,12 @@ export class ProductManager {
   }
 
   getModelPath() {
-    if (!this._sizeManager.selectedSize) {
+    const selectedSize = this._sizeManager.selectedSize;
+    if (!selectedSize) {
       return null;
     }
-    return this.productConfig.model(this._sizeManager.selectedSize);
+
+    return this._sizeManager.availableSizes.get(selectedSize)?.model ?? null;
   }
 
   canUseEngraving() {

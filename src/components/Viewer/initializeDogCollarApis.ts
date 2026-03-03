@@ -63,7 +63,7 @@ export const initializeDogCollarApis = async (
 
     parseSizes(variants, productManager);
 
-    parseTextures(collections, productManager.textureManager);
+    parseCollections(collections, productManager.textureManager);
 
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -77,7 +77,7 @@ const parseFonts = (engravingFontsResponse: any, WebbingTextManager: WebbingText
   const webbingFonts: Map<string, string> = new Map();
   const engravingFonts: Map<string, string> = new Map();
 
-  fontOptions.map((font: any) =>{
+  fontOptions.forEach((font: any) =>{
     if(font.use_case.includes("webbing")){
       webbingFonts.set(font.name, font.font_path);
     } else if(font.use_case.includes("buckle")){
@@ -132,12 +132,11 @@ const recordValue = (size: any): ProductSizeType | null => {
   return sizeLookup[normalized] ?? null;
 };
 
-const parseTextures = (collectionsResponse: any, textureManager: TextureManager) => {
-  console.log('collectionsResponse', collectionsResponse);
+const parseCollections = (collectionsResponse: any, textureManager: TextureManager) => {
   const allCollections = collectionsResponse.custom_collections;
 
   const collections: Collection[] = [];
-  allCollections.map((collection: any) => {
+  allCollections.forEach((collection: any) => {
     const parsedCollection: Collection = {
       id: parseInt(collection.id),
       image: collection.image,

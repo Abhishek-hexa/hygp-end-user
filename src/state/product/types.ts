@@ -33,9 +33,6 @@ export type Features =
 export type LeashLengthType = '3' | '4' | '5' | '6';
 
 export type ProductConfig = {
-  id: ProductType;
-  sizes: ProductSizeType[];
-  model: (size: ProductSizeType) => string;
   features: Features[];
 };
 
