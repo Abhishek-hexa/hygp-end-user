@@ -3,9 +3,9 @@ import { makeAutoObservable } from 'mobx';
 import { TextSize } from '../types';
 import { FontManager } from './FontManager';
 
-export class TextManager {
+export class WebbingTextManager {
   private _value = '';
-  private _size: TextSize = 'medium';
+  private _size: TextSize = 'MEDIUM';
   private _font = new FontManager();
 
   constructor() {
@@ -24,21 +24,29 @@ export class TextManager {
     return this._font;
   }
 
-  setText(value: string) {
-    this._value = value;
+  get availableFonts() {
+    return this._font.availableFonts;
   }
 
-  setSize(size: TextSize) {
-    this._size = size;
+  get selectedFont() {
+    return this._font.selectedFont;
   }
 
-  setFont(font: string) {
-    this._font.setFont(font);
+  setText(inValue: string) {
+    this._value = inValue;
+  }
+
+  setSize(inSize: TextSize) {
+    this._size = inSize;
+  }
+
+  setFont(inFont: string) {
+    this._font.setFont(inFont);
   }
 
   reset() {
     this._value = '';
-    this._size = 'medium';
+    this._size = 'MEDIUM';
     this._font.reset();
   }
 }

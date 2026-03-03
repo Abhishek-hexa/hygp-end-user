@@ -2,19 +2,19 @@ import { makeAutoObservable } from 'mobx';
 
 import { BuckleManager } from './managers/BuckleManager';
 import { EngravingManager } from './managers/EngravingManager';
-import { TextureManager } from './managers/MaterialManager';
+import { TextureManager } from './managers/TextureManager';
 import { SizeManager } from './managers/SizeManager';
-import { TextManager } from './managers/TextManager';
+import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
-import { ProductId } from './types';
+import { ProductType } from './types';
 
 export class ProductManager {
-  private _productId: ProductId = defaultProductId;
-  private _size = new SizeManager();
-  private _buckle = new BuckleManager();
-  private _engraving = new EngravingManager();
-  private _text = new TextManager();
-  private _material = new TextureManager();
+  private _productId: ProductType = defaultProductId;
+  private _sizeManager = new SizeManager();
+  private _buckleManager = new BuckleManager();
+  private _engravingManager = new EngravingManager();
+  private _webbingTextManager = new WebbingTextManager();
+  private _textureManager = new TextureManager();
 
   constructor() {
     makeAutoObservable(this);
@@ -24,66 +24,47 @@ export class ProductManager {
     return this._productId;
   }
 
-  get size() {
-    return this._size;
+  get sizeManager() {
+    return this._sizeManager;
   }
 
-  get buckle() {
-    return this._buckle;
+  get buckleManager() {
+    return this._buckleManager;
   }
 
-  get engraving() {
-    return this._engraving;
+  get engravingManager() {
+    return this._engravingManager;
   }
 
-  get text() {
-    return this._text;
+  get webbingText() {
+    return this._textureManager;
   }
 
-  get material() {
-    return this._material;
+  get textureManager() {
+    return this._textureManager;
   }
 
-  get config() {
+  get productConfig() {
     return productConfigs[this._productId];
   }
 
-  get capabilities() {
-    return this.config.capabilities;
-  }
-
   getModelPath() {
-    if (!this._size.selectedSize) {
+    if (!this._sizeManager.selectedSize) {
       return null;
     }
-    return this.config.model(this._size.selectedSize);
-  }
-
-  get resolvedModelPath() {
-    return this.getModelPath();
+    return this.productConfig.model(this._sizeManager.selectedSize);
   }
 
   canUseEngraving() {
-    if (!this.capabilities.hasEngraving) {
-      return false;
-    }
-
-    const engravingConfig = this.config.features.engraving;
-    if (!engravingConfig.enabled) {
-      return false;
-    }
-    if (engravingConfig.requiresBuckle) {
-      return this._buckle.type === engravingConfig.requiresBuckle;
-    }
-    return true;
+    return this.productConfig.features.includes('ENGRAVING');
   }
 
   canUseText() {
-    return this.config.features.text.enabled;
+    return this.productConfig.features.includes('COLLAR_TEXT') || this.productConfig.features.includes('HARNESS_TEXT');
   }
 
   canMoveText() {
-    return this.config.features.text.positionable ?? false;
+    return false;
   }
 
   canResizeText() {
@@ -91,43 +72,31 @@ export class ProductManager {
       return false;
     }
 
-    if (!this.capabilities.hasFabricTextResizeUI) {
-      return false;
-    }
-
-    return this.config.features.text.scalable ?? false;
+    return false;
   }
 
   hasBuckle() {
-    return this.capabilities.hasBuckle;
+    return this.productConfig.features.includes('BUCKLE');
   }
 
   hasHardware() {
-    return this.capabilities.hasHardware;
+    return this.productConfig.features.includes('HARDWARE');
   }
 
-  hasMatchingLeash() {
-    return this.capabilities.hasMatchingLeash;
-  }
-
-  hasDualCheckout() {
-    return this.capabilities.hasDualCheckout;
-  }
-
-  setProduct(productId: ProductId) {
-    this._productId = productId;
+  setProduct(inProductId: ProductType) {
+    this._productId = inProductId;
     this.resetAll();
   }
 
   getAllFeatures() {
-    return this.config.availableFeatures;
+    return this.productConfig.features;
   }
 
   resetAll() {
-    this._size.reset();
-    this._buckle.reset();
-    this._engraving.reset();
-    this._text.reset();
-    this._material.reset();
+    this._sizeManager.reset();
+    this._buckleManager.reset();
+    this._engravingManager.reset();
+    this._webbingTextManager.reset();
+    this._textureManager.reset();
   }
 }

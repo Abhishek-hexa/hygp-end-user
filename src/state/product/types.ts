@@ -1,143 +1,93 @@
-export type ProductId =
-  | 'dogCollar'
-  | 'catCollar'
-  | 'martingale'
-  | 'leash'
-  | 'bandana'
-  | 'harness';
+export type ProductType =
+  | 'DOG_COLLAR'
+  | 'CAT_COLLAR'
+  | 'MARTINGALE'
+  | 'LEASH'
+  | 'BANDANA'
+  | 'HARNESS';
+export type ProductIdType = ProductType;
 
-export type ProductSize =
-  | 'EXTRA SMALL'
+export type ProductSizeType =
+  | 'EXTRA_SMALL'
   | 'SMALL'
   | 'MEDIUM'
   | 'LARGE'
-  | 'MEDIUM WIDE'
-  | 'MEDIUM NARROW';
+  | 'XLARGE'
+  | 'XXLARGE'
+  | 'MEDIUM_WIDE'
+  | 'MEDIUM_NARROW';
+
 export type BuckleType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
-export type TextSize = 'small' | 'medium' | 'large';
+export type BuckleNameType = 'BUCKLE' | 'HARWARE';
+export type TextSize = 'SMALL' | 'MEDIUM' | 'LARGE';
+export type Features =
+  | 'SIZE'
+  | 'DESIGN'
+  | 'HARDWARE'
+  | 'COLLAR_TEXT'
+  | 'BUCKLE'
+  | 'ENGRAVING'
+  | 'HARNESS_TEXT'
+  | 'FETCH';
 
-type EngravingRule = {
-  enabled: boolean;
-  maxLines?: number;
-  requiresBuckle?: BuckleType;
-};
-
-type BuckleRule = {
-  types: BuckleType[];
-};
-
-type TextRule = {
-  enabled: boolean;
-  scalable?: boolean;
-  positionable?: boolean;
-};
-
-export interface ProductCapabilities {
-  hasBuckle: boolean;
-  hasHardware: boolean;
-  hasEngraving: boolean;
-  hasFabricTextResizeUI: boolean;
-  hasMatchingLeash: boolean;
-  hasDualCheckout: boolean;
-}
-
-export interface CheckoutConfig {
-  includeMatchingLeashSize?: string;
-  bandanaRedirectToDogConfigurator?: boolean;
-}
+export type LeashLengthType = '3' | '4' | '5' | '6';
 
 export type ProductConfig = {
-  id: ProductId;
-  sizes: ProductSize[];
-  model: (size: ProductSize) => string;
-  availableFeatures: Features[];
-  capabilities: ProductCapabilities;
-  checkout?: CheckoutConfig;
-  features: {
-    engraving: EngravingRule;
-    buckle: BuckleRule;
-    text: TextRule;
-  };
+  id: ProductType;
+  sizes: ProductSizeType[];
+  model: (size: ProductSizeType) => string;
+  features: Features[];
 };
 
-export type Features =
-  | 'size'
-  | 'design'
-  | 'hardware'
-  | 'collar text'
-  | 'buckle'
-  | 'engraving'
-  | 'harness text';
-
-export interface EngravingLine {
-  text: string;
-  font: string;
-}
-
-export interface EngravingConfig {
-  lines: EngravingLine[];
-}
-
-export interface Pattern {
-  id: string;
+export interface ApiProductVariant {
+  id: number;
+  modelUrl: string;
   name: string;
-  thumbnail: string;
+  plasticModelUrl: string;
+  prefix?: string;
+  size: ProductSizeType;
+  price: number;
+  sizeImageUrl?: string;
+}
+
+export interface ProductVariantsResponse {
+  variants: ApiProductVariant[];
+}
+
+export interface ApiBuckleOption {
+  id: number;
+  name: string;
+  metalColors?: string[];
+  plasticColors?: string[];
+  breakawayColors?: string[];
+  type: BuckleType;
+}
+
+export interface ApiFontOption {
+  fontUrl?: string;
+  name: string;
+  id: number;
+  previewUrl: string;
+  useCases?: string[];
+}
+
+export interface ApiCollection {
+  id: number;
+  name: string;
+}
+
+export interface ApiCollectionResponse {
+  collections: ApiCollection[];
+}
+
+export interface ApiPattern {
+  dataX?: string;
+  id: number;
+  name: string;
+  previewUrl?: string;
   textureUrl: string;
 }
 
-export interface Collection {
-  id: string;
-  name: string;
-  patterns: Pattern[];
-}
-
-export interface SizeOption {
-  id: string;
-  label: string;
-  price: number;
-  isDefault?: boolean;
-}
-
-export interface BuckleOption {
-  id: string;
-  type: BuckleType;
-  colors: string[];
-}
-
-export interface HardwareOption {
-  id: string;
-  type: 'METAL';
-  colors: string[];
-}
-
-export interface SizeResponse {
-  sizes: SizeOption[];
-}
-
-export interface GLBResponse {
-  glbUrl: string;
-  textureMaps: string[];
-  additionalData?: Record<string, unknown>;
-}
-
-export interface FabricTextConfig {
-  text: string;
-  color: string;
-  size?: TextSize;
-  position?: {
-    x: number;
-    y: number;
-  };
-  scale?: number;
-}
-
-export interface ProductConfiguration {
-  product: ProductId;
-  size?: SizeOption;
-  design?: Pattern;
-  buckle?: BuckleOption;
-  hardware?: HardwareOption;
-  engraving?: EngravingConfig;
-  fabricText?: FabricTextConfig;
-  checkout?: CheckoutConfig;
+export interface AllPatternResonse {
+  textures: ApiPattern[];
 }

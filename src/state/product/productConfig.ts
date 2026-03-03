@@ -1,169 +1,56 @@
-import { ProductConfig, ProductId } from './types';
+import { ProductConfig, ProductType } from './types';
 
-export const defaultProductId: ProductId = 'dogCollar';
+export const defaultProductId: ProductType = 'DOG_COLLAR';
 
-export const productConfigs: Record<ProductId, ProductConfig> = {
-  bandana: {
-    availableFeatures: [],
-    capabilities: {
-      hasBuckle: false,
-      hasDualCheckout: true,
-      hasEngraving: false,
-      hasFabricTextResizeUI: false,
-      hasHardware: false,
-      hasMatchingLeash: false,
-    },
-    features: {
-      buckle: {
-        types: [],
-      },
-      engraving: {
-        enabled: false,
-      },
-      text: {
-        enabled: false,
-      },
-    },
-    id: 'bandana',
+export const productConfigs: Record<ProductType, ProductConfig> = {
+  BANDANA: {
+    features: ['FETCH'],
+    id: 'BANDANA',
     model: (_size) => '',
     sizes: [],
   },
-  catCollar: {
-    availableFeatures: ['size', 'design', 'hardware', 'collar text', 'buckle'],
-    capabilities: {
-      hasBuckle: true,
-      hasDualCheckout: false,
-      hasEngraving: false,
-      hasFabricTextResizeUI: true,
-      hasHardware: false,
-      hasMatchingLeash: false,
-    },
-    features: {
-      buckle: {
-        types: ['BREAKAWAY', 'PLASTIC'],
-      },
-      engraving: {
-        enabled: false,
-      },
-      text: {
-        enabled: true,
-      },
-    },
-    id: 'catCollar',
+  CAT_COLLAR: {
+    features: [
+      'SIZE',
+      'DESIGN',
+      'HARDWARE',
+      'COLLAR_TEXT',
+      'BUCKLE',
+      'FETCH',
+    ],
+    id: 'CAT_COLLAR',
     model: (_size) => '',
     sizes: ['SMALL', 'LARGE'],
   },
-  dogCollar: {
-    availableFeatures: [
-      'size',
-      'design',
-      'hardware',
-      'collar text',
-      'buckle',
-      'engraving',
+  DOG_COLLAR: {
+    features: [
+      'SIZE',
+      'DESIGN',
+      'HARDWARE',
+      'COLLAR_TEXT',
+      'BUCKLE',
+      'ENGRAVING',
+      'FETCH',
     ],
-    capabilities: {
-      hasBuckle: true,
-      hasDualCheckout: false,
-      hasEngraving: true,
-      hasFabricTextResizeUI: true,
-      hasHardware: false,
-      hasMatchingLeash: true,
-    },
-    checkout: {
-      includeMatchingLeashSize: '',
-    },
-    features: {
-      buckle: {
-        types: ['METAL', 'PLASTIC'],
-      },
-      engraving: {
-        enabled: true,
-        maxLines: 4,
-        requiresBuckle: 'METAL',
-      },
-      text: {
-        enabled: true,
-        positionable: false,
-        scalable: false,
-      },
-    },
-    id: 'dogCollar',
+    id: 'DOG_COLLAR',
     model: (_size) => '',
-    sizes: ['EXTRA SMALL', 'SMALL', 'MEDIUM NARROW', 'MEDIUM WIDE'],
+    sizes: ['EXTRA_SMALL', 'SMALL', 'MEDIUM_NARROW', 'MEDIUM_WIDE'],
   },
-  harness: {
-    availableFeatures: [],
-    capabilities: {
-      hasBuckle: false,
-      hasDualCheckout: false,
-      hasEngraving: false,
-      hasFabricTextResizeUI: false,
-      hasHardware: false,
-      hasMatchingLeash: false,
-    },
-    features: {
-      buckle: {
-        types: [],
-      },
-      engraving: {
-        enabled: false,
-      },
-      text: {
-        enabled: false,
-      },
-    },
-    id: 'harness',
+  HARNESS: {
+    features: ['FETCH'],
+    id: 'HARNESS',
     model: (_size) => '',
     sizes: [],
   },
-  leash: {
-    availableFeatures: [],
-    capabilities: {
-      hasBuckle: false,
-      hasDualCheckout: false,
-      hasEngraving: false,
-      hasFabricTextResizeUI: true,
-      hasHardware: true,
-      hasMatchingLeash: false,
-    },
-    features: {
-      buckle: {
-        types: [],
-      },
-      engraving: {
-        enabled: false,
-      },
-      text: {
-        enabled: false,
-      },
-    },
-    id: 'leash',
+  LEASH: {
+    features: ['HARDWARE', 'FETCH'],
+    id: 'LEASH',
     model: (_size) => '',
     sizes: [],
   },
-  martingale: {
-    availableFeatures: [],
-    capabilities: {
-      hasBuckle: false,
-      hasDualCheckout: false,
-      hasEngraving: false,
-      hasFabricTextResizeUI: true,
-      hasHardware: true,
-      hasMatchingLeash: false,
-    },
-    features: {
-      buckle: {
-        types: [],
-      },
-      engraving: {
-        enabled: false,
-      },
-      text: {
-        enabled: false,
-      },
-    },
-    id: 'martingale',
+  MARTINGALE: {
+    features: ['HARDWARE', 'FETCH'],
+    id: 'MARTINGALE',
     model: (_size) => '',
     sizes: [],
   },

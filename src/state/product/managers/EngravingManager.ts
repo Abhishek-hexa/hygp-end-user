@@ -1,10 +1,14 @@
 import { makeAutoObservable } from 'mobx';
 
-import { FontManager } from './FontManager';
+export interface EngravingLine {
+  text: string;
+  font: string;
+}
 
 export class EngravingManager {
-  private _lines: string[] = [];
-  private _font = new FontManager();
+  private static readonly MAX_LINES = 4;
+  private _lines: EngravingLine[] = [];
+  private _availableFonts: Map<string, string> = new Map();
 
   constructor() {
     makeAutoObservable(this);
@@ -14,20 +18,23 @@ export class EngravingManager {
     return this._lines;
   }
 
-  get font() {
-    return this._font;
+  get availableFonts() {
+    return this._availableFonts;
   }
 
-  setLines(lines: string[]) {
-    this._lines = [...lines];
+  setLines(inLines: EngravingLine[]) {
+    if (inLines.length > EngravingManager.MAX_LINES) {
+      return;
+    }
+    this._lines = inLines;
   }
 
-  setFont(font: string) {
-    this._font.setFont(font);
+  setAvailableFonts(inFonts: Map<string, string>) {
+    this._availableFonts = inFonts;
   }
 
   reset() {
     this._lines = [];
-    this._font.reset();
+    this._availableFonts = new Map();
   }
 }
