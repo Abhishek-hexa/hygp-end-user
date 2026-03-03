@@ -6,7 +6,7 @@ import { FontManager } from './FontManager';
 export class WebbingTextManager {
   private _value = '';
   private _size: TextSize = 'MEDIUM';
-  private _font = new FontManager();
+  private _fontManager = new FontManager();
 
   constructor() {
     makeAutoObservable(this);
@@ -20,16 +20,16 @@ export class WebbingTextManager {
     return this._size;
   }
 
-  get font() {
-    return this._font;
+  get fontManager() {
+    return this._fontManager;
   }
 
   get availableFonts() {
-    return this._font.availableFonts;
+    return this._fontManager.availableFonts;
   }
 
   get selectedFont() {
-    return this._font.selectedFont;
+    return this._fontManager.selectedFont;
   }
 
   setText(inValue: string) {
@@ -41,12 +41,12 @@ export class WebbingTextManager {
   }
 
   setFont(inFont: string) {
-    this._font.setFont(inFont);
+    this._fontManager.setFont(inFont);
   }
 
   reset() {
     this._value = '';
     this._size = 'MEDIUM';
-    this._font.reset();
+    this._fontManager.reset();
   }
 }

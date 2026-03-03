@@ -2,8 +2,8 @@ import { makeAutoObservable } from 'mobx';
 
 import { BuckleManager } from './managers/BuckleManager';
 import { EngravingManager } from './managers/EngravingManager';
-import { TextureManager } from './managers/TextureManager';
 import { SizeManager } from './managers/SizeManager';
+import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
 import { ProductType } from './types';
@@ -37,7 +37,7 @@ export class ProductManager {
   }
 
   get webbingText() {
-    return this._textureManager;
+    return this._webbingTextManager;
   }
 
   get textureManager() {
@@ -60,7 +60,10 @@ export class ProductManager {
   }
 
   canUseText() {
-    return this.productConfig.features.includes('COLLAR_TEXT') || this.productConfig.features.includes('HARNESS_TEXT');
+    return (
+      this.productConfig.features.includes('COLLAR_TEXT') ||
+      this.productConfig.features.includes('HARNESS_TEXT')
+    );
   }
 
   canMoveText() {

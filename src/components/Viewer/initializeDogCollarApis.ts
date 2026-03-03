@@ -1,6 +1,10 @@
 import axios from 'axios';
 
 import { ProductManager } from '../../state/product/ProductManager';
+import { WebbingTextManager } from '../../state/product/managers/WebbingTextManager';
+import { EngravingManager } from '../../state/product/managers/EngravingManager';
+import { ProductSizeType } from '../../state/product/types';
+import { SizeDescription } from '../../state/product/managers/SizeManager';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -9,7 +13,7 @@ const fetchJson = async <T>(
 ): Promise<T> => {
   const { data } = await axios.get<T>(`${baseUrl}${path}`);
   // eslint-disable-next-line no-console
-  console.log(`[dog-collar-init] ${label}`, data);
+  // console.log(`[dog-collar-init] ${label}`, data);
   return data;
 };
 
@@ -48,14 +52,78 @@ export const initializeDogCollarApis = async (
         'collection products',
       );
     }
+    
+    // parseFonts(
+    //   engravingFonts, 
+    //   productManager.webbingText, 
+    //   productManager.engravingManager
+    // );
 
-    // TODO: Map `variants`, `buckles`, `engravingFonts`, and collections/products
-    // into product managers once API shape finalization is done.
-    void variants;
-    void buckles;
-    void engravingFonts;
+    parseSizes(variants, productManager);
+
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('[dog-collar-init] API initialization failed', error);
   }
+};
+
+const parseFonts = (engravingFontsResponse: any, WebbingTextManager: WebbingTextManager, EngravingManager: EngravingManager) => {
+  const fontOptions = engravingFontsResponse.data;
+
+  const webbingFonts: Map<string, string> = new Map();
+  const engravingFonts: Map<string, string> = new Map();
+
+  fontOptions.map((font: any) =>{
+    if(font.use_case.includes("webbing")){
+      webbingFonts.set(font.name, font.font_path);
+    } else if(font.use_case.includes("buckle")){
+      engravingFonts.set(font.name, font.font_path);
+    }
+  })
+
+  WebbingTextManager.fontManager.setAvailableFonts(webbingFonts);
+  EngravingManager.setAvailableFonts(engravingFonts);
+}
+
+const parseSizes = (sizeOptions: any, productManager: ProductManager) => {
+  const sizes = sizeOptions?.variants ?? [];
+  const sizeMap: Map<ProductSizeType, SizeDescription> = new Map();
+  
+  sizes.forEach((size: any) => {
+    const parsedSize = recordValue(size);
+    if (!parsedSize) {
+      return;
+    }
+
+    const sizeDescription: SizeDescription = {
+      id: size.id,
+      price: size.price,
+      model: size.model,
+      plasticModel: size.plasticModel,
+    }
+
+    
+    sizeMap.set(parsedSize, sizeDescription);
+  });
+  
+  productManager.sizeManager.setAvailableSizes(sizeMap);
+};
+
+const recordValue = (size: any): ProductSizeType | null => {
+  const normalized = String(size?.size)
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/-/g, '');
+
+  const sizeLookup: Record<string, ProductSizeType> = {
+    EXTRASMALL: 'EXTRA_SMALL',
+    SMALL: 'SMALL',
+    MEDIUMNARROW: 'MEDIUM_NARROW',
+    MEDIUMWIDE: 'MEDIUM_WIDE',
+    LARGE: 'LARGE',
+    XLARGE: 'XLARGE',
+    XXLARGE: 'XXLARGE',
+  };
+
+  return sizeLookup[normalized] ?? null;
 };

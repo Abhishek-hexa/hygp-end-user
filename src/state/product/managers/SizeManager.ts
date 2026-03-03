@@ -2,9 +2,16 @@ import { makeAutoObservable } from 'mobx';
 
 import { LeashLengthType, ProductSizeType } from '../types';
 
+export interface SizeDescription {
+  id: number;
+  price: string;
+  model: string;
+  plasticModel: string;
+}
+
 export class SizeManager {
   private _selectedSize: ProductSizeType | null = null;
-  private _availableSizes: ProductSizeType[] = [];
+  private _availableSizes: Map<ProductSizeType, SizeDescription> = new Map(); // Size : Description
 
   private _selectedLength: LeashLengthType | null = null;
   private _availableLengths: LeashLengthType[] = [];
@@ -29,20 +36,20 @@ export class SizeManager {
     return this._availableLengths;
   }
 
-  setSize(size: ProductSizeType) {
-    this._selectedSize = size;
+  setSize(inSize: ProductSizeType) {
+    this._selectedSize = inSize;
   }
 
-  setAvailableSizes(sizes: ProductSizeType[]) {
-    this._availableSizes = sizes;
+  setAvailableSizes(inSizes: Map<ProductSizeType, SizeDescription>) {
+    this._availableSizes = inSizes;
   }
 
   setLength(length: LeashLengthType) {
     this._selectedLength = length;
   }
 
-  setAvailableLengths(lengths: LeashLengthType[]) {
-    this._availableLengths = lengths;
+  setAvailableLengths(inLengths: LeashLengthType[]) {
+    this._availableLengths = inLengths;
   }
 
   reset() {
