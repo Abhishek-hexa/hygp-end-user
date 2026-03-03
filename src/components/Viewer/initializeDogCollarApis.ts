@@ -80,7 +80,8 @@ const parseFonts = (engravingFontsResponse: any, WebbingTextManager: WebbingText
   fontOptions.forEach((font: any) =>{
     if(font.use_case.includes("webbing")){
       webbingFonts.set(font.name, font.font_path);
-    } else if(font.use_case.includes("buckle")){
+    }
+    if(font.use_case.includes("buckle")){
       engravingFonts.set(font.name, font.font_path);
     }
   })

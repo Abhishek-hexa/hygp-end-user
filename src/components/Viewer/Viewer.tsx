@@ -3,11 +3,14 @@ import { useEffect, useRef } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { initializeDogCollarApis } from './initializeDogCollarApis';
+import { CanvasPanel } from './CanvasPanel';
+import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
   const mainContext = useMainContext();
-  const productManager = mainContext.designManager.productManager;
+  const designManager = mainContext.designManager;
+  const productManager = designManager.productManager;
   const hasInitializedRef = useRef(false);
 
   useEffect(() => {
@@ -22,8 +25,9 @@ export const Viewer = observer(() => {
   return (
     <div className="h-screen w-full bg-white">
       <NavBar />
-      <div className="mt-16 flex h-[calc(100vh-64px)] w-full items-center justify-center text-[#444]">
-        3D rendering is temporarily disabled.
+      <div className="mt-20 grid h-[calc(100vh-80px)] w-full grid-cols-[70%_30%]">
+        <CanvasPanel />
+        <ConfigurationPanel />
       </div>
     </div>
   );
