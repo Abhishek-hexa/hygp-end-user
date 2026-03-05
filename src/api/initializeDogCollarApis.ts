@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-import { ProductManager } from '../../state/product/ProductManager';
-import { WebbingTextManager } from '../../state/product/managers/WebbingTextManager';
-import { EngravingManager } from '../../state/product/managers/EngravingManager';
-import { BuckleType, Collection, ColorDescription, ProductSizeType, SizeDescription } from '../../state/product/types';
-import { TextureManager } from '../../state/product/managers/TextureManager';
-import { BuckleManager } from '../../state/product/managers/BuckleManager';
+import { ProductManager } from '../state/product/ProductManager';
+import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
+import { EngravingManager } from '../state/product/managers/EngravingManager';
+import { BuckleType, Collection, ColorDescription, ProductSizeType, SizeDescription } from '../state/product/types';
+import { PatternType, TextureManager } from '../state/product/managers/TextureManager';
+import { BuckleManager } from '../state/product/managers/BuckleManager';
+import { BucklesApiResponse, CollectionProductsApiResponse, EngravingFontsApiResponse, ProductVariantsApiResponse, ShopifyCollectionsApiResponse } from './types/api.types';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -30,28 +31,41 @@ export const initializeDogCollarApis = async (
 
   try {
     const [variants, buckles, engravingFonts, collections] = await Promise.all([
-      fetchJson<unknown>(
+      fetchJson<ProductVariantsApiResponse>(
         baseUrl,
         '/product/variants/8969048817879',
-        'product variants',
+        'product variants'
       ),
-      fetchJson<unknown>(baseUrl, '/buckle', 'buckles'),
-      fetchJson<unknown>(baseUrl, '/engraving-fonts', 'engraving fonts'),
-      fetchJson<{ collections?: Array<{ id?: number | string }> }>(
+
+      fetchJson<BucklesApiResponse>(
+        baseUrl,
+        '/buckle',
+        'buckles'
+      ),
+
+      fetchJson<EngravingFontsApiResponse>(
+        baseUrl,
+        '/engraving-fonts',
+        'engraving fonts'
+      ),
+
+      fetchJson<ShopifyCollectionsApiResponse>(
         baseUrl,
         '/shopify-collection/',
-        'collections',
+        'collections'
       ),
-    ]);
+    ])
 
-    const firstCollectionId = collections?.collections?.[0]?.id;
-
+    const firstCollectionId = collections?.custom_collections?.[0]?.id;
+    let firstCollectionProducts: CollectionProductsApiResponse | null = null;
+    
     if (firstCollectionId !== undefined && firstCollectionId !== null) {
-      await fetchJson(
+      const res = await fetchJson<CollectionProductsApiResponse>(
         baseUrl,
         `/shopify-collection/products/${String(firstCollectionId)}`,
         'collection products',
       );
+      firstCollectionProducts = res;
     }
     
     parseFonts(
@@ -65,6 +79,10 @@ export const initializeDogCollarApis = async (
     parseCollections(collections, productManager.textureManager);
 
     parseBuckles(buckles, productManager.buckleManager);
+
+    if(firstCollectionProducts){
+      parsePatterns(firstCollectionProducts, productManager.textureManager);
+    }
 
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -136,6 +154,7 @@ const recordValue = (size: any): ProductSizeType | null => {
 
 const parseCollections = (collectionsResponse: any, textureManager: TextureManager) => {
   const allCollections = collectionsResponse.custom_collections;
+  console.log(allCollections);
 
   const collections: Collection[] = [];
   allCollections.forEach((collection: any) => {
@@ -151,7 +170,6 @@ const parseCollections = (collectionsResponse: any, textureManager: TextureManag
 
 const parseBuckles = (bucklesResponse: any, buckleManager: BuckleManager) => {
   const buckles = bucklesResponse.data;
-  console.log('buckles', buckles);
   const buckleTypes: BuckleType[] = [];
   const metalColors: ColorDescription[] = [];
   const plasticColors: ColorDescription[] = [];
@@ -225,4 +243,24 @@ const parseBuckles = (bucklesResponse: any, buckleManager: BuckleManager) => {
       buckleManager.setSelectedColor(defaultColor);
     }
   }
+}
+
+const parsePatterns = (
+  collectionProductsResponse: CollectionProductsApiResponse, 
+  textureManager: TextureManager) => {
+    const { collectionId, products } = collectionProductsResponse;
+    const patterns: PatternType[] = [];
+
+    products.forEach((product) =>{
+      const parsedProduct: PatternType = {
+        id: parseInt(product.id),
+        name: product.name,
+        dataX: product.dataX,
+        pngImage: product.png_image,
+        preview: product.preview,
+      }
+      patterns.push(parsedProduct);
+    })
+    textureManager.setSelectedCollection(parseInt(collectionId));
+    textureManager.setAvailablePatterns(parseInt(collectionId), patterns);
 }

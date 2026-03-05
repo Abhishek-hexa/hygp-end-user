@@ -1,21 +1,25 @@
 import { makeAutoObservable } from 'mobx';
+
 import { Collection } from '../types';
 
+export interface PatternType {
+  id: number;
+  name: string;
+  dataX: string;
+  pngImage: string;
+  preview: string;
+}
+
 export class TextureManager {
-  private _texture: string | null = null;
 
-  private _availableCollections: Map<number, Collection> = new Map();
-  private _selectedCollection: Collection | null = null;
+  private _availableCollections: Map<number, Collection> = new Map(); // id: Collection Description
+  private _selectedCollection: number | null = null;
 
-  private _availablePatterns: string[] = [];
-  private _selectedPattern: string | null = null;
+  private _availablePatterns: Map<number, PatternType[]> = new Map();
+  private _selectedPatternId: number | null = null;
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  get material() {
-    return this._texture;
   }
 
   get availableCollections() {
@@ -23,41 +27,52 @@ export class TextureManager {
   }
 
   get selectedCollection() {
+    return (
+      this._availableCollections.get(this._selectedCollection ?? -1) ?? null
+    );
+  }
+
+  get selectedCollectionId() {
     return this._selectedCollection;
   }
 
-  get availablePatterns() {
-    return this._availablePatterns;
+  get selectedPatternId() {
+    return this._selectedPatternId;
   }
 
-  get selectedPattern() {
-    return this._selectedPattern;
-  }
-
-  setMaterial(inTexture: string) {
-    this._texture = inTexture;
+  get availablePatterns(): PatternType[] | null {
+    if (this._selectedCollection === null) {
+      return null;
+    }
+    return this._availablePatterns.get(this._selectedCollection) ?? null;
   }
 
   setSelectedCollection(id: number) {
-    this._selectedCollection = this._availableCollections.get(id) ?? null;
+    this._selectedCollection = id;
   }
 
   setAvailableCollections(collections: Collection[]) {
     this._availableCollections = new Map();
-    collections.forEach(collection => {
+    collections.forEach((collection) => {
       this._availableCollections.set(collection.id, collection);
     });
+    if (collections.length > 0 && this._selectedCollection === null) {
+      this._selectedCollection = collections[0].id;
+    }
   }
 
-  setSelectedPattern(pattern: string) {
-    this._selectedPattern = pattern;
+  setSelectedPattern(inPatternId: number) {
+    this._selectedPatternId = inPatternId;
   }
 
-  setAvailablePatterns(patterns: string[]) {
-    this._availablePatterns = patterns;
+  setAvailablePatterns(inCollectionId: number, inPatterns: PatternType[]) {
+    this._availablePatterns.set(inCollectionId, inPatterns);
   }
 
   reset() {
-    this._texture = null;
+    this._availableCollections = new Map();
+    this._selectedCollection = null;
+    this._availablePatterns = new Map();
+    this._selectedPatternId = null;
   }
 }
