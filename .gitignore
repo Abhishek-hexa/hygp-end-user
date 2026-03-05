@@ -23,5 +23,3 @@ yarn-error.log*
 
 # Husky Git Hooks (if not committing them)
 .husky/
-
-/dist
