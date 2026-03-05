@@ -1,11 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { ApiPattern } from '../types';
-
-export interface Collection {
-  id: number;
-  image: string;
-  title: string;
-}
+import { Collection } from '../types';
 
 export class TextureManager {
   private _texture: string | null = null;
@@ -13,7 +7,7 @@ export class TextureManager {
   private _availableCollections: Map<number, Collection> = new Map();
   private _selectedCollection: Collection | null = null;
 
-  private _availablePatterns: ApiPattern[] = [];
+  private _availablePatterns: string[] = [];
   private _selectedPattern: string | null = null;
 
   constructor() {
@@ -59,7 +53,7 @@ export class TextureManager {
     this._selectedPattern = pattern;
   }
 
-  setAvailablePatterns(patterns: ApiPattern[]) {
+  setAvailablePatterns(patterns: string[]) {
     this._availablePatterns = patterns;
   }
 

@@ -1,13 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
-import { LeashLengthType, ProductSizeType } from '../types';
-
-export interface SizeDescription {
-  id: number;
-  price: string;
-  model: string;
-  plasticModel: string;
-}
+import { LeashLengthType, ProductSizeType, SizeDescription } from '../types';
 
 export class SizeManager {
   private _selectedSize: ProductSizeType | null = null;

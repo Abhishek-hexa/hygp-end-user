@@ -1,18 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
-import { BuckleType } from '../types';
-
-export interface ColorDescription {
-  id: number;
-  material_id: number;
-  material_type: {
-    id: string;
-    name: string;
-  }
-  name: string;
-  hex: string;
-  preview: string;
-}
+import { BuckleType, ColorDescription } from '../types';
 
 export class BuckleManager {
   private _type: BuckleType | null = null;

@@ -3,10 +3,9 @@ import axios from 'axios';
 import { ProductManager } from '../../state/product/ProductManager';
 import { WebbingTextManager } from '../../state/product/managers/WebbingTextManager';
 import { EngravingManager } from '../../state/product/managers/EngravingManager';
-import { BuckleType, ProductSizeType } from '../../state/product/types';
-import { SizeDescription } from '../../state/product/managers/SizeManager';
-import { Collection, TextureManager } from '../../state/product/managers/TextureManager';
-import { BuckleManager, ColorDescription } from '../../state/product/managers/BuckleManager';
+import { BuckleType, Collection, ColorDescription, ProductSizeType, SizeDescription } from '../../state/product/types';
+import { TextureManager } from '../../state/product/managers/TextureManager';
+import { BuckleManager } from '../../state/product/managers/BuckleManager';
 
 const fetchJson = async <T>(
   baseUrl: string,

@@ -5,7 +5,6 @@ export type ProductType =
   | 'LEASH'
   | 'BANDANA'
   | 'HARNESS';
-export type ProductIdType = ProductType;
 
 export type ProductSizeType =
   | 'EXTRA_SMALL'
@@ -18,7 +17,6 @@ export type ProductSizeType =
   | 'MEDIUM_NARROW';
 
 export type BuckleType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
-export type BuckleNameType = 'BUCKLE' | 'HARWARE';
 export type TextSize = 'SMALL' | 'MEDIUM' | 'LARGE';
 export type Features =
   | 'SIZE'
@@ -36,55 +34,27 @@ export type ProductConfig = {
   features: Features[];
 };
 
-export interface ApiProductVariant {
+export interface Collection {
   id: number;
-  modelUrl: string;
-  name: string;
-  plasticModelUrl: string;
-  prefix?: string;
-  size: ProductSizeType;
-  price: number;
-  sizeImageUrl?: string;
+  image: string;
+  title: string;
 }
 
-export interface ProductVariantsResponse {
-  variants: ApiProductVariant[];
-}
-
-export interface ApiBuckleOption {
+export interface SizeDescription {
   id: number;
-  name: string;
-  metalColors?: string[];
-  plasticColors?: string[];
-  breakawayColors?: string[];
-  type: BuckleType;
+  price: string;
+  model: string;
+  plasticModel: string;
 }
 
-export interface ApiFontOption {
-  fontUrl?: string;
-  name: string;
+export interface ColorDescription {
   id: number;
-  previewUrl: string;
-  useCases?: string[];
-}
-
-export interface ApiCollection {
-  id: number;
+  material_id: number;
+  material_type: {
+    id: string;
+    name: string;
+  }
   name: string;
-}
-
-export interface ApiCollectionResponse {
-  collections: ApiCollection[];
-}
-
-export interface ApiPattern {
-  dataX?: string;
-  id: number;
-  name: string;
-  previewUrl?: string;
-  textureUrl: string;
-}
-
-export interface AllPatternResonse {
-  textures: ApiPattern[];
+  hex: string;
+  preview: string;
 }
