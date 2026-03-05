@@ -26,10 +26,10 @@ export const Viewer = observer(() => {
     <div className="h-screen w-full bg-white pt-20">
       <NavBar />
       <div className="grid h-full w-full grid-cols-10">
-        <div className="col-span-7">
+        <div className="col-span-7 min-h-0">
           <CanvasPanel />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-3 min-h-0">
           <ConfigurationPanel />
         </div>
       </div>

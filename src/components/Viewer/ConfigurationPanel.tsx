@@ -7,8 +7,8 @@ import { BuckleTab } from './ConfigurationTabs/BuckleTab';
 import { CollarTextTab } from './ConfigurationTabs/CollarTextTab';
 import { DesignTab } from './ConfigurationTabs/DesignTab';
 import { EngravingTab } from './ConfigurationTabs/EngravingTab';
-import { HarnessTextTab } from './ConfigurationTabs/HarnessTextTab';
 import { HardwareTab } from './ConfigurationTabs/HardwareTab';
+import { HarnessTextTab } from './ConfigurationTabs/HarnessTextTab';
 import { SizeTab } from './ConfigurationTabs/SizeTab';
 
 const featureLabelMap: Record<ConfigFeature, string> = {
@@ -64,7 +64,7 @@ export const ConfigurationPanel = observer(
     };
 
     return (
-      <aside className="flex h-full min-w-0 flex-col bg-gray-100 text-gray-700">
+      <aside className="flex h-full min-h-0 min-w-0 flex-col bg-gray-100 text-primary">
         <div className="flex h-20 items-center gap-3 border-b border-gray-300 px-4">
           <div className="flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap">
             {features.map(feature => (
@@ -72,10 +72,10 @@ export const ConfigurationPanel = observer(
                 key={feature}
                 type="button"
                 onClick={() => designManager.setActiveFeature(feature)}
-                className={`shrink-0 rounded-full border px-5 py-2 text-md font-semibold uppercase tracking-wide ${
+                className={`shrink-0 rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide ${
                   feature === activeFeature
-                    ? 'border-rose-400 bg-rose-400 text-white'
-                    : 'border-lime-200 bg-gray-100 text-lime-800'
+                    ? 'border-primaryOrange bg-primaryOrange text-white'
+                    : 'border-primary bg-gray-100 text-primary'
                 }`}
               >
                 {featureLabelMap[feature]}
@@ -83,7 +83,7 @@ export const ConfigurationPanel = observer(
             ))}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto p-6">
           {renderFeatureContent()}
         </div>
       </aside>
