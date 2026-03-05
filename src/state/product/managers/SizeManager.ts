@@ -44,8 +44,8 @@ export class SizeManager {
     this._availableSizes = inSizes;
   }
 
-  setLength(length: LeashLengthType) {
-    this._selectedLength = length;
+  setLength(inLength: LeashLengthType) {
+    this._selectedLength = inLength;
   }
 
   setAvailableLengths(inLengths: LeashLengthType[]) {
@@ -54,5 +54,8 @@ export class SizeManager {
 
   reset() {
     this._selectedSize = null;
+    this._selectedLength = null;
+    this._availableSizes.clear();
+    this._availableLengths = [];
   }
 }

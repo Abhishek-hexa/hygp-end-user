@@ -57,37 +57,6 @@ export class ProductManager {
     return this._sizeManager.availableSizes.get(selectedSize)?.model ?? null;
   }
 
-  canUseEngraving() {
-    return this.productConfig.features.includes('ENGRAVING');
-  }
-
-  canUseText() {
-    return (
-      this.productConfig.features.includes('COLLAR_TEXT') ||
-      this.productConfig.features.includes('HARNESS_TEXT')
-    );
-  }
-
-  canMoveText() {
-    return false;
-  }
-
-  canResizeText() {
-    if (!this.canUseText()) {
-      return false;
-    }
-
-    return false;
-  }
-
-  hasBuckle() {
-    return this.productConfig.features.includes('BUCKLE');
-  }
-
-  hasHardware() {
-    return this.productConfig.features.includes('HARDWARE');
-  }
-
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
     this.resetAll();

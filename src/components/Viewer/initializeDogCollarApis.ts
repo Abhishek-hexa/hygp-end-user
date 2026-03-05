@@ -1,12 +1,12 @@
-import axios, { all } from 'axios';
+import axios from 'axios';
 
 import { ProductManager } from '../../state/product/ProductManager';
 import { WebbingTextManager } from '../../state/product/managers/WebbingTextManager';
 import { EngravingManager } from '../../state/product/managers/EngravingManager';
-import { ProductSizeType } from '../../state/product/types';
+import { BuckleType, ProductSizeType } from '../../state/product/types';
 import { SizeDescription } from '../../state/product/managers/SizeManager';
 import { Collection, TextureManager } from '../../state/product/managers/TextureManager';
-import { text } from 'node:stream/consumers';
+import { BuckleManager, ColorDescription } from '../../state/product/managers/BuckleManager';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -64,6 +64,8 @@ export const initializeDogCollarApis = async (
     parseSizes(variants, productManager);
 
     parseCollections(collections, productManager.textureManager);
+
+    parseBuckles(buckles, productManager.buckleManager);
 
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -146,4 +148,82 @@ const parseCollections = (collectionsResponse: any, textureManager: TextureManag
     collections.push(parsedCollection);
   });
   textureManager.setAvailableCollections(collections);
+}
+
+const parseBuckles = (bucklesResponse: any, buckleManager: BuckleManager) => {
+  const buckles = bucklesResponse.data;
+  console.log('buckles', buckles);
+  const buckleTypes: BuckleType[] = [];
+  const metalColors: ColorDescription[] = [];
+  const plasticColors: ColorDescription[] = [];
+  const breakawayColors: ColorDescription[] = [];
+
+  buckles.forEach((buckle: any) => {
+    if(buckle.metal_color) {
+      const parsedMetalColor = {
+        id: buckle.id,
+        material_id: buckle.material_id,
+        name: buckle.name,
+        material_type: {
+          id : buckle.material_type.id,
+          name: buckle.material_type.name
+        },
+        hex: buckle.metal_color,
+        preview: buckle.preview,
+      }
+      if(!buckleTypes.includes('METAL')) {
+        buckleTypes.push('METAL');
+      }
+      metalColors.push(parsedMetalColor);
+    }
+    
+    if(buckle.plastic_color) {
+      const parsedPlasticColor = {
+        id: buckle.id,
+        material_id: buckle.material_id,
+        name: buckle.name,
+        material_type: {
+          id : buckle.material_type.id,
+          name: buckle.material_type.name
+        },
+        hex: buckle.plastic_color,
+        preview: buckle.preview,
+      }
+      if(!buckleTypes.includes('PLASTIC')) {
+        buckleTypes.push('PLASTIC');
+      }
+      plasticColors.push(parsedPlasticColor);
+    }
+
+    if(buckle.breakaway_color) {
+      const parsedBreakawayColor = {
+        id: buckle.id,
+        material_id: buckle.material_id,
+        name: buckle.name,
+        material_type: {
+          id : buckle.material_type.id,
+          name: buckle.material_type.name
+        },
+        hex: buckle.breakaway_color,
+        preview: buckle.preview,
+      }
+      if(!buckleTypes.includes('BREAKAWAY')) {
+        buckleTypes.push('BREAKAWAY');
+      }
+      breakawayColors.push(parsedBreakawayColor);
+    }
+  })
+  buckleManager.setAvailableBuckles(buckleTypes);
+  buckleManager.setMetalColors(metalColors);
+  buckleManager.setPlasticColors(plasticColors);
+  buckleManager.setBreakawayColors(breakawayColors);
+
+  const defaultType = buckleTypes[0];
+  if (defaultType) {
+    buckleManager.setType(defaultType);
+    const defaultColor = buckleManager.currentColors[0]?.name;
+    if (defaultColor) {
+      buckleManager.setSelectedColor(defaultColor);
+    }
+  }
 }

@@ -3,6 +3,12 @@ import { useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { ConfigFeature, DesignManager } from '../../state/design/DesignManager';
+import { BuckleTab } from './ConfigurationTabs/BuckleTab';
+import { CollarTextTab } from './ConfigurationTabs/CollarTextTab';
+import { DesignTab } from './ConfigurationTabs/DesignTab';
+import { EngravingTab } from './ConfigurationTabs/EngravingTab';
+import { HarnessTextTab } from './ConfigurationTabs/HarnessTextTab';
+import { HardwareTab } from './ConfigurationTabs/HardwareTab';
 import { SizeTab } from './ConfigurationTabs/SizeTab';
 
 const featureLabelMap: Record<ConfigFeature, string> = {
@@ -43,7 +49,12 @@ export const ConfigurationPanel = observer(
       }
 
       if (activeFeature === 'SIZE') return <SizeTab />;
-
+      if (activeFeature === 'DESIGN') return <DesignTab />;
+      if (activeFeature === 'COLLAR_TEXT') return <CollarTextTab />;
+      if (activeFeature === 'HARNESS_TEXT') return <HarnessTextTab />;
+      if (activeFeature === 'ENGRAVING') return <EngravingTab />;
+      if (activeFeature === 'BUCKLE') return <BuckleTab />;
+      if (activeFeature === 'HARDWARE') return <HardwareTab />;
 
       return (
         <div className="text-sm text-gray-500">
@@ -53,18 +64,18 @@ export const ConfigurationPanel = observer(
     };
 
     return (
-      <aside className="h-full min-w-0 bg-[#ebebeb] text-[#4a4a4a]">
-        <div className="flex h-[86px] items-center gap-3 border-b border-[#d0d0d0] px-4">
+      <aside className="flex h-full min-w-0 flex-col bg-gray-100 text-gray-700">
+        <div className="flex h-20 items-center gap-3 border-b border-gray-300 px-4">
           <div className="flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap">
             {features.map(feature => (
               <button
                 key={feature}
                 type="button"
                 onClick={() => designManager.setActiveFeature(feature)}
-                className={`shrink-0 rounded-full border px-5 py-2 text-base font-semibold uppercase tracking-wide ${
+                className={`shrink-0 rounded-full border px-5 py-2 text-md font-semibold uppercase tracking-wide ${
                   feature === activeFeature
-                    ? 'border-[#ef868a] bg-[#ef868a] text-white'
-                    : 'border-[#9eb9b5] bg-[#f0f0f0] text-[#6f9a94]'
+                    ? 'border-rose-400 bg-rose-400 text-white'
+                    : 'border-lime-200 bg-gray-100 text-lime-800'
                 }`}
               >
                 {featureLabelMap[feature]}
@@ -72,7 +83,7 @@ export const ConfigurationPanel = observer(
             ))}
           </div>
         </div>
-        <div className="h-[calc(100%-86px)] overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {renderFeatureContent()}
         </div>
       </aside>

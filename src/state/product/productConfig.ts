@@ -20,7 +20,6 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
     features: [
       'SIZE',
       'DESIGN',
-      'HARDWARE',
       'COLLAR_TEXT',
       'BUCKLE',
       'ENGRAVING',

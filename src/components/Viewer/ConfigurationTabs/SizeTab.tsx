@@ -21,7 +21,7 @@ export const SizeTab = observer(() => {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-3xl font-semibold text-[#555]">Select Collar Size</h3>
+      <h3 className="text-3xl font-semibold text-gray-700">Select Collar Size</h3>
       <div className="grid grid-cols-3 gap-3">
         {sizeEntries.map(([size, description]) => (
           <button
@@ -30,8 +30,8 @@ export const SizeTab = observer(() => {
             onClick={() => productManager.sizeManager.setSize(size)}
             className={`relative rounded-xl border px-3 py-4 text-center ${
               selectedSize === size
-                ? 'border-[#f17c7c] bg-white text-[#f04545]'
-                : 'border-[#6a9d9a] bg-[#f0f0f0] text-[#4a4a4a]'
+                ? 'border-rose-400 bg-white text-rose-600'
+                : 'border-teal-600 bg-gray-100 text-gray-700'
             }`}
           >
 
