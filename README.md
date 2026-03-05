@@ -1,6 +1,6 @@
-﻿# HYGP End User
+# HYGP End User
 
-React + TypeScript + MobX + React Three Fiber application for product visualization.
+React + TypeScript + MobX configurator UI for Here You Go Pup products.
 
 ## Getting Started
 
@@ -22,374 +22,196 @@ npm run dev
 npm run build
 ```
 
----
+4. Required env var:
 
-## State Manager Documentation (From `libState`)
+```bash
+VITE_API_BASE_URL=<your-api-base-url>
+```
 
-This section explains the full state architecture used in the app, starting from the root `libState` instance (`StateManager`) and following how data moves into 3D rendering.
+## Current State Architecture
 
-## 1. What `libState` Means in This Project
-
-In code, `libState` is the shared root state object passed into managers that need cross-domain access.
-
-- Root class: `src/state/StateManager.ts`
-- Local variable name used in managers: `_libState`
-- Provider: `src/context/MainContextProvider.tsx`
-
-`StateManager` is created in context provider and consumed via `useMainContext()`.
-
-## 2. High-Level State Architecture
+The current app has a single state domain rooted at `StateManager`.
 
 ```text
-StateManager (root / libState)
+StateManager
 |- DesignManager
-|  |- ProductManager
-|     |- SizeManager
-|     |- BuckleManager
-|     |- EngravingManager
-|     |- TextManager
-|     |- MaterialManager
-|- Design3DManager
-   |- MeshManager
-   |- CameraManager
-   |- EnvManager
+   |- ProductManager
+      |- SizeManager
+      |- BuckleManager
+      |- EngravingManager
+      |- WebbingTextManager
+      |  |- FontManager
+      |- TextureManager
 ```
 
-### Domain split
+- Root manager: `src/state/StateManager.ts`
+- Design domain manager: `src/state/design/DesignManager.ts`
+- Product manager: `src/state/product/ProductManager.ts`
+- Product sub-managers: `src/state/product/managers/*`
 
-- `DesignManager`: Product/business configuration state (size, buckle, engraving, text, material).
-- `Design3DManager`: 3D runtime state (meshes, camera controls, environment map).
+## Manager Details
 
-This split keeps product logic separate from rendering mechanics.
-
-## 3. Root Lifecycle: Creation and Access
-
-### 3.1 Creation
-
-`MainContextProvider` creates state with:
-
-```tsx
-<MainContext.Provider value={new StateManager()}>
-```
-
-### 3.2 Consumption
-
-Any component can read state through:
-
-```ts
-const { designManager, design3DManager } = useMainContext();
-```
-
-### 3.3 Reactivity
-
-Components that should react to state changes must be wrapped with `observer` from `mobx-react-lite`.
-
-Examples:
-
-- `src/components/Viewer3D/MeshCompute/MeshCompute.tsx`
-- `src/components/Viewer3D/Camera/Camera..tsx`
-- `src/components/Viewer3D/Env/Env.tsx`
-
-## 4. Root Manager: `StateManager`
+### `StateManager`
 
 File: `src/state/StateManager.ts`
 
-Responsibilities:
+- Owns `designManager`
+- Exposes `get designManager()`
 
-- Acts as single root state object for app context.
-- Owns two top-level domains:
-  - `_designManager`
-  - `_design3DManager`
-- Calls `makeAutoObservable(this)` so fields, getters, and methods become observable/computed/actions automatically.
+### `DesignManager`
 
-Exposed API:
+File: `src/state/design/DesignManager.ts`
 
-- `get designManager()`
-- `get design3DManager()`
+- Owns `productManager`
+- Tracks UI feature state:
+  - `availableFeatures` (derived from product config, excluding `FETCH`)
+  - `activeFeature`
+- API:
+  - `setActiveFeature(feature | null)`
 
-## 5. Design Domain (`DesignManager` -> `ProductManager`)
-
-### 5.1 `DesignManager`
-
-File: `src/state/DesignManager.ts`
-
-Responsibilities:
-
-- Keeps product-centric manager grouped under one entry point.
-- Holds `_productManager` instance.
-
-Exposed API:
-
-- `get productManager()`
-
-### 5.2 `ProductManager`
+### `ProductManager`
 
 File: `src/state/product/ProductManager.ts`
 
-`ProductManager` is the business rules hub.
+- Owns product selection and all product feature managers:
+  - `sizeManager`
+  - `buckleManager`
+  - `engravingManager`
+  - `webbingText`
+  - `textureManager`
+- API:
+  - `setProduct(productId)` (resets all feature managers)
+  - `getAllFeatures()`
+  - `getModelPath()` (returns selected size model or `null`)
+  - `resetAll()`
 
-State it owns:
-
-- `_productId`
-- `_size` (`SizeManager`)
-- `_buckle` (`BuckleManager`)
-- `_engraving` (`EngravingManager`)
-- `_text` (`TextManager`)
-- `_material` (`MaterialManager`)
-
-Computed/read APIs:
-
-- `config`: resolved from `productConfigs[_productId]`
-- `resolvedModelPath`: delegates to `getModelPath()`
-- `canUseEngraving()`
-- `getValidEngravingLines()`
-- `canUseText()`
-- `canMoveText()`
-
-Mutation APIs:
-
-- `setProduct(productId)`
-- `resetAll()`
-
-Important behavior:
-
-- `setProduct()` calls `resetAll()` to avoid stale selection values from previous product.
-- `getModelPath()` returns `null` when size is not selected.
-
-### 5.3 Sub-managers under `ProductManager`
-
-#### `SizeManager`
+### `SizeManager`
 
 File: `src/state/product/managers/SizeManager.ts`
 
-- State: `_selectedSize`
-- APIs: `setSize()`, `reset()`
+- State:
+  - selected size + available sizes map
+  - selected leash length + available lengths
+- API:
+  - `setSize`, `setAvailableSizes`
+  - `setLength`, `setAvailableLengths`
+  - `reset`
 
-#### `BuckleManager`
+### `BuckleManager`
 
 File: `src/state/product/managers/BuckleManager.ts`
 
-- State: `_type`
-- APIs: `setType()`, `reset()`
+- State:
+  - buckle type + available buckle types
+  - selected buckle color
+  - metal/plastic/breakaway color options
+- API:
+  - `setType`, `setAvailableBuckles`
+  - `setMetalColors`, `setPlasticColors`, `setBreakawayColors`
+  - `setSelectedColor`
+  - `reset`
+- Computed helper:
+  - `currentColors` returns colors for active buckle type
 
-#### `EngravingManager`
+### `EngravingManager`
 
 File: `src/state/product/managers/EngravingManager.ts`
 
-- State: `_lines: string[]`
-- APIs: `setLines()`, `reset()`
-
-#### `TextManager`
-
-File: `src/state/product/managers/TextManager.ts`
-
-- State: `_value`, `_size`
-- APIs: `setText()`, `setSize()`, `reset()`
-
-#### `MaterialManager`
-
-File: `src/state/product/managers/MaterialManager.ts`
-
-- State: `_material`
-- APIs: `setMaterial()`, `reset()`
-
-### 5.4 Product Config Source of Truth
-
-Files:
-
-- `src/state/product/types.ts`
-- `src/state/product/productConfig.ts`
-
-`productConfig` defines per-product capabilities and constraints:
-
-- supported sizes
-- buckle types
-- engraving enablement/rules
-- text feature rules
-- model path resolver function
-
-Business-rule methods in `ProductManager` read this config at runtime to enforce valid combinations.
-
-## 6. 3D Domain (`Design3DManager`)
-
-### 6.1 `Design3DManager`
-
-File: `src/state/Design3DManager.ts`
-
-Responsibilities:
-
-- Groups runtime 3D managers.
-- Provides access to:
-  - `meshManager`
-  - `cameraManager`
-  - `envManager`
-
-### 6.2 `MeshManager`
-
-File: `src/state/MeshManager.ts`
-
-State:
-
-- `_meshInfos: MeshInfo[]`
-- `_groupRef: THREE.Group | null`
-
-Responsibilities:
-
-- Stores parsed mesh metadata used by UI rendering.
-- Stores root loaded group reference so camera can focus to model bounds.
-
-APIs:
-
-- `setMeshInfos(meshInfos)`
-- `setGroupRef(group)`
-- `get meshInfos()`
-- `get groupRef()`
-
-### 6.3 `CameraManager`
-
-File: `src/state/CameraManager.ts`
-
-State:
-
-- `_cameraRef: CameraControls | null`
-
-Responsibilities:
-
-- Owns `CameraControls` instance reference.
-- Provides camera utility methods:
-  - `focusCameraTo(obj: THREE.Object3D[])`
-  - `resetCameraToRef()`
-
-Cross-manager dependency:
-
-- `resetCameraToRef()` reads mesh group from `libState.design3DManager.meshManager.groupRef`.
-
-### 6.4 `EnvManager`
-
-File: `src/state/EnvManager.tsx`
-
-State:
-
-- `_envVisibility`
-- `_envIntensity`
-- `_envRotation`
-- `_environmentTexture`
-
-Responsibilities:
-
-- Manage environment map settings for scene background/light feel.
-- Handle environment texture upload.
-
-APIs:
-
-- `setEnvVisibility()`, `setEnvIntensity()`, `setEnvRotation()`
-- `setEnvironmentTexture()`
-- `handleEnvUpload(file)`
-- `clearMap('envMap')`
-
-## 7. Mesh Entity Layer: `MeshInfo`
-
-File: `src/core/MeshInfo.ts`
-
-`MeshInfo` wraps raw `THREE.Mesh` with app-level metadata and operations.
-
-State:
-
-- `_id`, `_name`, `_mesh`, `_isVisible`
-
-APIs:
-
-- visibility toggle: `setIsVisible()`
-- mesh replacement: `setMesh()`
-- material update: `changeColor()` (clones material before changing color)
-- parser helper: `MeshInfo.parseMeshInfo(mesh)`
-
-Why this exists:
-
-- Keeps mutable 3D mesh operations localized in one object.
-- Avoids exposing raw mesh mutation logic across many components.
-
-## 8. End-to-End Data Flow
-
-### 8.1 App boot
-
-1. `App.tsx` wraps application with `MainContextProvider`.
-2. `MainContextProvider` creates `StateManager`.
-3. Components call `useMainContext()` to access state.
-
-### 8.2 Product to model load flow
-
-1. UI updates product settings through `ProductManager`/sub-managers.
-2. `productManager.resolvedModelPath` changes.
-3. `MeshCompute` calls `useMeshParser(resolvedModelPath)`.
-4. `useMeshParser` loads GLTF nodes and returns `MeshInfo[]`.
-5. `meshManager.setMeshInfos(meshInfo)` stores parsed meshes.
-6. `MeshCompute` renders `MeshView` for each mesh.
-7. `meshManager.setGroupRef(ref)` stores root group ref.
-8. `cameraManager.focusCameraTo([groupRef])` centers camera to model.
-
-### 8.3 Environment flow
-
-1. UI (or future control panel) calls `envManager.handleEnvUpload(file)`.
-2. Manager loads HDR texture via `Utils3D.loadEnvironmentTexture`.
-3. `Env` component re-renders and applies `envManager.environmentTexture`.
-
-## 9. Usage Rules for Developers
-
-1. Read state through getters, not private `_fields`.
-2. Mutate state only through manager methods (`set...`, `reset...`).
-3. Use `observer` on components that consume observable state.
-4. Keep business rules in `ProductManager`/config, not inside UI components.
-5. Keep Three.js-specific imperative operations inside `MeshInfo`, `CameraManager`, `EnvManager`, or utility layer.
-
-## 10. Pattern for Adding New State
-
-### Case A: Add a new property to existing manager
-
-1. Add private field (example: `_foo`).
-2. Add getter.
-3. Add mutation method (`setFoo`).
-4. Use manager from `observer` component.
-
-### Case B: Add a new product feature manager
-
-1. Create manager class in `src/state/product/managers`.
-2. Instantiate it inside `ProductManager`.
-3. Expose getter.
-4. Add reset behavior in `resetAll()`.
-5. Extend config in `types.ts` and `productConfig.ts` if feature is product-dependent.
-
-### Case C: Add a new 3D runtime manager
-
-1. Create manager class in `src/state/`.
-2. Instantiate in `Design3DManager`.
-3. Expose getter.
-4. Keep cross-manager reads through `libState` only when necessary.
-
-## 11. Current Caveats / Important Notes
-
-1. `MainContextProvider` currently constructs `new StateManager()` inline. If provider re-renders, state can be recreated. If stable lifetime is required across provider re-renders, memoize/store it with `useRef`.
-2. In current `productConfig.ts`, `model` functions return empty string. Until real model paths are provided, mesh loading will not produce actual product meshes.
-3. File `src/components/Viewer3D/Camera/Camera..tsx` has a double-dot filename; keep imports aligned with existing path convention.
-
-## 12. Quick Reference: Manager API Summary
-
-| Manager | Core State | Main Methods |
-| --- | --- | --- |
-| `StateManager` | `designManager`, `design3DManager` | getters only |
-| `DesignManager` | `productManager` | getter only |
-| `ProductManager` | product + feature managers | `setProduct`, `resetAll`, rule checks |
-| `SizeManager` | selected size | `setSize`, `reset` |
-| `BuckleManager` | buckle type | `setType`, `reset` |
-| `EngravingManager` | engraving lines | `setLines`, `reset` |
-| `TextManager` | text + text size | `setText`, `setSize`, `reset` |
-| `MaterialManager` | material id/value | `setMaterial`, `reset` |
-| `Design3DManager` | 3D manager group | getters only |
-| `MeshManager` | meshes + scene group ref | `setMeshInfos`, `setGroupRef` |
-| `CameraManager` | camera controls ref | `setCameraRef`, `focusCameraTo`, `resetCameraToRef` |
-| `EnvManager` | env map settings/texture | env setters, `handleEnvUpload`, `clearMap` |
-| `MeshInfo` | mesh wrapper data | `setIsVisible`, `setMesh`, `changeColor` |
-
----
-
-For any new feature, decide first if it belongs to business/product domain (`DesignManager`) or 3D runtime domain (`Design3DManager`) and extend the matching manager tree.
+- State:
+  - engraving lines (`max 4`)
+  - available engraving fonts map
+- API:
+  - `setLines`, `setAvailableFonts`, `reset`
+
+### `WebbingTextManager`
+
+File: `src/state/product/managers/WebbingTextManager.ts`
+
+- State:
+  - text value
+  - text size (`SMALL` | `MEDIUM` | `LARGE`)
+  - nested `FontManager`
+- API:
+  - `setText`, `setSize`, `setFont`, `reset`
+- Forwarded getters:
+  - `availableFonts`
+  - `selectedFont`
+
+### `FontManager`
+
+File: `src/state/product/managers/FontManager.ts`
+
+- State:
+  - selected font
+  - selected font id
+  - available fonts map (`name -> URL`)
+- API:
+  - `setFont`, `setFontId`, `setAvailableFonts`, `clearFont`, `reset`
+
+### `TextureManager`
+
+File: `src/state/product/managers/TextureManager.ts`
+
+- State:
+  - available collections map
+  - selected collection id
+  - available patterns per collection
+  - selected pattern id
+- API:
+  - `setAvailableCollections`, `setSelectedCollection`
+  - `setAvailablePatterns`, `setSelectedPattern`
+  - `reset`
+
+## Product Feature Configuration
+
+Source: `src/state/product/productConfig.ts`
+
+- `DOG_COLLAR`: `SIZE`, `DESIGN`, `BUCKLE`, `ENGRAVING`, `COLLAR_TEXT`, `FETCH`
+- `CAT_COLLAR`: `SIZE`, `DESIGN`, `HARDWARE`, `COLLAR_TEXT`, `BUCKLE`, `FETCH`
+- `LEASH`: `HARDWARE`, `FETCH`
+- `MARTINGALE`: `HARDWARE`, `FETCH`
+- `BANDANA`: `FETCH`
+- `HARNESS`: `FETCH`
+
+`DesignManager.availableFeatures` removes `FETCH`, so tab rendering only uses configurable features.
+
+## API Initialization Flow
+
+Source: `src/api/initializeDogCollarApis.ts`
+
+On first `Viewer` mount, `initializeDogCollarApis(productManager)`:
+
+1. Sets product to `DOG_COLLAR`
+2. Fetches in parallel:
+   - `/product/variants/8969048817879`
+   - `/buckle`
+   - `/engraving-fonts`
+   - `/shopify-collection/`
+3. Fetches first collection products:
+   - `/shopify-collection/products/{collectionId}`
+4. Parses responses into managers:
+   - sizes -> `SizeManager`
+   - buckle types/colors -> `BuckleManager`
+   - fonts -> `WebbingTextManager` and `EngravingManager`
+   - collections/patterns -> `TextureManager`
+
+## UI Feature Tab Status
+
+Source: `src/components/Viewer/ConfigurationTabs/*`
+
+- Implemented:
+  - `SizeTab`
+  - `DesignTab`
+  - `BuckleTab`
+- Placeholder (currently empty):
+  - `EngravingTab`
+  - `CollarTextTab`
+  - `HarnessTextTab`
+  - `HardwareTab`
+
+## Developer Notes
+
+1. Read manager state via getters, not private fields.
+2. Mutate state via manager methods (`set...`, `reset...`), not direct assignment.
+3. Keep business rules in `ProductManager` + manager classes, not React components.
+4. `MainContextProvider` creates `new StateManager()` inline; if provider rerenders, state reinitializes.
