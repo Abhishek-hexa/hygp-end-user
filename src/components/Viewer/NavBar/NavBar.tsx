@@ -1,95 +1,29 @@
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { useRef } from 'react';
-
-import { useMainContext } from '../../../hooks/useMainContext';
-import { Logger } from '../../../utils/Logger';
 
 export const NavBar = observer(() => {
-  const { designManager } = useMainContext();
-  const { viewManager } = designManager;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const previousBlobUrlRef = useRef<string | null>(null);
-
-  const handleExportJson = () => {
-    const meshInfoJson = viewManager.meshInfoJson;
-
-    if (!meshInfoJson) {
-      Logger.warn('No mesh info JSON to export');
-      return;
-    }
-
-    try {
-      const jsonString = JSON.stringify(meshInfoJson, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const blobUrl = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'mesh-info.json';
-      document.body.appendChild(link);
-      link.click();
-
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      Logger.error(`Error exporting JSON: ${error}`);
-    }
-  };
-
-  const handleLoadGlb = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Revoke previous blob URL to prevent memory leak
-      if (previousBlobUrlRef.current) {
-        URL.revokeObjectURL(previousBlobUrlRef.current);
-      }
-
-      const blobUrl = URL.createObjectURL(file);
-      previousBlobUrlRef.current = blobUrl;
-      viewManager.setGlbUrl(blobUrl);
-    }
-    // Reset input so same file can be selected again
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
-    <>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".glb"
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
-      />
-      <AppBar position="fixed" sx={{ bgcolor: '#1976d2', zIndex: 1300 }}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            3D Viewer
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              onClick={handleExportJson}
-              sx={{ '&:hover': { bgcolor: '#1976d2' }, bgcolor: '#2196f3' }}>
-              Export JSON
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleLoadGlb}
-              sx={{ '&:hover': { bgcolor: '#388e3c' }, bgcolor: '#4caf50' }}>
-              Load GLB
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </>
+    <header className="fixed left-0 top-0 z-50 h-20 w-full bg-primary">
+      <div className="mx-auto flex h-full w-full items-center justify-between px-5">
+        <div className="flex items-center">
+          <img
+            src="https://hereyougopup.com/cdn/shop/files/Logo_circle_Here_you_go_big.svg?v=1745832236&width=1070"
+            alt="Here You Go Pup Logo"
+            className="h-16 w-auto"
+          />
+        </div>
+        <nav className="hidden items-center gap-10 text-base font-bold uppercase tracking-wide text-amber-50 lg:flex">
+          <button type="button">Size Guide</button>
+          <button type="button">Shops</button>
+          <button type="button">Sell Your Own</button>
+          <button type="button">More</button>
+          <button
+            type="button"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-300 text-sm font-semibold text-gray-700"
+          >
+            Cart
+          </button>
+        </nav>
+      </div>
+    </header>
   );
 });

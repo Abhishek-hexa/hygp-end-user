@@ -1,0 +1,16 @@
+getAllFeatures() inside productManager
+
+image Generation utility and integrate it to engravingManager and textManager
+    class ImageGenration{
+        static methodes..  // inside src/services/ImageGenration.ts
+        get ImageTexture
+        get NormalMap
+        private manageRatio
+    }
+
+
+add  materialManager in engravingManager and textManager
+    this will store dynamically generated images for applying textures
+
+
+materialManager add movement of textures/text 

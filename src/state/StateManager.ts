@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
-import { Design3DManager } from './Design3DManager';
-import { DesignManager } from './DesignManager';
+import { DesignManager } from './design/DesignManager';
 
 export class StateManager {
   constructor() {
@@ -12,11 +11,5 @@ export class StateManager {
 
   get designManager() {
     return this._designManager;
-  }
-
-  private _design3DManager = new Design3DManager(this);
-
-  get design3DManager() {
-    return this._design3DManager;
   }
 }

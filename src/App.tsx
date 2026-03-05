@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { observer } from 'mobx-react-lite';
 import { SnackbarProvider } from 'notistack';
 
-import { MainContextProvider } from './hooks/useMainContext';
+import { MainContextProvider } from './context/MainContextProvider';
 import { Router } from './router/Router';
 
 const queryClient = new QueryClient({

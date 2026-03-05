@@ -1,30 +1,38 @@
-import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { useJsonParser } from '../../hooks/useJsonParser';
 import { useMainContext } from '../../hooks/useMainContext';
-import { Viewer3D } from '../Viewer3D/Viewer3D';
+import { initializeDogCollarApis } from './initializeDogCollarApis';
+import { CanvasPanel } from './CanvasPanel';
+import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
-  const { designManager } = useMainContext();
-  const { viewManager } = designManager;
+  const mainContext = useMainContext();
+  const designManager = mainContext.designManager;
+  const productManager = designManager.productManager;
+  const hasInitializedRef = useRef(false);
 
-  const { data: meshInfoJson, loading } = useJsonParser(viewManager.jsonUrl);
   useEffect(() => {
-    if (meshInfoJson && !loading) {
-      viewManager.setMeshInfoJson(meshInfoJson);
+    if (hasInitializedRef.current) {
+      return;
     }
-  }, [meshInfoJson, viewManager, loading]);
+
+    hasInitializedRef.current = true;
+    void initializeDogCollarApis(productManager);
+  }, [productManager]);
 
   return (
-    <Box sx={{ bgcolor: 'white', height: '100vh', width: '100%' }}>
+    <div className="h-screen w-full bg-white pt-20">
       <NavBar />
-      <Box
-        sx={{ height: 'calc(100vh - 64px)', marginTop: '64px', width: '100%' }}>
-        <Viewer3D />
-      </Box>
-    </Box>
+      <div className="grid h-full w-full grid-cols-10">
+        <div className="col-span-7 min-h-0">
+          <CanvasPanel />
+        </div>
+        <div className="col-span-3 min-h-0">
+          <ConfigurationPanel />
+        </div>
+      </div>
+    </div>
   );
 });
