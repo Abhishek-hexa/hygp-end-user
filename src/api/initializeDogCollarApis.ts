@@ -3,10 +3,10 @@ import axios from 'axios';
 import { ProductManager } from '../state/product/ProductManager';
 import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
-import { BuckleType, Collection, ColorDescription, PatternType, ProductSizeType, SizeDescription } from '../state/product/types';
+import { BuckleType, Collection, ColorDescription, FontDescription, PatternType, ProductSizeType, SizeDescription } from '../state/product/types';
 import { TextureManager } from '../state/product/managers/TextureManager';
 import { BuckleManager } from '../state/product/managers/BuckleManager';
-import { BucklesApiResponse, CollectionProductsApiResponse, EngravingFontsApiResponse, ProductVariantsApiResponse, ShopifyCollectionsApiResponse } from './types/api.types';
+import { BucklesApiResponse, CollectionProductsApiResponse, EngravingFontsApiResponse, ProductVariantApiItem, ProductVariantsApiResponse, ShopifyCollectionApiItem, ShopifyCollectionsApiResponse } from './types/api.types';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -92,30 +92,41 @@ export const initializeDogCollarApis = async (
   }
 };
 
-const parseFonts = (engravingFontsResponse: any, WebbingTextManager: WebbingTextManager, EngravingManager: EngravingManager) => {
+const parseFonts = (engravingFontsResponse: EngravingFontsApiResponse, WebbingTextManager: WebbingTextManager, EngravingManager: EngravingManager) => {
   const fontOptions = engravingFontsResponse.data;
+  console.log(engravingFontsResponse);
 
-  const webbingFonts: Map<string, string> = new Map();
-  const engravingFonts: Map<string, string> = new Map();
+  const webbingFonts: Map<number, FontDescription> = new Map();
+  const engravingFonts: Map<number, FontDescription> = new Map();
 
-  fontOptions.forEach((font: any) =>{
+  fontOptions.forEach((font) =>{
     if(font.use_case.includes("webbing")){
-      webbingFonts.set(font.name, font.font_path);
+      webbingFonts.set(font.id, {
+        id: font.id,
+        name: font.name,
+        preview: font.preview,
+        font_path: font.font_path
+      });
     }
     if(font.use_case.includes("buckle")){
-      engravingFonts.set(font.name, font.font_path);
+      engravingFonts.set(font.id, {
+        id: font.id,
+        name: font.name,
+        preview: font.preview,
+        font_path: font.font_path
+      });
     }
   })
 
-  WebbingTextManager.fontManager.setAvailableFonts(webbingFonts);
+  WebbingTextManager.setAvailableFonts(webbingFonts);
   EngravingManager.setAvailableFonts(engravingFonts);
 }
 
-const parseSizes = (sizeOptions: any, productManager: ProductManager) => {
+const parseSizes = (sizeOptions: ProductVariantsApiResponse, productManager: ProductManager) => {
   const sizes = sizeOptions?.variants ?? [];
   const sizeMap: Map<ProductSizeType, SizeDescription> = new Map();
   
-  sizes.forEach((size: any) => {
+  sizes.forEach((size: ProductVariantApiItem) => {
     const parsedSize = recordValue(size);
     if (!parsedSize) {
       return;
@@ -135,7 +146,7 @@ const parseSizes = (sizeOptions: any, productManager: ProductManager) => {
   productManager.sizeManager.setAvailableSizes(sizeMap);
 };
 
-const recordValue = (size: any): ProductSizeType | null => {
+const recordValue = (size: ProductVariantApiItem): ProductSizeType | null => {
   const normalized = String(size?.size)
     .toUpperCase()
     .replace(/\s+/g, '')
@@ -154,12 +165,11 @@ const recordValue = (size: any): ProductSizeType | null => {
   return sizeLookup[normalized] ?? null;
 };
 
-const parseCollections = (collectionsResponse: any, textureManager: TextureManager) => {
+const parseCollections = (collectionsResponse: ShopifyCollectionsApiResponse, textureManager: TextureManager) => {
   const allCollections = collectionsResponse.custom_collections;
-  console.log(allCollections);
 
   const collections: Collection[] = [];
-  allCollections.forEach((collection: any) => {
+  allCollections.forEach((collection: ShopifyCollectionApiItem) => {
     const parsedCollection: Collection = {
       id: parseInt(collection.id),
       image: collection.image,
@@ -170,7 +180,7 @@ const parseCollections = (collectionsResponse: any, textureManager: TextureManag
   textureManager.setAvailableCollections(collections);
 }
 
-const parseBuckles = (bucklesResponse: any, buckleManager: BuckleManager) => {
+const parseBuckles = (bucklesResponse: BucklesApiResponse, buckleManager: BuckleManager) => {
   const buckles = bucklesResponse.data;
   const buckleTypes: BuckleType[] = [];
   const metalColors: ColorDescription[] = [];
@@ -240,7 +250,7 @@ const parseBuckles = (bucklesResponse: any, buckleManager: BuckleManager) => {
   const defaultType = buckleTypes[0];
   if (defaultType) {
     buckleManager.setType(defaultType);
-    const defaultColor = buckleManager.currentColors[0]?.name;
+    const defaultColor = buckleManager.currentColors[0]?.id;
     if (defaultColor) {
       buckleManager.setSelectedColor(defaultColor);
     }

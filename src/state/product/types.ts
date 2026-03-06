@@ -66,3 +66,10 @@ export interface PatternType {
   pngImage: string;
   preview: string;
 }
+
+export interface FontDescription {
+  id: number;
+  name: string;
+  preview: string;
+  font_path: string;
+}

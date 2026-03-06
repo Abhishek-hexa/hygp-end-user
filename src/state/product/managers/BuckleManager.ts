@@ -53,8 +53,8 @@ export class BuckleManager {
     return this._selectedColor;
   }
 
-  setType(type: BuckleType) {
-    this._type = type;
+  setType(inType: BuckleType) {
+    this._type = inType;
   }
 
   setAvailableBuckles(inAvailableBuckles: BuckleType[]) {
@@ -73,8 +73,8 @@ export class BuckleManager {
     this._breakawayColors = inBreakawayColors;
   }
 
-  setSelectedColor(color: number) {
-    this._selectedColor = color;
+  setSelectedColor(inColor: number) {
+    this._selectedColor = inColor;
   }
 
   reset() {
