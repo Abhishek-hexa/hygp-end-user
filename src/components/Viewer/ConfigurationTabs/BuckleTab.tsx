@@ -28,11 +28,11 @@ export const BuckleTab = observer(() => {
     }
 
     const hasSelectedColor = colors.some(
-      color => color.name === buckleManager.selectedColor,
+      color => color.id === buckleManager.selectedColor,
     );
 
     if (!hasSelectedColor) {
-      const nextColor = colors[0]?.name;
+      const nextColor = colors[0]?.id;
       if (nextColor) {
         buckleManager.setSelectedColor(nextColor);
       }
@@ -48,7 +48,7 @@ export const BuckleTab = observer(() => {
           ? buckleManager.plasticColors
           : buckleManager.breakawayColors;
 
-    const defaultColor = nextColors[0]?.name;
+    const defaultColor = nextColors[0]?.id;
     if (defaultColor) {
       buckleManager.setSelectedColor(defaultColor);
     }
@@ -89,12 +89,12 @@ export const BuckleTab = observer(() => {
         <h3 className="text-xl font-semibold">Buckle Finish</h3>
         <div className="flex flex-wrap gap-3">
           {colors.map(color => {
-            const isSelected = buckleManager.selectedColor === color.name;
+            const isSelected = buckleManager.selectedColor === color.id;
             return (
               <button
                 key={color.id}
                 type="button"
-                onClick={() => buckleManager.setSelectedColor(color.name)}
+                onClick={() => buckleManager.setSelectedColor(color.id)}
                 className={`relative h-14 w-14 rounded-md border ${
                   isSelected ? 'border-primaryOrange bg-primaryOrange/10 text-primaryOrange' : 'border-teal-600'
                 }`}

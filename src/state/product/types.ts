@@ -58,3 +58,11 @@ export interface ColorDescription {
   hex: string;
   preview: string;
 }
+
+export interface PatternType {
+  id: number;
+  name: string;
+  dataX: string;
+  pngImage: string;
+  preview: string;
+}

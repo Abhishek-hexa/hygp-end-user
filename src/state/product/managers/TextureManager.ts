@@ -1,14 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
-import { Collection } from '../types';
-
-export interface PatternType {
-  id: number;
-  name: string;
-  dataX: string;
-  pngImage: string;
-  preview: string;
-}
+import { Collection, PatternType } from '../types';
 
 export class TextureManager {
 
@@ -51,13 +43,13 @@ export class TextureManager {
     this._selectedCollection = id;
   }
 
-  setAvailableCollections(collections: Collection[]) {
+  setAvailableCollections(inCollections: Collection[]) {
     this._availableCollections = new Map();
-    collections.forEach((collection) => {
+    inCollections.forEach((collection) => {
       this._availableCollections.set(collection.id, collection);
     });
-    if (collections.length > 0 && this._selectedCollection === null) {
-      this._selectedCollection = collections[0].id;
+    if (inCollections.length > 0 && this._selectedCollection === null) {
+      this._selectedCollection = inCollections[0].id;
     }
   }
 

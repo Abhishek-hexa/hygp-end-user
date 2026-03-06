@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { PatternType } from '../../../state/product/managers/TextureManager';
+import { PatternType } from '../../../state/product/types';
 
 export const DesignTab = observer(() => {
   const { designManager } = useMainContext();
@@ -20,10 +20,7 @@ export const DesignTab = observer(() => {
         return;
       }
 
-      const baseUrl = String(import.meta.env.VITE_API_BASE_URL ?? '').replace(
-        /\/$/,
-        '',
-      );
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
       if (!baseUrl) {
         return;
       }
@@ -41,7 +38,7 @@ export const DesignTab = observer(() => {
             preview: string;
           }>;
         }>(
-          `${baseUrl}/shopify-collection/products/${String(selectedCollection.id)}`,
+          `${baseUrl}/shopify-collection/products/${(selectedCollection.id)}`,
         );
         const nextPatterns: PatternType[] = (data.products ?? []).map(
           (product) => ({

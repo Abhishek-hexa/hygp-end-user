@@ -3,8 +3,8 @@ import axios from 'axios';
 import { ProductManager } from '../state/product/ProductManager';
 import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
-import { BuckleType, Collection, ColorDescription, ProductSizeType, SizeDescription } from '../state/product/types';
-import { PatternType, TextureManager } from '../state/product/managers/TextureManager';
+import { BuckleType, Collection, ColorDescription, PatternType, ProductSizeType, SizeDescription } from '../state/product/types';
+import { TextureManager } from '../state/product/managers/TextureManager';
 import { BuckleManager } from '../state/product/managers/BuckleManager';
 import { BucklesApiResponse, CollectionProductsApiResponse, EngravingFontsApiResponse, ProductVariantsApiResponse, ShopifyCollectionsApiResponse } from './types/api.types';
 
@@ -56,6 +56,7 @@ export const initializeDogCollarApis = async (
       ),
     ])
 
+    // fetching first collection's Pattern
     const firstCollectionId = collections?.custom_collections?.[0]?.id;
     let firstCollectionProducts: CollectionProductsApiResponse | null = null;
     
@@ -68,6 +69,7 @@ export const initializeDogCollarApis = async (
       firstCollectionProducts = res;
     }
     
+    // Parsing and setting up values to our managers
     parseFonts(
       engravingFonts, 
       productManager.webbingText, 
