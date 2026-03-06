@@ -5,7 +5,10 @@ export default {
     extend: {
       colors: {
         primary: '#86a69e',
-        primaryOrange: '#f28783'
+        primaryOrange: '#f28783',
+      },
+      fontFamily: {
+        ranchers: ['Ranchers', 'cursive'],
       },
     },
   },
