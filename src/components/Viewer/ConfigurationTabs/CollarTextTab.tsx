@@ -2,12 +2,9 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { TextSize } from '../../../state/product/types';
-import {
-  AIcon,
-  ChevronDownIcon,
-  TextIcon,
-  SelectedItemIcon,
-} from '../../icons/Icons';
+import { SelectedItemIcon, TextIcon } from '../../icons/Icons';
+import { FontSelectField } from './shared/FontSelectField';
+import { TextInputWithCounter } from './shared/TextInputWithCounter';
 
 const MAX_TEXT_LENGTH = 20;
 
@@ -29,7 +26,6 @@ export const CollarTextTab = observer(() => {
   const { designManager } = useMainContext();
   const webbingTextManager = designManager.productManager.webbingText;
   const fonts = Array.from(webbingTextManager.availableFonts.values());
-  const fontNameById = new Map(fonts.map((font) => [font.id, font.name]));
 
   return (
     <div className="space-y-5 text-gray-700 p-4">
@@ -44,52 +40,23 @@ export const CollarTextTab = observer(() => {
 
       <section className="space-y-2">
         <h4 className="text-sm font-semibold text-gray-400">Custom Text</h4>
-        <div className='flex gap-2 justify-between p-2'>
+        <div className="flex justify-between gap-2 p-2">
           <TextIcon className="h-5 w-5 shrink-0 text-primary/70 mt-2" />
           <div className="flex-col space-y-3 w-full">
-            <div className="flex flex-1 items-center rounded-lg border border-primary/65 px-3 py-2">
-              <input
-                type="text"
-                value={webbingTextManager.value}
-                maxLength={MAX_TEXT_LENGTH}
-                placeholder="Type Your text here"
-                onChange={(event) =>
-                  webbingTextManager.setText(event.target.value)
-                }
-                className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
-              />
-              <span className="ml-3 text-sm text-gray-500">
-                {webbingTextManager.value.length}/{MAX_TEXT_LENGTH}
-              </span>
-            </div>
+            <TextInputWithCounter
+              value={webbingTextManager.value}
+              maxLength={MAX_TEXT_LENGTH}
+              placeholder="Type Your text here"
+              onChange={(value) => webbingTextManager.setText(value)}
+            />
 
-            <div className="relative flex items-center rounded-lg border border-primary/65 bg-[#f8f8f8] px-3 py-2">
-              {webbingTextManager.selectedFont !== null ? (
-                <span className="truncate pr-2 text-sm text-primary/80">
-                  {fontNameById.get(webbingTextManager.selectedFont) ??
-                    'Select font'}
-                </span>
-              ) : (
-                <AIcon className="h-5 w-5 text-primary/80" />
-              )}
-              <ChevronDownIcon className="ml-auto h-4 w-4 text-primary/70" />
-              <select
-                aria-label="Select collar text font"
-                value={webbingTextManager.selectedFont ?? ''}
-                onChange={(event) =>
-                  webbingTextManager.setFont(Number(event.target.value))
-                }
-                className="absolute inset-0 cursor-pointer opacity-0">
-                <option value="" disabled>
-                  Select font
-                </option>
-                {fonts.map((font) => (
-                  <option key={font.id} value={font.id}>
-                    {font.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FontSelectField
+              ariaLabel="Select collar text font"
+              selectedFont={webbingTextManager.selectedFont}
+              fonts={fonts}
+              onSelectFont={(fontId) => webbingTextManager.setFont(fontId)}
+              containerClassName="bg-[#f8f8f8]"
+            />
           </div>
         </div>
       </section>
