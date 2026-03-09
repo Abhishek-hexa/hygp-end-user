@@ -17,7 +17,7 @@ export const EngravingTab = observer(() => {
   const fontNameById = new Map(fonts.map((font) => [font.id, font.name]));
 
   return (
-    <div className="space-y-5 text-gray-700">
+    <div className="space-y-5 text-gray-700 p-4">
       <section className="space-y-1">
         <h3 className="text-xl font-semibold text-gray-900">Buckle Engraving</h3>
         <p className="text-sm text-gray-500">Add your pet's details for safety.</p>

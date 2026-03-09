@@ -123,7 +123,7 @@ export const DesignTab = observer(() => {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1 py-2">
         <div className="mb-3">
           <label htmlFor="pattern-search" className="sr-only">
             Search pattern
@@ -135,7 +135,7 @@ export const DesignTab = observer(() => {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search"
-              className="w-full rounded-full border border-[#8fb4ad] bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
+              className="w-full rounded-full border border-primary bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
             />
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
@@ -145,7 +145,7 @@ export const DesignTab = observer(() => {
                 key={`chip-${collection.id}`}
                 type="button"
                 onClick={() => textureManager.removeSelectedCollection(collection.id)}
-                className="inline-flex items-center gap-1 rounded-full border border-[#7fa8a0] bg-[#eaf5f3] px-3 py-1 text-xs text-[#2f6b63]"
+                className="inline-flex items-center gap-1 rounded-full border border-primary bg-[#eaf5f3] px-3 py-1 text-xs text-primary"
               >
                 <span>{collection.title}</span>
                 <CancelIcon className="h-3 w-3" />
@@ -185,8 +185,8 @@ export const DesignTab = observer(() => {
                   />
                   {textureManager.selectedPatternId === pattern.id ? (
                     <SelectedItemIcon
-                      className="absolute right-1 top-1 h-4 w-4"
-                      fillColor="#3f8f80"
+                      className="absolute top-[50%] left-[50%] h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                      version='white'
                     />
                   ) : null}
                 </button>

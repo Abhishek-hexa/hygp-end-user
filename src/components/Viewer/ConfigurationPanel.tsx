@@ -104,7 +104,7 @@ export const ConfigurationPanel = observer(
             <RightArrowIcon />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto">
           {renderFeatureContent()}
         </div>
       </aside>

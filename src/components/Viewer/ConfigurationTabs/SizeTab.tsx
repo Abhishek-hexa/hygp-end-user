@@ -21,7 +21,7 @@ export const SizeTab = observer(() => {
   const selectedSize = productManager.sizeManager.selectedSize;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="space-y-1">
         <h3 className="text-lg font-bold text-gray-900">Select Collar Size</h3>
         <p className="text-sm text-gray-500">Choose the perfect fit for your furry friend</p>
