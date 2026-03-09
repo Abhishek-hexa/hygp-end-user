@@ -28,3 +28,7 @@ body,
   overflow: hidden;
 }
 }
+
+.feature-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
