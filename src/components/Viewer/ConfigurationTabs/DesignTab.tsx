@@ -1,10 +1,12 @@
-import axios from 'axios';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { CancelIcon, SearchIcon, SelectedItemIcon } from '../../icons/Icons';
-import { PatternType } from '../../../state/product/types';
+import { SearchIcon } from '../../icons/Icons';
+import { CollectionSidebar } from './DesignTab/CollectionSidebar';
+import { PatternGrid } from './DesignTab/PatternGrid';
+import { SelectedCollectionChips } from './DesignTab/SelectedCollectionChips';
+import { usePatternLoader } from './DesignTab/usePatternLoader';
 
 export const DesignTab = observer(() => {
   const { designManager } = useMainContext();
@@ -14,62 +16,10 @@ export const DesignTab = observer(() => {
   const selectedCollections = textureManager.selectedCollections;
   const patterns = textureManager.availablePatterns ?? [];
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadPatterns = async () => {
-      if (selectedCollectionIds.length === 0) {
-        return;
-      }
-
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      if (!baseUrl) {
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        await Promise.all(
-          selectedCollectionIds.map(async (collectionId) => {
-            if (textureManager.hasPatternsForCollection(collectionId)) {
-              return;
-            }
-
-            const { data } = await axios.get<{
-              products: Array<{
-                id: string;
-                name: string;
-                dataX: string;
-                png_image: string;
-                preview: string;
-              }>;
-            }>(`${baseUrl}/shopify-collection/products/${collectionId}`);
-
-            const nextPatterns: PatternType[] = (data.products ?? []).map(
-              (product) => ({
-                dataX: product.dataX,
-                id: parseInt(product.id),
-                name: product.name,
-                pngImage: product.png_image,
-                preview: product.preview,
-              }),
-            );
-
-            textureManager.setAvailablePatterns(collectionId, nextPatterns);
-          }),
-        );
-      } catch {
-        setError('Could not load designs.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadPatterns();
-  }, [selectedCollectionIds, textureManager]);
+  const { clearError, error, loading } = usePatternLoader(
+    selectedCollectionIds,
+    textureManager,
+  );
 
   const filteredPatterns = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -84,44 +34,14 @@ export const DesignTab = observer(() => {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 md:flex-row">
-      <div className="md:w-[30%] md:max-w-[150px] md:min-w-[130px] md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200 md:pr-2">
-        <div className="flex gap-2 overflow-x-auto md:block md:space-y-1 md:overflow-visible">
-          {collections.map((collection) => {
-            const isSelected = selectedCollectionIds.includes(collection.id);
-
-            return (
-              <button
-                key={collection.id}
-                type="button"
-                className={`group w-[90px] shrink-0 border-b bg-white p-2 text-left text-xs transition-all md:w-full relative  ${
-                  isSelected
-                    ? 'border-l-2  rounded-l-xl  border-l-primary text-primary'
-                    : 'text-gray-600 hover:border-primary hover:bg-primary/10'
-                }`}
-                onClick={() => {
-                  textureManager.toggleSelectedCollection(collection.id);
-                  setError(null);
-                }}>
-                <div className="mb-2 overflow-hidden flex items-center justify-center">
-                  <img
-                    src={collection.image}
-                    alt={collection.title}
-                    className="h-8 w-8 object-cover rounded-md"
-                  />
-                </div>
-                <span className="block truncate text-center text-[12px] font-medium">
-                  {collection.title}
-                </span>
-                {isSelected ? (
-                    <SelectedItemIcon
-                      className="absolute right-1 top-1 h-4 w-4"
-                    />
-                  ) : null}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <CollectionSidebar
+        collections={collections}
+        selectedCollectionIds={selectedCollectionIds}
+        onToggleCollection={(collectionId) => {
+          textureManager.toggleSelectedCollection(collectionId);
+          clearError();
+        }}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1 py-2">
         <div className="mb-3">
@@ -139,19 +59,12 @@ export const DesignTab = observer(() => {
             />
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {selectedCollections.map((collection) => (
-              <button
-                key={`chip-${collection.id}`}
-                type="button"
-                onClick={() => textureManager.removeSelectedCollection(collection.id)}
-                className="inline-flex items-center gap-1 rounded-full border border-primary bg-[#eaf5f3] px-3 py-1 text-xs text-primary"
-              >
-                <span>{collection.title}</span>
-                <CancelIcon className="h-3 w-3" />
-              </button>
-            ))}
-          </div>
+          <SelectedCollectionChips
+            selectedCollections={selectedCollections}
+            onRemoveCollection={(collectionId) =>
+              textureManager.removeSelectedCollection(collectionId)
+            }
+          />
         </div>
 
         {loading ? (
@@ -162,37 +75,11 @@ export const DesignTab = observer(() => {
           <p className="text-sm text-gray-500">No designs found.</p>
         ) : null}
         {!loading && !error ? (
-          <div>
-            <p className="mb-2 text-right text-xs font-medium text-gray-500">
-              Showing {filteredPatterns.length} result
-              {filteredPatterns.length === 1 ? '' : 's'}
-            </p>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-              {filteredPatterns.map((pattern) => (
-                <button
-                  key={pattern.id}
-                  type="button"
-                  onClick={() => textureManager.setSelectedPattern(pattern.id)}
-                  className={`group relative overflow-hidden rounded-md border transition-all ${
-                    textureManager.selectedPatternId === pattern.id
-                      ? 'border-[#3f8f80] ring-2 ring-[#a7d3cc]'
-                      : 'border-gray-200 hover:border-[#8fb4ad]'
-                  }`}>
-                  <img
-                    src={pattern.preview}
-                    alt={pattern.name}
-                    className="aspect-square w-full object-cover"
-                  />
-                  {textureManager.selectedPatternId === pattern.id ? (
-                    <SelectedItemIcon
-                      className="absolute top-[50%] left-[50%] h-6 w-6 -translate-x-1/2 -translate-y-1/2"
-                      version='white'
-                    />
-                  ) : null}
-                </button>
-              ))}
-            </div>
-          </div>
+          <PatternGrid
+            patterns={filteredPatterns}
+            selectedPatternId={textureManager.selectedPatternId}
+            onSelectPattern={(patternId) => textureManager.setSelectedPattern(patternId)}
+          />
         ) : null}
       </div>
     </div>
