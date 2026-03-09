@@ -11,11 +11,11 @@ export const NavBar = observer(() => {
             className="h-16 w-auto"
           />
         </div>
-        <nav className="hidden items-center gap-10 text-base font-bold uppercase tracking-wide text-amber-50 lg:flex">
-          <button type="button">Size Guide</button>
-          <button type="button">Shops</button>
-          <button type="button">Sell Your Own</button>
-          <button type="button">More</button>
+        <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
+          <button type="button" className="uppercase">Size Guide</button>
+          <button type="button" className="uppercase">Shops</button>
+          <button type="button" className="uppercase">Sell Your Own</button>
+          <button type="button" className="uppercase">More</button>
           <button
             type="button"
             className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-300 text-sm font-semibold text-gray-700"

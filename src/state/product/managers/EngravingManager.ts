@@ -86,16 +86,6 @@ export class EngravingManager {
 
   setAvailableFonts(inFonts: Map<number, FontDescription>) {
     this._availableFonts = inFonts;
-
-    const firstFont = this._availableFonts.keys().next().value;
-    if (firstFont === undefined) {
-      return;
-    }
-
-    this._lines = this._lines.map((line) => ({
-      ...line,
-      font: line.font ?? firstFont,
-    }));
   }
 
   reset() {

@@ -8,7 +8,7 @@ export default {
         primaryOrange: '#f28783',
       },
       fontFamily: {
-        ranchers: ['Ranchers', 'cursive'],
+        ranchers: ['Ranchers'],
       },
     },
   },

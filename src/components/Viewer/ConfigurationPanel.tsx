@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { ConfigFeature, DesignManager } from '../../state/design/DesignManager';
+import { LeftArrowIcon, RightArrowIcon } from '../icons/Icons';
 import { BuckleTab } from './ConfigurationTabs/BuckleTab';
 import { CollarTextTab } from './ConfigurationTabs/CollarTextTab';
 import { DesignTab } from './ConfigurationTabs/DesignTab';
@@ -27,6 +28,15 @@ export const ConfigurationPanel = observer(
     const designManager: DesignManager = mainContext.designManager;
     const features = designManager.availableFeatures;
     const activeFeature = designManager.activeFeature;
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const scrollLeft = () => {
+      if (scrollRef.current) scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    };
+
+    const scrollRight = () => {
+      if (scrollRef.current) scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    };
 
     useEffect(() => {
       if (!features.length) {
@@ -64,24 +74,35 @@ export const ConfigurationPanel = observer(
     };
 
     return (
-      <aside className="flex h-full min-h-0 min-w-0 flex-col bg-gray-100 text-primary">
-        <div className="flex h-20 items-center gap-3 border-b border-gray-300 px-4">
-          <div className="flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap">
+      <aside className="flex h-full min-h-0 min-w-0 flex-col text-primary">
+        <div className="flex h-[80px] items-center gap-3 border-b border-gray-300 bg-white px-6">
+          <button type="button" onClick={scrollLeft} className="text-primaryOrange/50 hover:text-primaryOrange transition-colors">
+            <LeftArrowIcon />
+          </button>
+          <div 
+            ref={scrollRef}
+            className="flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap"
+            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+          >
+            <style>{`.flex-1::-webkit-scrollbar { display: none; }`}</style>
             {features.map(feature => (
               <button
                 key={feature}
                 type="button"
                 onClick={() => designManager.setActiveFeature(feature)}
-                className={`shrink-0 rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide ${
+                className={`flex shrink-0 items-center justify-center rounded-full border-2 px-4 py-1 font-ranchers text-md font-normal tracking-[1px] transition-colors ${
                   feature === activeFeature
                     ? 'border-primaryOrange bg-primaryOrange text-white'
-                    : 'border-primary bg-gray-100 text-primary'
+                    : 'border-primary bg-white text-primary hover:bg-gray-50'
                 }`}
               >
                 {featureLabelMap[feature]}
               </button>
             ))}
           </div>
+          <button type="button" onClick={scrollRight} className="text-primaryOrange/50 hover:text-primaryOrange transition-colors">
+            <RightArrowIcon />
+          </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-6">
           {renderFeatureContent()}

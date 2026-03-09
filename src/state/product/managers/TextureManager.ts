@@ -5,7 +5,8 @@ import { Collection, PatternType } from '../types';
 export class TextureManager {
 
   private _availableCollections: Map<number, Collection> = new Map(); // id: Collection Description
-  private _selectedCollection: number | null = null;
+  private _selectedCollectionIds: number[] = [];
+  private _activeCollectionId: number | null = null;
 
   private _availablePatterns: Map<number, PatternType[]> = new Map();
   private _selectedPatternId: number | null = null;
@@ -19,13 +20,26 @@ export class TextureManager {
   }
 
   get selectedCollection() {
+    if (this._activeCollectionId !== null) {
+      return this._availableCollections.get(this._activeCollectionId) ?? null;
+    }
     return (
-      this._availableCollections.get(this._selectedCollection ?? -1) ?? null
+      this._availableCollections.get(this._selectedCollectionIds[0] ?? -1) ?? null
     );
   }
 
   get selectedCollectionId() {
-    return this._selectedCollection;
+    return this._activeCollectionId;
+  }
+
+  get selectedCollectionIds() {
+    return this._selectedCollectionIds;
+  }
+
+  get selectedCollections() {
+    return this._selectedCollectionIds
+      .map((id) => this._availableCollections.get(id))
+      .filter((collection): collection is Collection => collection !== undefined);
   }
 
   get selectedPatternId() {
@@ -33,14 +47,53 @@ export class TextureManager {
   }
 
   get availablePatterns(): PatternType[] | null {
-    if (this._selectedCollection === null) {
+    if (this._selectedCollectionIds.length === 0) {
       return null;
     }
-    return this._availablePatterns.get(this._selectedCollection) ?? null;
+    const mergedPatterns = this._selectedCollectionIds.flatMap(
+      (collectionId) => this._availablePatterns.get(collectionId) ?? [],
+    );
+    return mergedPatterns;
   }
 
   setSelectedCollection(id: number) {
-    this._selectedCollection = id;
+    this._activeCollectionId = id;
+    if (!this._selectedCollectionIds.includes(id)) {
+      this._selectedCollectionIds = [...this._selectedCollectionIds, id];
+    }
+  }
+
+  setSelectedCollections(ids: number[]) {
+    const uniqueIds = Array.from(new Set(ids)).filter((id) =>
+      this._availableCollections.has(id),
+    );
+    this._selectedCollectionIds = uniqueIds;
+    if (!uniqueIds.includes(this._activeCollectionId ?? -1)) {
+      this._activeCollectionId = uniqueIds[0] ?? null;
+    }
+  }
+
+  toggleSelectedCollection(id: number) {
+    if (this._selectedCollectionIds.includes(id)) {
+      this._selectedCollectionIds = this._selectedCollectionIds.filter(
+        (collectionId) => collectionId !== id,
+      );
+      if (this._activeCollectionId === id) {
+        this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+      }
+      return;
+    }
+    this._selectedCollectionIds = [...this._selectedCollectionIds, id];
+    this._activeCollectionId = id;
+  }
+
+  removeSelectedCollection(id: number) {
+    this._selectedCollectionIds = this._selectedCollectionIds.filter(
+      (collectionId) => collectionId !== id,
+    );
+    if (this._activeCollectionId === id) {
+      this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+    }
   }
 
   setAvailableCollections(inCollections: Collection[]) {
@@ -48,8 +101,18 @@ export class TextureManager {
     inCollections.forEach((collection) => {
       this._availableCollections.set(collection.id, collection);
     });
-    if (inCollections.length > 0 && this._selectedCollection === null) {
-      this._selectedCollection = inCollections[0].id;
+    const validIds = new Set(inCollections.map((collection) => collection.id));
+    this._selectedCollectionIds = this._selectedCollectionIds.filter((id) =>
+      validIds.has(id),
+    );
+    if (this._selectedCollectionIds.length === 0 && inCollections.length > 0) {
+      this._selectedCollectionIds = [inCollections[0].id];
+    }
+    if (
+      this._activeCollectionId === null ||
+      !validIds.has(this._activeCollectionId)
+    ) {
+      this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
     }
   }
 
@@ -61,9 +124,14 @@ export class TextureManager {
     this._availablePatterns.set(inCollectionId, inPatterns);
   }
 
+  hasPatternsForCollection(collectionId: number) {
+    return this._availablePatterns.has(collectionId);
+  }
+
   reset() {
     this._availableCollections = new Map();
-    this._selectedCollection = null;
+    this._selectedCollectionIds = [];
+    this._activeCollectionId = null;
     this._availablePatterns = new Map();
     this._selectedPatternId = null;
   }

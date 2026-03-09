@@ -273,6 +273,7 @@ const parsePatterns = (
       }
       patterns.push(parsedProduct);
     })
-    textureManager.setSelectedCollection(parseInt(collectionId));
-    textureManager.setAvailablePatterns(parseInt(collectionId), patterns);
+    const parsedCollectionId = parseInt(collectionId);
+    textureManager.setSelectedCollection(parsedCollectionId);
+    textureManager.setAvailablePatterns(parsedCollectionId, patterns);
 }
