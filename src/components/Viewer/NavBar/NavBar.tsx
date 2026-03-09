@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { CartIcon } from '../../icons/Icons';
 
 export const NavBar = observer(() => {
   return (
@@ -18,9 +19,9 @@ export const NavBar = observer(() => {
           <button type="button" className="uppercase">More</button>
           <button
             type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-300 text-sm font-semibold text-gray-700"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700"
           >
-            Cart
+            <CartIcon />
           </button>
         </nav>
       </div>
