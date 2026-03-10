@@ -14,6 +14,7 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
       'COLLAR_TEXT',
       'MEOW',
     ],
+    buckleMaterials: ['BREAKAWAY', 'PLASTIC'],
   },
   DOG_COLLAR: {
     features: [
@@ -24,6 +25,7 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
       'COLLAR_TEXT',
       'FETCH',
     ],
+    buckleMaterials: ['METAL','PLASTIC'],
   },
   HARNESS: {
     features: [

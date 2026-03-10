@@ -60,6 +60,7 @@ export class ProductManager {
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
     this.reset();
+    this._buckleManager.setProductId(inProductId);
   }
 
   getAllFeatures() {
