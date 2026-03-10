@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 import { ProductManager } from '../state/product/ProductManager';
-import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
+import { BuckleManager } from '../state/product/managers/BuckleManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
+import { TextureManager } from '../state/product/managers/TextureManager';
+import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import {
-  BuckleType,
+  BuckleMaterialType,
   Collection,
   ColorDescription,
   FontDescription,
@@ -13,8 +15,7 @@ import {
   ProductType,
   SizeDescription,
 } from '../state/product/types';
-import { TextureManager } from '../state/product/managers/TextureManager';
-import { BuckleManager } from '../state/product/managers/BuckleManager';
+import { apiEndPointMap } from './ApiEndPointMap';
 import {
   BucklesApiResponse,
   CollectionProductsApiResponse,
@@ -24,7 +25,6 @@ import {
   ShopifyCollectionApiItem,
   ShopifyCollectionsApiResponse,
 } from './types/api.types';
-import { apiEndPointMap } from './ApiEndPointMap';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -41,7 +41,9 @@ export const initializeProductApis = async (
   productManager: ProductManager,
   productType: ProductType = 'DOG_COLLAR',
 ) => {
-  console.log(`[product-init] Starting API initialization for product type: ${productType}`);
+  console.log(
+    `[product-init] Starting API initialization for product type: ${productType}`,
+  );
   productManager.setProduct(productType);
 
   const endPoints = apiEndPointMap[productType];
@@ -213,10 +215,11 @@ const parseBuckles = (
   buckleManager: BuckleManager,
 ) => {
   const buckles = bucklesResponse.data;
-  const buckleTypes: BuckleType[] = [];
   const metalColors: ColorDescription[] = [];
   const plasticColors: ColorDescription[] = [];
   const breakawayColors: ColorDescription[] = [];
+
+  console.log('[product-init] Parsing buckles', buckles);
 
   buckles.forEach((buckle: any) => {
     if (buckle.metal_color) {
@@ -224,16 +227,15 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'METAL' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'METAL' },
         hex: buckle.metal_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('METAL')) {
-        buckleTypes.push('METAL');
-      }
       metalColors.push(parsedMetalColor);
     }
 
@@ -242,16 +244,15 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'PLASTIC' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'PLASTIC' },
         hex: buckle.plastic_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('PLASTIC')) {
-        buckleTypes.push('PLASTIC');
-      }
       plasticColors.push(parsedPlasticColor);
     }
 
@@ -260,32 +261,21 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'BREAKAWAY' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'BREAKAWAY' },
         hex: buckle.breakaway_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('BREAKAWAY')) {
-        buckleTypes.push('BREAKAWAY');
-      }
       breakawayColors.push(parsedBreakawayColor);
     }
   });
-  buckleManager.setAvailableBuckles(buckleTypes);
   buckleManager.setMetalColors(metalColors);
   buckleManager.setPlasticColors(plasticColors);
   buckleManager.setBreakawayColors(breakawayColors);
-
-  const defaultType = buckleTypes[0];
-  if (defaultType) {
-    buckleManager.setType(defaultType);
-    const defaultColor = buckleManager.currentColors[0]?.id;
-    if (defaultColor) {
-      buckleManager.setSelectedColor(defaultColor);
-    }
-  }
 };
 
 const parsePatterns = (
