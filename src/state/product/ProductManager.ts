@@ -59,14 +59,14 @@ export class ProductManager {
 
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
-    this.resetAll();
+    this.reset();
   }
 
   getAllFeatures() {
     return this.productConfig.features;
   }
 
-  resetAll() {
+  reset() {
     this._sizeManager.reset();
     this._buckleManager.reset();
     this._engravingManager.reset();

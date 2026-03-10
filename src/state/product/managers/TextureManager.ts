@@ -129,10 +129,8 @@ export class TextureManager {
   }
 
   reset() {
-    this._availableCollections = new Map();
     this._selectedCollectionIds = [];
     this._activeCollectionId = null;
-    this._availablePatterns = new Map();
     this._selectedPatternId = null;
   }
 }

@@ -12,8 +12,6 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
       'DESIGN',
       'HARDWARE',
       'COLLAR_TEXT',
-      'BUCKLE',
-      'FETCH',
     ],
   },
   DOG_COLLAR: {

@@ -1,7 +1,52 @@
 import { observer } from 'mobx-react-lite';
+import { useEffect, useRef, useState } from 'react';
+
+import { initializeProductApis } from '../../../api/initializeProductApis';
+import { useMainContext } from '../../../hooks/useMainContext';
+import { ProductType } from '../../../state/product/types';
 import { CartIcon } from '../../icons/Icons';
 
+const shopItems: Array<{ label: string; productType: ProductType }> = [
+  { label: 'Cat Collars', productType: 'CAT_COLLAR' },
+  { label: 'Dog Bandanas', productType: 'BANDANA' },
+  { label: 'Dog Collars', productType: 'DOG_COLLAR' },
+  { label: 'Dog Leashes', productType: 'LEASH' },
+  { label: 'Dog Harnesses', productType: 'HARNESS' },
+  { label: 'Martingale Collars', productType: 'MARTINGALE' },
+];
+
 export const NavBar = observer(() => {
+  const mainContext = useMainContext();
+  const productManager = mainContext.designManager.productManager;
+  const [isShopsOpen, setIsShopsOpen] = useState(false);
+  const shopsMenuRef = useRef<HTMLDivElement>(null);
+
+  const handleShopSelect = (productType: ProductType) => {
+    if (productManager.productId === productType) {
+      setIsShopsOpen(false);
+      return;
+    }
+
+    setIsShopsOpen(false);
+    void initializeProductApis(productManager, productType);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!shopsMenuRef.current) {
+        return;
+      }
+      if (!shopsMenuRef.current.contains(event.target as Node)) {
+        setIsShopsOpen(false);
+      }
+    };
+
+    window.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <header className="fixed left-0 top-0 z-50 h-20 w-full bg-primary">
       <div className="mx-auto flex h-full w-full items-center justify-between px-5">
@@ -14,7 +59,34 @@ export const NavBar = observer(() => {
         </div>
         <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
           <button type="button" className="uppercase">Size Guide</button>
-          <button type="button" className="uppercase">Shops</button>
+          <div
+            ref={shopsMenuRef}
+            className="relative"
+          >
+            <button
+              type="button"
+              className="uppercase"
+              onClick={() => setIsShopsOpen((prev) => !prev)}
+            >
+              Shops
+            </button>
+            {isShopsOpen ? (
+              <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                  {shopItems.map((shopItem) => (
+                    <button
+                      key={shopItem.productType}
+                      type="button"
+                      className="text-left transition-opacity hover:opacity-80"
+                      onClick={() => handleShopSelect(shopItem.productType)}
+                    >
+                      {shopItem.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
           <button type="button" className="uppercase">Sell Your Own</button>
           <button type="button" className="uppercase">More</button>
           <button
