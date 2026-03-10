@@ -5,7 +5,7 @@ import { useMainContext } from '../../hooks/useMainContext';
 import { CanvasPanel } from './CanvasPanel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
-import { initializeDogCollarApis } from '../../api/initializeDogCollarApis';
+import { initializeProductApis } from '../../api/initializeProductApis';
 
 export const Viewer = observer(() => {
   const mainContext = useMainContext();
@@ -18,7 +18,7 @@ export const Viewer = observer(() => {
     }
 
     hasInitializedRef.current = true;
-    void initializeDogCollarApis(productManager);
+    void initializeProductApis(productManager, productManager.productId);
   }, [productManager]);
 
   return (
