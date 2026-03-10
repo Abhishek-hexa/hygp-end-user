@@ -1,12 +1,15 @@
 import { makeAutoObservable } from 'mobx';
 
-import { TextSize } from '../types';
-import { FontManager } from './FontManager';
+import { FontDescription, TextSize } from '../types';
+
+const DEFAULT_TEXT_COLOR = '#374b67';
 
 export class WebbingTextManager {
   private _value = '';
   private _size: TextSize = 'MEDIUM';
-  private _fontManager = new FontManager();
+  private _availableFonts: Map<number, FontDescription> = new Map();
+  private _selectedFont: number | null = null;
+  private _selectedColor = DEFAULT_TEXT_COLOR;
 
   constructor() {
     makeAutoObservable(this);
@@ -20,16 +23,16 @@ export class WebbingTextManager {
     return this._size;
   }
 
-  get fontManager() {
-    return this._fontManager;
-  }
-
   get availableFonts() {
-    return this._fontManager.availableFonts;
+    return this._availableFonts;
   }
 
   get selectedFont() {
-    return this._fontManager.selectedFont;
+    return this._selectedFont;
+  }
+
+  get selectedColor() {
+    return this._selectedColor;
   }
 
   setText(inValue: string) {
@@ -40,13 +43,23 @@ export class WebbingTextManager {
     this._size = inSize;
   }
 
-  setFont(inFont: string) {
-    this._fontManager.setFont(inFont);
+  setFont(inFont: number) {
+    this._selectedFont = inFont;
+  }
+
+  setColor(inColor: string) {
+    this._selectedColor = inColor;
+  }
+
+  setAvailableFonts(inAvailableFonts: Map<number, FontDescription>) {
+    this._availableFonts = inAvailableFonts;
   }
 
   reset() {
     this._value = '';
     this._size = 'MEDIUM';
-    this._fontManager.reset();
+    this._availableFonts = new Map();
+    this._selectedFont = null;
+    this._selectedColor = DEFAULT_TEXT_COLOR;
   }
 }

@@ -12,8 +12,7 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
       'DESIGN',
       'HARDWARE',
       'COLLAR_TEXT',
-      'BUCKLE',
-      'FETCH',
+      'MEOW',
     ],
   },
   DOG_COLLAR: {
@@ -27,12 +26,29 @@ export const productConfigs: Record<ProductType, ProductConfig> = {
     ],
   },
   HARNESS: {
-    features: ['FETCH'],
+    features: [
+      'SIZE',
+      'DESIGN',
+      'HARNESS_TEXT',
+      'FETCH',
+    ],
   },
   LEASH: {
-    features: ['HARDWARE', 'FETCH'],
+    features: [
+      'SIZE',
+      'DESIGN',
+      'HARDWARE',
+      'LEASH_TEXT',
+      'FETCH',
+    ],
   },
   MARTINGALE: {
-    features: ['HARDWARE', 'FETCH'],
+    features: [
+      'SIZE',
+      'DESIGN',
+      'HARDWARE',
+      'COLLAR_TEXT',
+      'FETCH',
+    ],
   },
 };

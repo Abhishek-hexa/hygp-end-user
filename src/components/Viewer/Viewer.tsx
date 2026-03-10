@@ -2,15 +2,14 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
-import { initializeDogCollarApis } from './initializeDogCollarApis';
 import { CanvasPanel } from './CanvasPanel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
+import { initializeProductApis } from '../../api/initializeProductApis';
 
 export const Viewer = observer(() => {
   const mainContext = useMainContext();
-  const designManager = mainContext.designManager;
-  const productManager = designManager.productManager;
+  const productManager = mainContext.designManager.productManager;
   const hasInitializedRef = useRef(false);
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export const Viewer = observer(() => {
     }
 
     hasInitializedRef.current = true;
-    void initializeDogCollarApis(productManager);
+    void initializeProductApis(productManager, productManager.productId);
   }, [productManager]);
 
   return (

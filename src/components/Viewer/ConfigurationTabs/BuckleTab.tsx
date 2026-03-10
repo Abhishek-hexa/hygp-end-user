@@ -1,14 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { BuckleType } from '../../../state/product/types';
-
-const buckleLabelMap: Record<BuckleType, string> = {
-  BREAKAWAY: 'Breakaway',
-  METAL: 'Metal',
-  PLASTIC: 'Plastic',
-};
+import { BuckleFinishSelector } from './BuckleTab/BuckleFinishSelector';
+import { BuckleMaterialSelector } from './BuckleTab/BuckleMaterialSelector';
+import { useBuckleSelectionSync } from './BuckleTab/useBuckleSelectionSync';
 
 export const BuckleTab = observer(() => {
   const mainContext = useMainContext();
@@ -17,27 +13,7 @@ export const BuckleTab = observer(() => {
   const selectedType = buckleManager.type;
   const colors = buckleManager.currentColors;
 
-  useEffect(() => {
-    if (!selectedType && availableBuckles.length) {
-      buckleManager.setType(availableBuckles[0]);
-      return;
-    }
-
-    if (!selectedType) {
-      return;
-    }
-
-    const hasSelectedColor = colors.some(
-      color => color.name === buckleManager.selectedColor,
-    );
-
-    if (!hasSelectedColor) {
-      const nextColor = colors[0]?.name;
-      if (nextColor) {
-        buckleManager.setSelectedColor(nextColor);
-      }
-    }
-  }, [availableBuckles, buckleManager, colors, selectedType]);
+  useBuckleSelectionSync(buckleManager);
 
   const setMaterial = (type: BuckleType) => {
     buckleManager.setType(type);
@@ -48,64 +24,32 @@ export const BuckleTab = observer(() => {
           ? buckleManager.plasticColors
           : buckleManager.breakawayColors;
 
-    const defaultColor = nextColors[0]?.name;
+    const defaultColor = nextColors[0]?.id;
     if (defaultColor) {
       buckleManager.setSelectedColor(defaultColor);
     }
   };
 
-  const materialGridClass =
-    availableBuckles.length >= 3
-      ? 'grid-cols-3'
-      : availableBuckles.length === 2
-        ? 'grid-cols-2'
-        : 'grid-cols-1';
-
   return (
-    <div className="space-y-9 text-gray-700">
-      <section className="space-y-3">
-        <h3 className="text-xl font-semibold">Buckle Material</h3>
-        <div
-          className={`inline-grid overflow-hidden rounded-xl border border-teal-600 bg-gray-100 p-1 ${materialGridClass}`}
-        >
-          {availableBuckles.map(type => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => setMaterial(type)}
-              className={`min-w-28 px-4 py-2 text-sm font-medium ${
-                selectedType === type
-                  ? 'rounded-lg border border-primaryOrange bg-primaryOrange/10 text-primaryOrange'
-                  : 'text-gray-600'
-              }`}
-            >
-              {buckleLabelMap[type]}
-            </button>
-          ))}
-        </div>
+    <div className="space-y-6 text-gray-700 p-4">
+      <section className="space-y-1">
+        <h3 className="text-xl font-semibold text-gray-900">Buckle Customization</h3>
+        <p className="text-sm text-gray-500">Select material and finish for hardware.</p>
       </section>
 
-      <section className="space-y-3">
-        <h3 className="text-xl font-semibold">Buckle Finish</h3>
-        <div className="flex flex-wrap gap-3">
-          {colors.map(color => {
-            const isSelected = buckleManager.selectedColor === color.name;
-            return (
-              <button
-                key={color.id}
-                type="button"
-                onClick={() => buckleManager.setSelectedColor(color.name)}
-                className={`relative h-14 w-14 rounded-md border ${
-                  isSelected ? 'border-primaryOrange bg-primaryOrange/10 text-primaryOrange' : 'border-teal-600'
-                }`}
-                style={{ backgroundColor: color.hex || '#d9d9d9' }}
-                title={color.name}
-              >
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <BuckleMaterialSelector
+        availableBuckles={availableBuckles}
+        selectedType={selectedType}
+        onSelectType={setMaterial}
+      />
+
+      <div className="border-t border-gray-200" />
+
+      <BuckleFinishSelector
+        colors={colors}
+        selectedColor={buckleManager.selectedColor}
+        onSelectColor={(colorId) => buckleManager.setSelectedColor(colorId)}
+      />
     </div>
   );
 });

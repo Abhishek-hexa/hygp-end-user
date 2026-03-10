@@ -1,0 +1,27 @@
+import { Collection } from '../../../../state/product/types';
+import { CancelIcon } from '../../../icons/Icons';
+
+type SelectedCollectionChipsProps = {
+  onRemoveCollection: (id: number) => void;
+  selectedCollections: Collection[];
+};
+
+export const SelectedCollectionChips = ({
+  onRemoveCollection,
+  selectedCollections,
+}: SelectedCollectionChipsProps) => {
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      {selectedCollections.map((collection) => (
+        <button
+          key={`chip-${collection.id}`}
+          type="button"
+          onClick={() => onRemoveCollection(collection.id)}
+          className="inline-flex items-center gap-1 rounded-full border border-primary bg-[#eaf5f3] px-3 py-1 text-xs text-primary">
+          <span>{collection.title}</span>
+          <CancelIcon className="h-3 w-3" />
+        </button>
+      ))}
+    </div>
+  );
+};

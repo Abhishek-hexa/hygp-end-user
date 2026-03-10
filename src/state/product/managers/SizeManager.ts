@@ -35,6 +35,7 @@ export class SizeManager {
 
   setAvailableSizes(inSizes: Map<ProductSizeType, SizeDescription>) {
     this._availableSizes = inSizes;
+    this._selectedSize = this._availableSizes.keys().next().value || null;
   }
 
   setLength(inLength: LeashLengthType) {

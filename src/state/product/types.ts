@@ -26,7 +26,9 @@ export type Features =
   | 'BUCKLE'
   | 'ENGRAVING'
   | 'HARNESS_TEXT'
-  | 'FETCH';
+  | 'FETCH'
+  | 'LEASH_TEXT'
+  | 'MEOW';
 
 export type LeashLengthType = '3' | '4' | '5' | '6';
 
@@ -57,4 +59,19 @@ export interface ColorDescription {
   name: string;
   hex: string;
   preview: string;
+}
+
+export interface PatternType {
+  id: number;
+  name: string;
+  dataX: string;
+  pngImage: string;
+  preview: string;
+}
+
+export interface FontDescription {
+  id: number;
+  name: string;
+  preview: string;
+  font_path: string;
 }

@@ -1,21 +1,18 @@
 import { makeAutoObservable } from 'mobx';
-import { Collection } from '../types';
+
+import { Collection, PatternType } from '../types';
 
 export class TextureManager {
-  private _texture: string | null = null;
 
-  private _availableCollections: Map<number, Collection> = new Map();
-  private _selectedCollection: Collection | null = null;
+  private _availableCollections: Map<number, Collection> = new Map(); // id: Collection Description
+  private _selectedCollectionIds: number[] = [];
+  private _activeCollectionId: number | null = null;
 
-  private _availablePatterns: string[] = [];
-  private _selectedPattern: string | null = null;
+  private _availablePatterns: Map<number, PatternType[]> = new Map();
+  private _selectedPatternId: number | null = null;
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  get material() {
-    return this._texture;
   }
 
   get availableCollections() {
@@ -23,41 +20,117 @@ export class TextureManager {
   }
 
   get selectedCollection() {
-    return this._selectedCollection;
+    if (this._activeCollectionId !== null) {
+      return this._availableCollections.get(this._activeCollectionId) ?? null;
+    }
+    return (
+      this._availableCollections.get(this._selectedCollectionIds[0] ?? -1) ?? null
+    );
   }
 
-  get availablePatterns() {
-    return this._availablePatterns;
+  get selectedCollectionId() {
+    return this._activeCollectionId;
   }
 
-  get selectedPattern() {
-    return this._selectedPattern;
+  get selectedCollectionIds() {
+    return this._selectedCollectionIds;
   }
 
-  setMaterial(inTexture: string) {
-    this._texture = inTexture;
+  get selectedCollections() {
+    return this._selectedCollectionIds
+      .map((id) => this._availableCollections.get(id))
+      .filter((collection): collection is Collection => collection !== undefined);
+  }
+
+  get selectedPatternId() {
+    return this._selectedPatternId;
+  }
+
+  get availablePatterns(): PatternType[] | null {
+    if (this._selectedCollectionIds.length === 0) {
+      return null;
+    }
+    const mergedPatterns = this._selectedCollectionIds.flatMap(
+      (collectionId) => this._availablePatterns.get(collectionId) ?? [],
+    );
+    return mergedPatterns;
   }
 
   setSelectedCollection(id: number) {
-    this._selectedCollection = this._availableCollections.get(id) ?? null;
+    this._activeCollectionId = id;
+    if (!this._selectedCollectionIds.includes(id)) {
+      this._selectedCollectionIds = [...this._selectedCollectionIds, id];
+    }
   }
 
-  setAvailableCollections(collections: Collection[]) {
+  setSelectedCollections(ids: number[]) {
+    const uniqueIds = Array.from(new Set(ids)).filter((id) =>
+      this._availableCollections.has(id),
+    );
+    this._selectedCollectionIds = uniqueIds;
+    if (!uniqueIds.includes(this._activeCollectionId ?? -1)) {
+      this._activeCollectionId = uniqueIds[0] ?? null;
+    }
+  }
+
+  toggleSelectedCollection(id: number) {
+    if (this._selectedCollectionIds.includes(id)) {
+      this._selectedCollectionIds = this._selectedCollectionIds.filter(
+        (collectionId) => collectionId !== id,
+      );
+      if (this._activeCollectionId === id) {
+        this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+      }
+      return;
+    }
+    this._selectedCollectionIds = [...this._selectedCollectionIds, id];
+    this._activeCollectionId = id;
+  }
+
+  removeSelectedCollection(id: number) {
+    this._selectedCollectionIds = this._selectedCollectionIds.filter(
+      (collectionId) => collectionId !== id,
+    );
+    if (this._activeCollectionId === id) {
+      this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+    }
+  }
+
+  setAvailableCollections(inCollections: Collection[]) {
     this._availableCollections = new Map();
-    collections.forEach(collection => {
+    inCollections.forEach((collection) => {
       this._availableCollections.set(collection.id, collection);
     });
+    const validIds = new Set(inCollections.map((collection) => collection.id));
+    this._selectedCollectionIds = this._selectedCollectionIds.filter((id) =>
+      validIds.has(id),
+    );
+    if (this._selectedCollectionIds.length === 0 && inCollections.length > 0) {
+      this._selectedCollectionIds = [inCollections[0].id];
+    }
+    if (
+      this._activeCollectionId === null ||
+      !validIds.has(this._activeCollectionId)
+    ) {
+      this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+    }
   }
 
-  setSelectedPattern(pattern: string) {
-    this._selectedPattern = pattern;
+  setSelectedPattern(inPatternId: number) {
+    this._selectedPatternId = inPatternId;
   }
 
-  setAvailablePatterns(patterns: string[]) {
-    this._availablePatterns = patterns;
+  setAvailablePatterns(inCollectionId: number, inPatterns: PatternType[]) {
+    this._availablePatterns.set(inCollectionId, inPatterns);
+  }
+
+  hasPatternsForCollection(collectionId: number) {
+    return this._availablePatterns.has(collectionId);
   }
 
   reset() {
-    this._texture = null;
+    this._selectedCollectionIds = [];
+    this._activeCollectionId = null;
+    this._selectedPatternId = null;
   }
 }
