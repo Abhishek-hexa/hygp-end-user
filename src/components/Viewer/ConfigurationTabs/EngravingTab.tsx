@@ -28,7 +28,7 @@ export const EngravingTab = observer(() => {
         {engravingManager.lines.map((line, index) => (
           <div
             key={index}
-            className="rounded-xl border border-gray-200 bg-gray-100 p-3"
+            className="rounded-xl border bg-gray-100/50 p-3"
           >
             <div className="flex items-start gap-3">
               <div className="pt-3 text-primary">

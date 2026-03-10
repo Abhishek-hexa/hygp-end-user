@@ -19,7 +19,7 @@ export const TextInputWithCounter = ({
 }: TextInputWithCounterProps) => {
   return (
     <div
-      className={`flex items-center rounded-lg border border-primary/65 px-3 py-2 ${
+      className={`flex items-center rounded-lg border border-primary bg-white px-3 py-2 ${
         wrapperClassName ?? ''
       }`}>
       <input
