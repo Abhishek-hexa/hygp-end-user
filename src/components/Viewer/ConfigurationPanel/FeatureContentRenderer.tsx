@@ -1,11 +1,10 @@
 import { ConfigFeature } from '../../../state/design/DesignManager';
 import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
-import { CollarTextTab } from '../ConfigurationTabs/CollarTextTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
 import { EngravingTab } from '../ConfigurationTabs/EngravingTab';
 import { HardwareTab } from '../ConfigurationTabs/HardwareTab';
-import { HarnessTextTab } from '../ConfigurationTabs/HarnessTextTab';
 import { SizeTab } from '../ConfigurationTabs/SizeTab';
+import { WebbingTextTab } from '../ConfigurationTabs/WebbingTextTab';
 import { featureLabelMap } from './featureLabelMap';
 
 type FeatureContentRendererProps = {
@@ -26,10 +25,13 @@ export const FeatureContentRenderer = ({
     return <DesignTab />;
   }
   if (activeFeature === 'COLLAR_TEXT') {
-    return <CollarTextTab />;
+    return <WebbingTextTab target="collar" />;
+  }
+  if (activeFeature === 'LEASH_TEXT') {
+    return <WebbingTextTab target="leash" />;
   }
   if (activeFeature === 'HARNESS_TEXT') {
-    return <HarnessTextTab />;
+    return <WebbingTextTab target="harness" />;
   }
   if (activeFeature === 'ENGRAVING') {
     return <EngravingTab />;

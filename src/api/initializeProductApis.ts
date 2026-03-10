@@ -41,6 +41,7 @@ export const initializeProductApis = async (
   productManager: ProductManager,
   productType: ProductType = 'DOG_COLLAR',
 ) => {
+  console.log(`[product-init] Starting API initialization for product type: ${productType}`);
   productManager.setProduct(productType);
 
   const endPoints = apiEndPointMap[productType];
@@ -103,6 +104,8 @@ export const initializeProductApis = async (
     if (firstCollectionProducts) {
       parsePatterns(firstCollectionProducts, productManager.textureManager);
     }
+
+    console.log('[product-init] API initialization completed successfully');
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('[product-init] API initialization failed', error);
@@ -146,7 +149,7 @@ const parseSizes = (
   sizeOptions: ProductVariantsApiResponse,
   productManager: ProductManager,
 ) => {
-  const sizes = sizeOptions?.variants ?? [];
+  const sizes = sizeOptions.variants ? sizeOptions.variants : sizeOptions.data;
   const sizeMap: Map<ProductSizeType, SizeDescription> = new Map();
 
   sizes.forEach((size: ProductVariantApiItem) => {
@@ -156,8 +159,8 @@ const parseSizes = (
     }
 
     const sizeDescription: SizeDescription = {
-      id: size.id,
-      price: size.price,
+      id: typeof size.id === 'string' ? parseInt(size.id) : size.id,
+      price: size.price ? size.price : size.withoutBellPrice,
       model: size.model,
       plasticModel: size.plasticModel,
     };
@@ -221,10 +224,10 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: {
+        material_type: buckle.material_type ? ({
           id: buckle.material_type.id,
           name: buckle.material_type.name,
-        },
+        }) : {  id: 0, name: 'METAL' },
         hex: buckle.metal_color,
         preview: buckle.preview,
       };
@@ -239,10 +242,10 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: {
+        material_type: buckle.material_type ? ({
           id: buckle.material_type.id,
           name: buckle.material_type.name,
-        },
+        }) : {  id: 0, name: 'PLASTIC' },
         hex: buckle.plastic_color,
         preview: buckle.preview,
       };
@@ -257,10 +260,10 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: {
+        material_type: buckle.material_type ? ({
           id: buckle.material_type.id,
           name: buckle.material_type.name,
-        },
+        }) : {  id: 0, name: 'BREAKAWAY' },
         hex: buckle.breakaway_color,
         preview: buckle.preview,
       };

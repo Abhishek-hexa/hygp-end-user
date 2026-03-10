@@ -26,7 +26,9 @@ export type Features =
   | 'BUCKLE'
   | 'ENGRAVING'
   | 'HARNESS_TEXT'
-  | 'FETCH';
+  | 'FETCH'
+  | 'LEASH_TEXT'
+  | 'MEOW';
 
 export type LeashLengthType = '3' | '4' | '5' | '6';
 

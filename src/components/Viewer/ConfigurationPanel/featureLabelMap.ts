@@ -8,4 +8,6 @@ export const featureLabelMap: Record<ConfigFeature, string> = {
   HARDWARE: 'HARDWARE',
   HARNESS_TEXT: 'HARNESS TEXT',
   SIZE: 'SIZE',
+  LEASH_TEXT: 'LEASH TEXT',
+  MEOW: 'MEOW',
 };

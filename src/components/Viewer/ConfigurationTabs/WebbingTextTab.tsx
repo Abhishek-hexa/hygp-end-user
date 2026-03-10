@@ -8,50 +8,75 @@ import { TextInputWithCounter } from './shared/TextInputWithCounter';
 
 const MAX_TEXT_LENGTH = 20;
 
+type WebbingTextTarget = 'collar' | 'leash' | 'harness';
+
+type WebbingTextCopy = {
+  title: string;
+  description: string;
+  fontAriaLabel: string;
+  inputPlaceholder: string;
+};
+
+const copyByTarget: Record<WebbingTextTarget, WebbingTextCopy> = {
+  collar: {
+    title: 'Collar Custom Text',
+    description: 'Make it unique with custom text on the collar.',
+    fontAriaLabel: 'Select collar text font',
+    inputPlaceholder: 'Type your collar text here',
+  },
+  leash: {
+    title: 'Leash Custom Text',
+    description: 'Make it unique with custom text on the leash.',
+    fontAriaLabel: 'Select leash text font',
+    inputPlaceholder: 'Type your leash text here',
+  },
+  harness: {
+    title: 'Harness Custom Text',
+    description: 'Make it unique with custom text on the harness.',
+    fontAriaLabel: 'Select harness text font',
+    inputPlaceholder: 'Type your harness text here',
+  },
+};
+
 const textSizes: Array<{ label: string; value: TextSize }> = [
   { label: 'Small', value: 'SMALL' },
   { label: 'Medium', value: 'MEDIUM' },
   { label: 'Large', value: 'LARGE' },
 ];
 
-const textColors = [
-  '#2d9ce6',
-  '#374b67',
-  '#4dc4b4',
-  '#dfb029',
-  '#44ddd7',
-];
+const textColors = ['#2d9ce6', '#374b67', '#4dc4b4', '#dfb029', '#44ddd7'];
 
-export const CollarTextTab = observer(() => {
+type WebbingTextTabProps = {
+  target: WebbingTextTarget;
+};
+
+export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
   const { designManager } = useMainContext();
   const webbingTextManager = designManager.productManager.webbingText;
   const fonts = Array.from(webbingTextManager.availableFonts.values());
+  const copy = copyByTarget[target];
 
   return (
-    <div className="space-y-5 text-gray-700 p-4">
+    <div className="space-y-5 p-4 text-gray-700">
       <section className="space-y-1">
-        <h3 className="text-xl font-semibold text-gray-900">
-          Collar Custom Text
-        </h3>
-        <p className="text-sm text-gray-500">
-          Make it unique with custom text on the strap.
-        </p>
+        <h3 className="text-xl font-semibold text-gray-900">{copy.title}</h3>
+        <p className="text-sm text-gray-500">{copy.description}</p>
       </section>
 
       <section className="space-y-2">
         <h4 className="text-sm font-semibold text-gray-400">Custom Text</h4>
         <div className="flex justify-between gap-2 p-2">
-          <TextIcon className="h-5 w-5 shrink-0 text-primary/70 mt-2" />
-          <div className="flex-col space-y-3 w-full">
+          <TextIcon className="mt-2 h-5 w-5 shrink-0 text-primary/70" />
+          <div className="w-full flex-col space-y-3">
             <TextInputWithCounter
               value={webbingTextManager.value}
               maxLength={MAX_TEXT_LENGTH}
-              placeholder="Type Your text here"
+              placeholder={copy.inputPlaceholder}
               onChange={(value) => webbingTextManager.setText(value)}
             />
 
             <FontSelectField
-              ariaLabel="Select collar text font"
+              ariaLabel={copy.fontAriaLabel}
               selectedFont={webbingTextManager.selectedFont}
               fonts={fonts}
               onSelectFont={(fontId) => webbingTextManager.setFont(fontId)}
@@ -100,12 +125,11 @@ export const CollarTextTab = observer(() => {
                   isSelected
                     ? 'border-primary bg-primary/10 text-gray-900'
                     : 'border-gray-200 bg-white text-gray-700'
-                }`}>
+                }`}
+              >
                 {size.label}
                 {isSelected ? (
-                  <SelectedItemIcon
-                    className="absolute right-1.5 top-1.5 h-3.5 w-3.5"
-                  />
+                  <SelectedItemIcon className="absolute right-1.5 top-1.5 h-3.5 w-3.5" />
                 ) : null}
               </button>
             );
@@ -115,3 +139,4 @@ export const CollarTextTab = observer(() => {
     </div>
   );
 });
+

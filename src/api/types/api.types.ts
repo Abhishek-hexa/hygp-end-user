@@ -82,11 +82,13 @@ export interface ProductVariantApiItem {
 
   width: number | null
   length: number | null
+  withoutBellPrice: string
 }
 
 export interface ProductVariantsApiResponse {
   success: boolean
   variants: ProductVariantApiItem[]
+  data: ProductVariantApiItem[] // For backward compatibility, to be removed in the future
 }
 
 
