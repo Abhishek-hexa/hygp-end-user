@@ -1,13 +1,13 @@
 import { useRef } from 'react';
 
-import { ConfigFeature } from '../../../state/design/DesignManager';
+import { Features } from '../../../state/product/types';
 import { LeftArrowIcon, RightArrowIcon } from '../../icons/Icons';
 import { FeatureTabButton } from './FeatureTabButton';
 
 type FeatureTabsHeaderProps = {
-  activeFeature: ConfigFeature | null;
-  features: ConfigFeature[];
-  onSelectFeature: (feature: ConfigFeature) => void;
+  activeFeature: Features | null;
+  features: Features[];
+  onSelectFeature: (feature: Features) => void;
 };
 
 export const FeatureTabsHeader = ({

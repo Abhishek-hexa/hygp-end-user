@@ -1,4 +1,4 @@
-import { ConfigFeature } from '../../../state/design/DesignManager';
+import { Features } from '../../../state/product/types';
 import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
 import { EngravingTab } from '../ConfigurationTabs/EngravingTab';
@@ -8,7 +8,7 @@ import { WebbingTextTab } from '../ConfigurationTabs/WebbingTextTab';
 import { featureLabelMap } from './featureLabelMap';
 
 type FeatureContentRendererProps = {
-  activeFeature: ConfigFeature | null;
+  activeFeature: Features | null;
 };
 
 export const FeatureContentRenderer = ({

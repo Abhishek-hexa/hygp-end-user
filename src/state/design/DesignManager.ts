@@ -4,12 +4,10 @@ import { ProductManager } from '../product/ProductManager';
 import { Features } from '../product/types';
 import { StateManager } from '../StateManager';
 
-export type ConfigFeature = Features;
-
 export class DesignManager {
   private _libState: StateManager;
   private _productManager: ProductManager;
-  private _activeFeature: ConfigFeature | null = null;
+  private _activeFeature: Features | null = null;
 
   constructor(libState: StateManager) {
     this._libState = libState;
@@ -30,7 +28,7 @@ export class DesignManager {
     return this._activeFeature;
   }
 
-  setActiveFeature(feature: ConfigFeature | null) {
+  setActiveFeature(feature: Features | null) {
     this._activeFeature = feature;
   }
 }
