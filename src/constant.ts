@@ -1,6 +1,7 @@
 export const NavigationRoutes = {
   Default: '/',
+  Product: '/:productSlug',
   Developer: '/developer',
-  NotFound: '/not-found',
+  NotFound: '*',
   User: '/user',
 } as const;

@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { initializeProductApis } from '../../../api/initializeProductApis';
 import { useMainContext } from '../../../hooks/useMainContext';
+import { productTypeToSlug } from '../../../state/product/productRouting';
 import { ProductType } from '../../../state/product/types';
 import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
 import { MobileNavMenu } from './MobileNavMenu';
@@ -19,6 +20,7 @@ const shopItems: Array<{ label: string; productType: ProductType }> = [
 export const NavBar = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
+  const navigate = useNavigate();
   const [isShopsOpen, setIsShopsOpen] = useState(false);
   const shopsMenuRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +31,7 @@ export const NavBar = observer(() => {
     }
 
     setIsShopsOpen(false);
-    void initializeProductApis(productManager, productType);
+    navigate(`/${productTypeToSlug(productType)}`);
   };
 
   useEffect(() => {

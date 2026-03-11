@@ -1,25 +1,32 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { CanvasPanel } from './CanvasPanel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 import { initializeProductApis } from '../../api/initializeProductApis';
+import {
+  defaultProductSlug,
+  productSlugToType,
+} from '../../state/product/productRouting';
 
 export const Viewer = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
-  const hasInitializedRef = useRef(false);
+  const navigate = useNavigate();
+  const { productSlug } = useParams<{ productSlug: string }>();
+  const selectedProductType = productSlugToType(productSlug);
 
   useEffect(() => {
-    if (hasInitializedRef.current) {
+    if (!selectedProductType) {
+      navigate(`/${defaultProductSlug}`, { replace: true });
       return;
     }
 
-    hasInitializedRef.current = true;
-    void initializeProductApis(productManager, productManager.productId);
-  }, [productManager]);
+    void initializeProductApis(productManager, selectedProductType);
+  }, [navigate, productManager, selectedProductType]);
 
   return (
     <div className="h-screen w-full bg-white pt-16 lg:pt-20">
