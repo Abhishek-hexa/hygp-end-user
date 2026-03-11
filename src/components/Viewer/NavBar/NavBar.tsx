@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { initializeProductApis } from '../../../api/initializeProductApis';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { ProductType } from '../../../state/product/types';
-import { CartIcon } from '../../icons/Icons';
+
+import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
+import { MobileNavMenu } from './MobileNavMenu';
 
 const shopItems: Array<{ label: string; productType: ProductType }> = [
   { label: 'Cat Collars', productType: 'CAT_COLLAR' },
@@ -34,9 +36,9 @@ export const NavBar = observer(() => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!shopsMenuRef.current) {
-        return;
+        setIsShopsOpen(false);
       }
-      if (!shopsMenuRef.current.contains(event.target as Node)) {
+      if (shopsMenuRef.current && !shopsMenuRef.current.contains(event.target as Node)) {
         setIsShopsOpen(false);
       }
     };
@@ -52,11 +54,21 @@ export const NavBar = observer(() => {
       <div className="mx-auto flex h-full w-full items-center justify-between px-5">
         <div className="flex items-center">
           <img
-            src="https://hereyougopup.com/cdn/shop/files/Logo_circle_Here_you_go_big.svg?v=1745832236&width=1070"
+            src="/logo/mobileNavbar.png"
             alt="Here You Go Pup Logo"
-            className="h-16 w-auto"
+            className="h-11 w-auto lg:hidden"
+          />
+          <img
+            src="/logo/desktopNavbar.png"
+            alt="Here You Go Pup Logo"
+            className="hidden h-16 w-auto lg:block"
           />
         </div>
+        <MobileNavMenu
+          shopItems={shopItems}
+          currentProductType={productManager.productId}
+          onShopSelect={handleShopSelect}
+        />
         <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
           <button type="button" className="uppercase">Size Guide</button>
           <div
@@ -65,10 +77,10 @@ export const NavBar = observer(() => {
           >
             <button
               type="button"
-              className="uppercase"
+              className="uppercase flex items-center gap-1"
               onClick={() => setIsShopsOpen((prev) => !prev)}
             >
-              Shops
+              Shops <ChevronDownIcon />
             </button>
             {isShopsOpen ? (
               <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
