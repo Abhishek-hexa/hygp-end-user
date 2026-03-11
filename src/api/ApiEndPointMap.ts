@@ -2,6 +2,7 @@ import { ProductType } from '../state/product/types';
 
 export type ProductApiEndpoints = {
   productVariants: string;
+  leashVariants?: string;
   buckles?: string;
   engravingFonts: string;
   collections: string;
@@ -10,6 +11,7 @@ export type ProductApiEndpoints = {
 export const apiEndPointMap: Record<ProductType, ProductApiEndpoints> = {
   DOG_COLLAR: {
     productVariants: '/product/variants/8969048817879',
+    leashVariants: '/product/dog-leases/8870433947863',
     buckles: '/buckle',
     engravingFonts: '/engraving-fonts',
     collections: '/shopify-collection/',

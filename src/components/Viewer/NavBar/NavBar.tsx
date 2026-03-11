@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { initializeProductApis } from '../../../api/initializeProductApis';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { ProductType } from '../../../state/product/types';
-
 import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
 import { MobileNavMenu } from './MobileNavMenu';
 

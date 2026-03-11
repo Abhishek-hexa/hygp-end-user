@@ -16,7 +16,7 @@ export type ProductSizeType =
   | 'MEDIUM_WIDE'
   | 'MEDIUM_NARROW';
 
-export type BuckleType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
+export type BuckleMaterialType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
 export type TextSize = 'SMALL' | 'MEDIUM' | 'LARGE';
 export type Features =
   | 'SIZE'
@@ -34,6 +34,7 @@ export type LeashLengthType = '3' | '4' | '5' | '6';
 
 export type ProductConfig = {
   features: Features[];
+  buckleMaterials?: BuckleMaterialType[];
 };
 
 export interface Collection {
@@ -55,7 +56,7 @@ export interface ColorDescription {
   material_type: {
     id: string;
     name: string;
-  }
+  };
   name: string;
   hex: string;
   preview: string;

@@ -38,12 +38,18 @@ export class SizeManager {
     this._selectedSize = this._availableSizes.keys().next().value || null;
   }
 
-  setLength(inLength: LeashLengthType) {
+  setLength(inLength: LeashLengthType | null) {
     this._selectedLength = inLength;
   }
 
   setAvailableLengths(inLengths: LeashLengthType[]) {
     this._availableLengths = inLengths;
+    if (
+      this._selectedLength &&
+      !this._availableLengths.includes(this._selectedLength)
+    ) {
+      this._selectedLength = null;
+    }
   }
 
   reset() {

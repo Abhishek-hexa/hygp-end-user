@@ -1,10 +1,11 @@
 import { makeAutoObservable } from 'mobx';
 
-import { BuckleType, ColorDescription } from '../types';
+import { BuckleMaterialType, ColorDescription, ProductType } from '../types';
+import { defaultProductId, productConfigs } from '../productConfig';
 
 export class BuckleManager {
-  private _type: BuckleType | null = null;
-  private _availableBuckles: BuckleType[] = [];
+  private _material: BuckleMaterialType | null = null;
+  private _productId: ProductType =  defaultProductId;
 
   private _selectedColor: number | null = null;
   private _metalColors: ColorDescription[] = [];
@@ -15,12 +16,29 @@ export class BuckleManager {
     makeAutoObservable(this);
   }
 
-  get type() {
-    return this._type;
+  private syncSelection() {
+    const availableMaterials = this.availableBuckleMaterials;
+    const hasCurrentMaterial =
+      this._material !== null && availableMaterials.includes(this._material);
+
+    if (!hasCurrentMaterial) {
+      this._material = availableMaterials[0] ?? null;
+    }
+
+    const colors = this.currentColors;
+    const hasSelectedColor = colors.some((color) => color.id === this._selectedColor);
+
+    if (!hasSelectedColor) {
+      this._selectedColor = colors[0]?.id ?? null;
+    }
   }
 
-  get availableBuckles() {
-    return this._availableBuckles;
+  get material() {
+    return this._material;
+  }
+
+  get availableBuckleMaterials() {
+    return productConfigs[this._productId].buckleMaterials ?? [];
   }
 
   get metalColors() {
@@ -36,41 +54,43 @@ export class BuckleManager {
   }
 
   get currentColors() {
-    if (this._type === 'METAL') {
-      return this._metalColors;
-    }
-    if (this._type === 'PLASTIC') {
+    if (this._material === 'PLASTIC') {
       return this._plasticColors;
     }
-    if (this._type === 'BREAKAWAY') {
-      return this._breakawayColors;
-    }
-
-    return [];
+    return this._metalColors;
   }
 
   get selectedColor() {
     return this._selectedColor;
   }
 
-  setType(inType: BuckleType) {
-    this._type = inType;
+  get productId() {
+    return this._productId;
   }
 
-  setAvailableBuckles(inAvailableBuckles: BuckleType[]) {
-    this._availableBuckles = inAvailableBuckles;
+  setMaterial(inMaterial: BuckleMaterialType) {
+    this._material = inMaterial;
+    this.syncSelection();
+  }
+
+  setProductId(inProductId: ProductType) {
+    this._productId = inProductId;
+    this.syncSelection();
   }
 
   setMetalColors(inMetalColors: ColorDescription[]) {
     this._metalColors = inMetalColors;
+    this.syncSelection();
   }
 
   setPlasticColors(inPlasticColors: ColorDescription[]) {
     this._plasticColors = inPlasticColors;
+    this.syncSelection();
   }
 
   setBreakawayColors(inBreakawayColors: ColorDescription[]) {
     this._breakawayColors = inBreakawayColors;
+    this.syncSelection();
   }
 
   setSelectedColor(inColor: number) {
@@ -78,8 +98,7 @@ export class BuckleManager {
   }
 
   reset() {
-    this._type = null;
-    this._availableBuckles = [];
+    this._material = null;
     this._selectedColor = null;
     this._metalColors = [];
     this._plasticColors = [];

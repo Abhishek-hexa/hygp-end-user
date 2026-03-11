@@ -1,30 +1,31 @@
 import axios from 'axios';
 
 import { ProductManager } from '../state/product/ProductManager';
-import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
+import { BuckleManager } from '../state/product/managers/BuckleManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
+import { TextureManager } from '../state/product/managers/TextureManager';
+import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import {
-  BuckleType,
   Collection,
   ColorDescription,
   FontDescription,
+  LeashLengthType,
   PatternType,
   ProductSizeType,
   ProductType,
   SizeDescription,
 } from '../state/product/types';
-import { TextureManager } from '../state/product/managers/TextureManager';
-import { BuckleManager } from '../state/product/managers/BuckleManager';
+import { apiEndPointMap } from './ApiEndPointMap';
 import {
   BucklesApiResponse,
   CollectionProductsApiResponse,
   EngravingFontsApiResponse,
+  LeashVariantsApiResponse,
   ProductVariantApiItem,
   ProductVariantsApiResponse,
   ShopifyCollectionApiItem,
   ShopifyCollectionsApiResponse,
 } from './types/api.types';
-import { apiEndPointMap } from './ApiEndPointMap';
 
 const fetchJson = async <T>(
   baseUrl: string,
@@ -41,7 +42,9 @@ export const initializeProductApis = async (
   productManager: ProductManager,
   productType: ProductType = 'DOG_COLLAR',
 ) => {
-  console.log(`[product-init] Starting API initialization for product type: ${productType}`);
+  console.log(
+    `[product-init] Starting API initialization for product type: ${productType}`,
+  );
   productManager.setProduct(productType);
 
   const endPoints = apiEndPointMap[productType];
@@ -52,31 +55,40 @@ export const initializeProductApis = async (
   );
 
   try {
-    const [variants, buckles, engravingFonts, collections] = await Promise.all([
-      fetchJson<ProductVariantsApiResponse>(
-        baseUrl,
-        endPoints.productVariants,
-        'product variants',
-      ),
+    const [variants, buckles, engravingFonts, collections, leashes] =
+      await Promise.all([
+        fetchJson<ProductVariantsApiResponse>(
+          baseUrl,
+          endPoints.productVariants,
+          'product variants',
+        ),
 
-      fetchJson<BucklesApiResponse>(
-        baseUrl,
-        endPoints.buckles ?? '/buckle',
-        'buckles',
-      ),
+        fetchJson<BucklesApiResponse>(
+          baseUrl,
+          endPoints.buckles ?? '/buckle',
+          'buckles',
+        ),
 
-      fetchJson<EngravingFontsApiResponse>(
-        baseUrl,
-        endPoints.engravingFonts,
-        'engraving fonts',
-      ),
+        fetchJson<EngravingFontsApiResponse>(
+          baseUrl,
+          endPoints.engravingFonts,
+          'engraving fonts',
+        ),
 
-      fetchJson<ShopifyCollectionsApiResponse>(
-        baseUrl,
-        endPoints.collections,
-        'collections',
-      ),
-    ]);
+        fetchJson<ShopifyCollectionsApiResponse>(
+          baseUrl,
+          endPoints.collections,
+          'collections',
+        ),
+
+        productType === 'DOG_COLLAR' && endPoints.leashVariants
+          ? fetchJson<LeashVariantsApiResponse>(
+              baseUrl,
+              endPoints.leashVariants,
+              'leash variants',
+            )
+          : Promise.resolve<LeashVariantsApiResponse | null>(null),
+      ]);
 
     // Fetch patterns for the first collection by default.
     const firstCollectionId = collections?.custom_collections?.[0]?.id;
@@ -103,6 +115,10 @@ export const initializeProductApis = async (
 
     if (firstCollectionProducts) {
       parsePatterns(firstCollectionProducts, productManager.textureManager);
+    }
+
+    if (productType === 'DOG_COLLAR' && leashes) {
+      parseLeashVariants(leashes, productManager.sizeManager);
     }
 
     console.log('[product-init] API initialization completed successfully');
@@ -213,7 +229,6 @@ const parseBuckles = (
   buckleManager: BuckleManager,
 ) => {
   const buckles = bucklesResponse.data;
-  const buckleTypes: BuckleType[] = [];
   const metalColors: ColorDescription[] = [];
   const plasticColors: ColorDescription[] = [];
   const breakawayColors: ColorDescription[] = [];
@@ -224,16 +239,15 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'METAL' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'METAL' },
         hex: buckle.metal_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('METAL')) {
-        buckleTypes.push('METAL');
-      }
       metalColors.push(parsedMetalColor);
     }
 
@@ -242,16 +256,15 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'PLASTIC' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'PLASTIC' },
         hex: buckle.plastic_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('PLASTIC')) {
-        buckleTypes.push('PLASTIC');
-      }
       plasticColors.push(parsedPlasticColor);
     }
 
@@ -260,32 +273,21 @@ const parseBuckles = (
         id: buckle.id,
         material_id: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type ? ({
-          id: buckle.material_type.id,
-          name: buckle.material_type.name,
-        }) : {  id: 0, name: 'BREAKAWAY' },
+        material_type: buckle.material_type
+          ? {
+              id: buckle.material_type.id,
+              name: buckle.material_type.name,
+            }
+          : { id: 0, name: 'BREAKAWAY' },
         hex: buckle.breakaway_color,
         preview: buckle.preview,
       };
-      if (!buckleTypes.includes('BREAKAWAY')) {
-        buckleTypes.push('BREAKAWAY');
-      }
       breakawayColors.push(parsedBreakawayColor);
     }
   });
-  buckleManager.setAvailableBuckles(buckleTypes);
   buckleManager.setMetalColors(metalColors);
   buckleManager.setPlasticColors(plasticColors);
   buckleManager.setBreakawayColors(breakawayColors);
-
-  const defaultType = buckleTypes[0];
-  if (defaultType) {
-    buckleManager.setType(defaultType);
-    const defaultColor = buckleManager.currentColors[0]?.id;
-    if (defaultColor) {
-      buckleManager.setSelectedColor(defaultColor);
-    }
-  }
 };
 
 const parsePatterns = (
@@ -308,4 +310,45 @@ const parsePatterns = (
   const parsedCollectionId = parseInt(collectionId);
   textureManager.setSelectedCollection(parsedCollectionId);
   textureManager.setAvailablePatterns(parsedCollectionId, patterns);
+  textureManager.setSelectedPattern(patterns[0]?.id ?? null);
+};
+
+const parseLeashVariants = (
+  leashVariantsResponse: LeashVariantsApiResponse,
+  sizeManager: ProductManager['sizeManager'],
+) => {
+  const availableLengths: LeashLengthType[] = [];
+  const seen = new Set<LeashLengthType>();
+
+  leashVariantsResponse.data.forEach((variant) => {
+    variant.length?.forEach((lengthLabel) => {
+      const parsedLength = parseLeashLengthLabel(lengthLabel);
+      if (!parsedLength || seen.has(parsedLength)) {
+        return;
+      }
+
+      seen.add(parsedLength);
+      availableLengths.push(parsedLength);
+    });
+  });
+
+  const orderedLengths = (['3', '4', '5', '6'] as LeashLengthType[]).filter(
+    (length) => seen.has(length),
+  );
+  sizeManager.setAvailableLengths(orderedLengths);
+};
+
+const parseLeashLengthLabel = (
+  lengthLabel: string,
+): LeashLengthType | null => {
+  const parsed = String(lengthLabel).match(/[3-6]/)?.[0];
+  if (
+    parsed === '3' ||
+    parsed === '4' ||
+    parsed === '5' ||
+    parsed === '6'
+  ) {
+    return parsed;
+  }
+  return null;
 };

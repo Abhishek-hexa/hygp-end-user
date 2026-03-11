@@ -1,10 +1,10 @@
-import { ConfigFeature } from '../../../state/design/DesignManager';
+import { Features } from '../../../state/product/types';
 import { featureLabelMap } from './featureLabelMap';
 
 type FeatureTabButtonProps = {
-  activeFeature: ConfigFeature | null;
-  feature: ConfigFeature;
-  onClick: (feature: ConfigFeature) => void;
+  activeFeature: Features | null;
+  feature: Features;
+  onClick: (feature: Features) => void;
 };
 
 export const FeatureTabButton = ({
