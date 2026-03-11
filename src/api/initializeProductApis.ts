@@ -6,7 +6,6 @@ import { EngravingManager } from '../state/product/managers/EngravingManager';
 import { TextureManager } from '../state/product/managers/TextureManager';
 import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import {
-  BuckleMaterialType,
   Collection,
   ColorDescription,
   FontDescription,
@@ -298,4 +297,5 @@ const parsePatterns = (
   const parsedCollectionId = parseInt(collectionId);
   textureManager.setSelectedCollection(parsedCollectionId);
   textureManager.setAvailablePatterns(parsedCollectionId, patterns);
+  textureManager.setSelectedPattern(patterns[0]?.id ?? null);
 };

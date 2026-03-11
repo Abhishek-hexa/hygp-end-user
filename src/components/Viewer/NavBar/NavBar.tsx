@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { initializeProductApis } from '../../../api/initializeProductApis';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { ProductType } from '../../../state/product/types';
-import { CartIcon } from '../../icons/Icons';
+import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
 
 const shopItems: Array<{ label: string; productType: ProductType }> = [
   { label: 'Cat Collars', productType: 'CAT_COLLAR' },
@@ -65,10 +65,11 @@ export const NavBar = observer(() => {
           >
             <button
               type="button"
-              className="uppercase"
+              className="uppercase flex items-center gap-1"
               onClick={() => setIsShopsOpen((prev) => !prev)}
             >
-              Shops
+              Shops 
+              <ChevronDownIcon />
             </button>
             {isShopsOpen ? (
               <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">

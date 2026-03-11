@@ -18,15 +18,19 @@ export const BuckleTab = observer(() => {
           Buckle Customization
         </h3>
         <p className="text-sm text-gray-500">
-          Select material and finish for hardware.
+          Select {availableBuckleMaterials.length > 0 && 'material and'} finish for hardware.
         </p>
       </section>
 
-      <BuckleMaterialSelector
-        availableBuckleMaterials={availableBuckleMaterials}
-        selectedMaterial={selectedMaterial}
-        onSelectMaterial={(type) => buckleManager.setMaterial(type)}
-      />
+      {availableBuckleMaterials.length > 0 && 
+        <BuckleMaterialSelector
+          availableBuckleMaterials={availableBuckleMaterials}
+          selectedMaterial={selectedMaterial}
+          onSelectMaterial={(type) => buckleManager.setMaterial(type)}
+        />
+      }
+
+      
 
       <div className="border-t border-gray-200" />
 
