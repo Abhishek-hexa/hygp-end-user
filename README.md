@@ -122,7 +122,7 @@ Renderer source: `src/components/Viewer/ConfigurationPanel/FeatureContentRendere
 - `SIZE` -> `SizeTab`
 - `DESIGN` -> `DesignTab`
 - `BUCKLE` -> `BuckleTab`
-- `HARDWARE` -> `HardwareTab` (currently reuses `BuckleTab`)
+- `HARDWARE` -> `BuckleTab`
 - `ENGRAVING` -> `EngravingTab`
 - `COLLAR_TEXT` -> `WebbingTextTab target="collar"`
 - `LEASH_TEXT` -> `WebbingTextTab target="leash"`
