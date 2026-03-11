@@ -111,37 +111,37 @@ export const AIcon = ({ className }: { className?: string }) => (
     <path
       d="M4 20H7"
       stroke="#85A59D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M14 20H21"
       stroke="#85A59D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M6.89844 15H13.7984"
       stroke="#85A59D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M10.2031 6.30078L16.0031 20.0008"
       stroke="#85A59D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M5 20L11 4H13L20 20"
       stroke="#85A59D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -175,44 +175,44 @@ export const TextIcon = ({ className }: { className?: string }) => (
     <path
       d="M4 8V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M4 16V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H8"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V8"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M16 20H18C18.5304 20 19.0391 19.7893 19.4142 19.4142C19.7893 19.0391 20 18.5304 20 18V16"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M12 16V9"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M9 9H15"
       stroke="#84A49D"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -228,9 +228,10 @@ export const CartIcon = ({ className, stroke ='#333333' }: { className?: string,
     <path
       d="M6 17.001C6.53043 17.001 7.03914 17.2117 7.41421 17.5868C7.78929 17.9618 8 18.4705 8 19.001C8 19.5314 7.78929 20.0401 7.41421 20.4152C7.03914 20.7903 6.53043 21.001 6 21.001C5.46957 21.001 4.96086 20.7903 4.58579 20.4152C4.21071 20.0401 4 19.5314 4 19.001C4 18.4705 4.21071 17.9618 4.58579 17.5868C4.96086 17.2117 5.46957 17.001 6 17.001ZM6 17.001H17M6 17.001V3.00098H4M17 17.001C17.5304 17.001 18.0391 17.2117 18.4142 17.5868C18.7893 17.9618 19 18.4705 19 19.001C19 19.5314 18.7893 20.0401 18.4142 20.4152C18.0391 20.7903 17.5304 21.001 17 21.001C16.4696 21.001 15.9609 20.7903 15.5858 20.4152C15.2107 20.0401 15 19.5314 15 19.001C15 18.4705 15.2107 17.9618 15.5858 17.5868C15.9609 17.2117 16.4696 17.001 17 17.001ZM6 5.00098L20 6.00098L19 13.001H6"
       stroke={stroke}
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
+
