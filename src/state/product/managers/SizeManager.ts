@@ -8,6 +8,7 @@ export class SizeManager {
 
   private _selectedLength: LeashLengthType | null = null;
   private _availableLengths: LeashLengthType[] = [];
+  private _lengthPrices: Map<LeashLengthType, string> = new Map();
 
   constructor() {
     makeAutoObservable(this);
@@ -27,6 +28,10 @@ export class SizeManager {
 
   get availableLengths() {
     return this._availableLengths;
+  }
+
+  get lengthPrices() {
+    return this._lengthPrices;
   }
 
   setSize(inSize: ProductSizeType) {
@@ -52,10 +57,15 @@ export class SizeManager {
     }
   }
 
+  setLengthPrices(inLengthPrices: Map<LeashLengthType, string>) {
+    this._lengthPrices = inLengthPrices;
+  }
+
   reset() {
     this._selectedSize = null;
     this._selectedLength = null;
     this._availableSizes.clear();
     this._availableLengths = [];
+    this._lengthPrices.clear();
   }
 }

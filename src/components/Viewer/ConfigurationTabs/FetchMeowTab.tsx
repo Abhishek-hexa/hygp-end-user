@@ -14,24 +14,71 @@ const leashLabelMap: Record<LeashLengthType, string> = {
   '6': '6 Foot',
 };
 
+const sizeLabelMap: Record<string, string> = {
+  EXTRA_SMALL: 'Extra Small',
+  LARGE: 'Large',
+  MEDIUM: 'Medium',
+  MEDIUM_NARROW: 'Medium Narrow',
+  MEDIUM_WIDE: 'Medium Wide',
+  SMALL: 'Small',
+  XLARGE: 'XLarge',
+  XXLARGE: 'XXLarge',
+};
+
+const productSummaryLabelMap: Record<string, string> = {
+  BANDANA: 'CUSTOM BANDANA',
+  CAT_COLLAR: 'CUSTOM COLLAR',
+  DOG_COLLAR: 'CUSTOM COLLAR',
+  HARNESS: 'CUSTOM HARNESS',
+  LEASH: 'CUSTOM LEASH',
+  MARTINGALE: 'CUSTOM MARTINGALE COLLAR',
+};
+
+const parsePrice = (value: string | null | undefined): number => {
+  const parsed = Number.parseFloat(String(value ?? '').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
+
 export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
   const { sizeManager } = productManager;
   const heading = feature === 'MEOW' ? 'Ready to Meow!' : 'Ready to Fetch!';
   const isDogCollar = productManager.productId === 'DOG_COLLAR';
+
+  const selectedSize = sizeManager.selectedSize;
+  const selectedSizeDescription = selectedSize
+    ? sizeManager.availableSizes.get(selectedSize)
+    : null;
+  const selectedSizePriceNumber = parsePrice(selectedSizeDescription?.price);
+  const selectedSizePriceLabel = formatPrice(selectedSizePriceNumber);
+
   const leashLengths = sizeManager.availableLengths;
   const selectedLeashLength = sizeManager.selectedLength;
+  const selectedLeashPriceNumber = selectedLeashLength
+    ? parsePrice(sizeManager.lengthPrices.get(selectedLeashLength))
+    : 0;
+  const totalPriceNumber = isDogCollar
+    ? selectedSizePriceNumber + selectedLeashPriceNumber
+    : selectedSizePriceNumber;
+
   const selectedLeashLabel = selectedLeashLength
     ? `${leashLabelMap[selectedLeashLength] ?? `${selectedLeashLength} Foot`} LEASH`
     : 'NO LEASH';
 
   const leashOptions = [
-    { id: 'none', name: 'No Leash', price: '$00.00', selected: sizeManager.selectedLength === null },
+    {
+      id: 'none',
+      name: 'No Leash',
+      price: '$0.00',
+      selected: sizeManager.selectedLength === null,
+    },
     ...leashLengths.map((length) => ({
       id: length,
       name: leashLabelMap[length] ?? `${length} Foot`,
-      price: '$35.00',
+      price: formatPrice(parsePrice(sizeManager.lengthPrices.get(length))),
       selected: sizeManager.selectedLength === length,
     })),
   ];
@@ -76,13 +123,15 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
       <section className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-5">
         <div className="space-y-2 text-xs font-semibold text-primary">
           <div className="flex items-center justify-between">
-            <span>CUSTOM COLLAR (EXTRA SMALL)</span>
-            <span>$19.45</span>
+            <span>
+              {`${productSummaryLabelMap[productManager.productId] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
+            </span>
+            <span>{selectedSizePriceLabel}</span>
           </div>
           {isDogCollar && (
             <div className="flex items-center justify-between">
               <span>{selectedLeashLabel}</span>
-              <span>{selectedLeashLength ? '$35.00' : '$00.00'}</span>
+              <span>{selectedLeashLength ? formatPrice(selectedLeashPriceNumber) : '$0.00'}</span>
             </div>
           )}
         </div>
@@ -91,7 +140,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
 
         <div className="flex items-center justify-between text-lg font-semibold text-gray-700">
           <span>TOTAL AMOUNT</span>
-          <span>$44.45</span>
+          <span>{formatPrice(totalPriceNumber)}</span>
         </div>
 
         <p className="mt-3 text-center text-sm text-primary/80">

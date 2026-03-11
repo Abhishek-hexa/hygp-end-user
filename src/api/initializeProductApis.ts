@@ -319,6 +319,7 @@ const parseLeashVariants = (
 ) => {
   const availableLengths: LeashLengthType[] = [];
   const seen = new Set<LeashLengthType>();
+  const lengthPrices: Map<LeashLengthType, string> = new Map();
 
   leashVariantsResponse.data.forEach((variant) => {
     variant.length?.forEach((lengthLabel) => {
@@ -329,6 +330,7 @@ const parseLeashVariants = (
 
       seen.add(parsedLength);
       availableLengths.push(parsedLength);
+      lengthPrices.set(parsedLength, variant.price);
     });
   });
 
@@ -336,6 +338,14 @@ const parseLeashVariants = (
     (length) => seen.has(length),
   );
   sizeManager.setAvailableLengths(orderedLengths);
+  const orderedLengthPrices = new Map<LeashLengthType, string>();
+  orderedLengths.forEach((length) => {
+    const price = lengthPrices.get(length);
+    if (price) {
+      orderedLengthPrices.set(length, price);
+    }
+  });
+  sizeManager.setLengthPrices(orderedLengthPrices);
 };
 
 const parseLeashLengthLabel = (
