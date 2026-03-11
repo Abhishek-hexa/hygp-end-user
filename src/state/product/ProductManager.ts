@@ -6,10 +6,11 @@ import { SizeManager } from './managers/SizeManager';
 import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
-import { ProductType } from './types';
+import { Features, ProductType } from './types';
 
 export class ProductManager {
   private _productId: ProductType = defaultProductId;
+  private _activeFeature: Features | null = null;
   private _sizeManager = new SizeManager();
   private _buckleManager = new BuckleManager();
   private _engravingManager = new EngravingManager();
@@ -18,6 +19,7 @@ export class ProductManager {
 
   constructor() {
     makeAutoObservable(this);
+    this._activeFeature = this.getAllFeatures()[0] ?? null;
   }
 
   get productId() {
@@ -48,6 +50,10 @@ export class ProductManager {
     return productConfigs[this._productId];
   }
 
+  get activeFeature() {
+    return this._activeFeature;
+  }
+
   getModelPath() {
     const selectedSize = this._sizeManager.selectedSize;
     if (!selectedSize) {
@@ -59,12 +65,17 @@ export class ProductManager {
 
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
+    this._activeFeature = this.getAllFeatures()[0] ?? null;
     this.reset();
     this._buckleManager.setProductId(inProductId);
   }
 
   getAllFeatures() {
     return this.productConfig.features;
+  }
+
+  setActiveFeature(feature: Features | null) {
+    this._activeFeature = feature;
   }
 
   reset() {
