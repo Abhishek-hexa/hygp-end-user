@@ -50,7 +50,7 @@ export const MobileNavMenu = ({
     <div ref={mobileMenuRef} className="relative lg:hidden">
       <button
         type="button"
-        className="font-ranchers inline-flex items-center gap-3 rounded-full bg-[#fbf2e8] px-5 py-2 text-xl uppercase leading-none tracking-wider text-primaryOrange"
+        className="font-ranchers inline-flex items-center gap-2 rounded-full bg-[#fbf2e8] px-4 py-1.5 text-lg uppercase leading-none tracking-wider text-primaryOrange lg:gap-3 lg:px-5 lg:py-2 lg:text-xl"
         aria-label="Toggle menu"
         aria-expanded={isMobileMenuOpen}
         onClick={() => {
@@ -61,20 +61,20 @@ export const MobileNavMenu = ({
         }}
       >
         <span>Menu</span>
-        <span className="relative block h-4 w-5">
+        <span className="relative block h-3.5 w-5">
           <span
             className={`absolute left-0 top-0 h-0.5 w-5 bg-primaryOrange transition-transform duration-200 ${
-              isMobileMenuOpen ? 'translate-y-[7px] rotate-45' : ''
+              isMobileMenuOpen ? 'translate-y-[6px] rotate-45' : ''
             }`}
           />
           <span
-            className={`absolute left-0 top-[7px] h-0.5 w-5 bg-primaryOrange transition-opacity duration-200 ${
+            className={`absolute left-0 top-[6px] h-0.5 w-5 bg-primaryOrange transition-opacity duration-200 ${
               isMobileMenuOpen ? 'opacity-0' : 'opacity-100'
             }`}
           />
           <span
-            className={`absolute left-0 top-[14px] h-0.5 w-5 bg-primaryOrange transition-transform duration-200 ${
-              isMobileMenuOpen ? '-translate-y-[7px] -rotate-45' : ''
+            className={`absolute left-0 top-[12px] h-0.5 w-5 bg-primaryOrange transition-transform duration-200 ${
+              isMobileMenuOpen ? '-translate-y-[6px] -rotate-45' : ''
             }`}
           />
         </span>

@@ -13,8 +13,8 @@ export const CollectionSidebar = ({
   selectedCollectionIds,
 }: CollectionSidebarProps) => {
   return (
-    <div className="md:w-[30%] md:max-w-[150px] md:min-w-[130px] md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200 md:pr-2">
-      <div className="flex gap-2 overflow-x-auto md:block md:space-y-1 md:overflow-visible">
+    <div className="md:w-[30%] md:max-w-[150px] md:min-w-[130px] md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200">
+      <div className="feature-tabs-scroll flex overflow-x-auto md:block md:space-y-1 md:overflow-visible">
         {collections.map((collection) => {
           const isSelected = selectedCollectionIds.includes(collection.id);
 
@@ -22,20 +22,20 @@ export const CollectionSidebar = ({
             <button
               key={collection.id}
               type="button"
-              className={`group relative w-[90px] shrink-0 border-b bg-white p-2 text-left text-xs transition-all md:w-full ${
+              className={`border border-gray-200 group relative w-[78px] shrink-0 border-b bg-white p-1.5 text-left text-[11px] transition-all md:w-full md:border-b-0 md:p-2 md:text-xs ${
                 isSelected
-                  ? 'rounded-l-md border-l-2 border-l-primary text-primary'
+                  ? 'border-b-2 border-b-primary text-primary md:rounded-l-md md:border-l-2 md:border-l-primary'
                   : 'text-gray-600 hover:border-primary hover:bg-primary/10'
               }`}
               onClick={() => onToggleCollection(collection.id)}>
-              <div className="mb-2 flex items-center justify-center overflow-hidden">
+              <div className="mb-1.5 flex items-center justify-center overflow-hidden md:mb-2">
                 <img
                   src={collection.image}
                   alt={collection.title}
-                  className="h-8 w-8 rounded-md object-cover"
+                  className="h-7 w-7 rounded-md object-cover md:h-8 md:w-8"
                 />
               </div>
-              <span className="block truncate text-center text-md font-medium">
+              <span className="block truncate text-center text-xs font-medium md:text-md">
                 {collection.title}
               </span>
               {isSelected ? (

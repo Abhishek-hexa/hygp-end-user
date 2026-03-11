@@ -16,6 +16,7 @@ export const DesignTab = observer(() => {
   const selectedCollections = textureManager.selectedCollections;
   const patterns = textureManager.availablePatterns ?? [];
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const { clearError, error, loading } = usePatternLoader(
     selectedCollectionIds,
     textureManager,
@@ -33,7 +34,7 @@ export const DesignTab = observer(() => {
   }, [patterns, searchQuery]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 md:flex-row">
+    <div className="flex h-full min-h-0 flex-col gap-2 md:flex-row md:gap-3">
       <CollectionSidebar
         collections={collections}
         selectedCollectionIds={selectedCollectionIds}
@@ -43,12 +44,12 @@ export const DesignTab = observer(() => {
         }}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1 py-2">
-        <div className="mb-3">
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto py-1 pr-1 md:py-2">
+        <div className="mb-2 md:mb-3">
           <label htmlFor="pattern-search" className="sr-only">
             Search pattern
           </label>
-          <div className="relative">
+          <div className={`${isMobileSearchOpen ? 'relative block' : 'hidden'} md:block`}>
             <input
               id="pattern-search"
               type="text"
@@ -81,6 +82,14 @@ export const DesignTab = observer(() => {
             onSelectPattern={(patternId) => textureManager.setSelectedPattern(patternId)}
           />
         ) : null}
+        <button
+          type="button"
+          onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+          className="absolute bottom-3 right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-[#f2f5f4] text-primary shadow-sm md:hidden"
+          aria-label="Toggle search"
+        >
+          <SearchIcon className="h-5 w-5" />
+        </button>
       </div>
     </div>
   );

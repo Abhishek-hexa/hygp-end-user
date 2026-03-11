@@ -31,10 +31,10 @@ export const BuckleTab = observer(() => {
   };
 
   return (
-    <div className="space-y-6 text-gray-700 p-4">
+    <div className="space-y-4 p-3 text-gray-700 lg:space-y-6 lg:p-4">
       <section className="space-y-1">
-        <h3 className="text-xl font-semibold text-gray-900">Buckle Customization</h3>
-        <p className="text-sm text-gray-500">Select material and finish for hardware.</p>
+        <h3 className="text-lg font-semibold text-gray-900 lg:text-xl">Buckle Customization</h3>
+        <p className="text-xs text-gray-500 lg:text-sm">Select material and finish for hardware.</p>
       </section>
 
       <BuckleMaterialSelector

@@ -50,13 +50,13 @@ export const NavBar = observer(() => {
   }, []);
 
   return (
-    <header className="fixed left-0 top-0 z-50 h-20 w-full bg-primary">
-      <div className="mx-auto flex h-full w-full items-center justify-between px-5">
+    <header className="fixed left-0 top-0 z-50 h-16 w-full bg-primary lg:h-20">
+      <div className="mx-auto flex h-full w-full items-center justify-between px-3 lg:px-5">
         <div className="flex items-center">
           <img
             src="/logo/mobileNavbar.png"
             alt="Here You Go Pup Logo"
-            className="h-11 w-auto lg:hidden"
+            className="h-8 w-auto lg:hidden"
           />
           <img
             src="/logo/desktopNavbar.png"
