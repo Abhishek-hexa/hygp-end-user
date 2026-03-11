@@ -2,7 +2,6 @@ import { ConfigFeature } from '../../../state/design/DesignManager';
 import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
 import { EngravingTab } from '../ConfigurationTabs/EngravingTab';
-import { HardwareTab } from '../ConfigurationTabs/HardwareTab';
 import { SizeTab } from '../ConfigurationTabs/SizeTab';
 import { WebbingTextTab } from '../ConfigurationTabs/WebbingTextTab';
 import { featureLabelMap } from './featureLabelMap';
@@ -40,7 +39,7 @@ export const FeatureContentRenderer = ({
     return <BuckleTab />;
   }
   if (activeFeature === 'HARDWARE') {
-    return <HardwareTab />;
+    return <BuckleTab />;
   }
 
   return (

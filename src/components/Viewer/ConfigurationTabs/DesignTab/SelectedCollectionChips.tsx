@@ -11,7 +11,7 @@ export const SelectedCollectionChips = ({
   selectedCollections,
 }: SelectedCollectionChipsProps) => {
   return (
-    <div className="mt-2 flex flex-wrap gap-2">
+    <div className="mt-2 hidden flex-wrap gap-2 md:flex">
       {selectedCollections.map((collection) => (
         <button
           key={`chip-${collection.id}`}

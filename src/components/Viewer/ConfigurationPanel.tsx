@@ -42,7 +42,7 @@ export const ConfigurationPanel = observer(
         <div className="min-h-0 flex-1 overflow-y-auto">
           <FeatureContentRenderer activeFeature={activeFeature} />
         </div>
-        <div className="border-t border-gray-200 bg-white px-4 py-3">
+        <div className="hidden border-t border-gray-200 bg-white px-3 py-1 lg:block lg:px-4 lg:py-3">
           <button
             type="button"
             className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primaryOrange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95"

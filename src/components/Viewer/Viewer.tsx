@@ -22,13 +22,13 @@ export const Viewer = observer(() => {
   }, [productManager]);
 
   return (
-    <div className="h-screen w-full bg-white pt-20">
+    <div className="h-screen w-full bg-white pt-16 lg:pt-20">
       <NavBar />
-      <div className="grid h-full w-full grid-cols-10">
-        <div className="col-span-7 min-h-0">
+      <div className="grid h-full w-full grid-cols-10 max-lg:grid-cols-1 max-lg:grid-rows-[minmax(0,1.18fr)_minmax(0,1fr)]">
+        <div className="col-span-7 min-h-0 max-lg:col-span-1">
           <CanvasPanel />
         </div>
-        <div className="col-span-3 min-h-0">
+        <div className="col-span-3 min-h-0 max-lg:col-span-1">
           <ConfigurationPanel />
         </div>
       </div>

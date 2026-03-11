@@ -30,11 +30,11 @@ export const FeatureTabsHeader = ({
   };
 
   return (
-    <div className="flex h-[80px] items-center gap-3 border-b border-gray-300 bg-white px-6">
+    <div className="flex p-2 items-center gap-2 border-b border-gray-300 bg-white px-3 lg:gap-3 lg:px-6">
       <button
         type="button"
         onClick={scrollLeft}
-        className="text-primaryOrange/50 transition-colors hover:text-primaryOrange">
+        className="hidden text-primaryOrange/50 transition-colors hover:text-primaryOrange lg:block">
         <LeftArrowIcon />
       </button>
       <div
@@ -53,7 +53,7 @@ export const FeatureTabsHeader = ({
       <button
         type="button"
         onClick={scrollRight}
-        className="text-primaryOrange/50 transition-colors hover:text-primaryOrange">
+        className="hidden text-primaryOrange/50 transition-colors hover:text-primaryOrange lg:block">
         <RightArrowIcon />
       </button>
     </div>
