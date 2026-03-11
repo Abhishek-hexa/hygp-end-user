@@ -23,7 +23,7 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
     <div className="space-y-4 p-3 text-gray-700 lg:space-y-5 lg:p-4">
       <section className="space-y-1">
         <h3 className="text-base font-semibold text-gray-900 lg:text-xl">{copy.title}</h3>
-        <p className="text-sm text-gray-500">{copy.description}</p>
+        <p className="text-xs text-gray-500">{copy.description}</p>
       </section>
 
       <section className="space-y-2">

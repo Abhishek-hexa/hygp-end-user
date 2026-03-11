@@ -5,9 +5,10 @@ export const featureLabelMap: Record<ConfigFeature, string> = {
   COLLAR_TEXT: 'COLLAR TEXT',
   DESIGN: 'SELECT DESIGN',
   ENGRAVING: 'ENGRAVING',
+  FETCH: 'FETCH',
   HARDWARE: 'HARDWARE',
   HARNESS_TEXT: 'HARNESS TEXT',
-  SIZE: 'SIZE',
   LEASH_TEXT: 'LEASH TEXT',
   MEOW: 'MEOW',
+  SIZE: 'SIZE',
 };

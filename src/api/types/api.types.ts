@@ -91,6 +91,21 @@ export interface ProductVariantsApiResponse {
   data: ProductVariantApiItem[] // For backward compatibility, to be removed in the future
 }
 
+//    Leash Variants API
+//    GET /leashes.varients
+
+export interface LeashVariantApiItem {
+  id: number
+  size: string
+  prefix: string
+  price: string
+  model: string
+  sizeImage?: string | null
+  length: string[]
+}
+
+export type LeashVariantsApiResponse = ApiResponse<LeashVariantApiItem[]>
+
 
 //    Shopify Collections API
 //    GET /shopify-collection

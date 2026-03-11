@@ -4,7 +4,7 @@ import { ProductManager } from '../product/ProductManager';
 import { Features } from '../product/types';
 import { StateManager } from '../StateManager';
 
-export type ConfigFeature = Exclude<Features, 'FETCH'>;
+export type ConfigFeature = Features;
 
 export class DesignManager {
   private _libState: StateManager;
@@ -23,9 +23,7 @@ export class DesignManager {
   }
 
   get availableFeatures() {
-    return this._productManager
-      .getAllFeatures()
-      .filter((feature): feature is ConfigFeature => feature !== 'FETCH');
+    return this._productManager.getAllFeatures();
   }
 
   get activeFeature() {

@@ -9,6 +9,7 @@ import {
   Collection,
   ColorDescription,
   FontDescription,
+  LeashLengthType,
   PatternType,
   ProductSizeType,
   ProductType,
@@ -19,6 +20,7 @@ import {
   BucklesApiResponse,
   CollectionProductsApiResponse,
   EngravingFontsApiResponse,
+  LeashVariantsApiResponse,
   ProductVariantApiItem,
   ProductVariantsApiResponse,
   ShopifyCollectionApiItem,
@@ -53,31 +55,40 @@ export const initializeProductApis = async (
   );
 
   try {
-    const [variants, buckles, engravingFonts, collections] = await Promise.all([
-      fetchJson<ProductVariantsApiResponse>(
-        baseUrl,
-        endPoints.productVariants,
-        'product variants',
-      ),
+    const [variants, buckles, engravingFonts, collections, leashes] =
+      await Promise.all([
+        fetchJson<ProductVariantsApiResponse>(
+          baseUrl,
+          endPoints.productVariants,
+          'product variants',
+        ),
 
-      fetchJson<BucklesApiResponse>(
-        baseUrl,
-        endPoints.buckles ?? '/buckle',
-        'buckles',
-      ),
+        fetchJson<BucklesApiResponse>(
+          baseUrl,
+          endPoints.buckles ?? '/buckle',
+          'buckles',
+        ),
 
-      fetchJson<EngravingFontsApiResponse>(
-        baseUrl,
-        endPoints.engravingFonts,
-        'engraving fonts',
-      ),
+        fetchJson<EngravingFontsApiResponse>(
+          baseUrl,
+          endPoints.engravingFonts,
+          'engraving fonts',
+        ),
 
-      fetchJson<ShopifyCollectionsApiResponse>(
-        baseUrl,
-        endPoints.collections,
-        'collections',
-      ),
-    ]);
+        fetchJson<ShopifyCollectionsApiResponse>(
+          baseUrl,
+          endPoints.collections,
+          'collections',
+        ),
+
+        productType === 'DOG_COLLAR' && endPoints.leashVariants
+          ? fetchJson<LeashVariantsApiResponse>(
+              baseUrl,
+              endPoints.leashVariants,
+              'leash variants',
+            )
+          : Promise.resolve<LeashVariantsApiResponse | null>(null),
+      ]);
 
     // Fetch patterns for the first collection by default.
     const firstCollectionId = collections?.custom_collections?.[0]?.id;
@@ -104,6 +115,10 @@ export const initializeProductApis = async (
 
     if (firstCollectionProducts) {
       parsePatterns(firstCollectionProducts, productManager.textureManager);
+    }
+
+    if (productType === 'DOG_COLLAR' && leashes) {
+      parseLeashVariants(leashes, productManager.sizeManager);
     }
 
     console.log('[product-init] API initialization completed successfully');
@@ -218,8 +233,6 @@ const parseBuckles = (
   const plasticColors: ColorDescription[] = [];
   const breakawayColors: ColorDescription[] = [];
 
-  console.log('[product-init] Parsing buckles', buckles);
-
   buckles.forEach((buckle: any) => {
     if (buckle.metal_color) {
       const parsedMetalColor = {
@@ -298,4 +311,44 @@ const parsePatterns = (
   textureManager.setSelectedCollection(parsedCollectionId);
   textureManager.setAvailablePatterns(parsedCollectionId, patterns);
   textureManager.setSelectedPattern(patterns[0]?.id ?? null);
+};
+
+const parseLeashVariants = (
+  leashVariantsResponse: LeashVariantsApiResponse,
+  sizeManager: ProductManager['sizeManager'],
+) => {
+  const availableLengths: LeashLengthType[] = [];
+  const seen = new Set<LeashLengthType>();
+
+  leashVariantsResponse.data.forEach((variant) => {
+    variant.length?.forEach((lengthLabel) => {
+      const parsedLength = parseLeashLengthLabel(lengthLabel);
+      if (!parsedLength || seen.has(parsedLength)) {
+        return;
+      }
+
+      seen.add(parsedLength);
+      availableLengths.push(parsedLength);
+    });
+  });
+
+  const orderedLengths = (['3', '4', '5', '6'] as LeashLengthType[]).filter(
+    (length) => seen.has(length),
+  );
+  sizeManager.setAvailableLengths(orderedLengths);
+};
+
+const parseLeashLengthLabel = (
+  lengthLabel: string,
+): LeashLengthType | null => {
+  const parsed = String(lengthLabel).match(/[3-6]/)?.[0];
+  if (
+    parsed === '3' ||
+    parsed === '4' ||
+    parsed === '5' ||
+    parsed === '6'
+  ) {
+    return parsed;
+  }
+  return null;
 };
