@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { SearchIcon } from '../../icons/Icons';
@@ -7,31 +7,39 @@ import { CollectionSidebar } from './DesignTab/CollectionSidebar';
 import { PatternGrid } from './DesignTab/PatternGrid';
 import { SelectedCollectionChips } from './DesignTab/SelectedCollectionChips';
 import { usePatternLoader } from './DesignTab/usePatternLoader';
+import { useSearchPatterns } from './DesignTab/useSearchPatterns';
 
 export const DesignTab = observer(() => {
   const { designManager } = useMainContext();
   const textureManager = designManager.productManager.textureManager;
+  const productType = 'DOG_COLLAR';
+
   const collections = Array.from(textureManager.availableCollections.values());
   const selectedCollectionIds = textureManager.selectedCollectionIds;
   const selectedCollections = textureManager.selectedCollections;
   const patterns = textureManager.availablePatterns ?? [];
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+
   const { clearError, error, loading } = usePatternLoader(
     selectedCollectionIds,
     textureManager,
   );
 
-  const filteredPatterns = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) {
-      return patterns;
-    }
+  const { loading: searchLoading, error: searchError } = useSearchPatterns(
+    searchQuery,
+    selectedCollectionIds,
+    textureManager,
+    productType,
+  );
 
-    return patterns.filter((pattern) =>
-      pattern.name.toLowerCase().includes(query),
-    );
-  }, [patterns, searchQuery]);
+  const displayedPatterns = searchQuery.trim()
+    ? (textureManager.searchPatterns ?? [])
+    : patterns;
+
+  const isLoading = loading || searchLoading;
+  const displayError = error || searchError;
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-2 md:flex-row md:gap-3">
@@ -49,7 +57,8 @@ export const DesignTab = observer(() => {
           <label htmlFor="pattern-search" className="sr-only">
             Search pattern
           </label>
-          <div className={`${isMobileSearchOpen ? 'relative block' : 'hidden'} md:block`}>
+          <div
+            className={`relative ${isMobileSearchOpen ? 'block' : 'hidden'} md:block`}>
             <input
               id="pattern-search"
               type="text"
@@ -58,7 +67,18 @@ export const DesignTab = observer(() => {
               placeholder="Search"
               className="w-full rounded-full border border-primary bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
             />
+
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Clear search">
+                ✕
+              </button>
+            )}
           </div>
           <SelectedCollectionChips
             selectedCollections={selectedCollections}
@@ -68,26 +88,36 @@ export const DesignTab = observer(() => {
           />
         </div>
 
-        {loading ? (
-          <p className="text-sm text-gray-500">Loading designs...</p>
+        {isLoading ? (
+          <p className="text-sm text-gray-500">
+            {searchLoading ? 'Searching...' : 'Loading designs...'}
+          </p>
         ) : null}
-        {error ? <p className="text-sm text-red-500">{error}</p> : null}
-        {!loading && !error && filteredPatterns.length === 0 ? (
-          <p className="text-sm text-gray-500">No designs found.</p>
+        {displayError ? (
+          <p className="text-sm text-red-500">{displayError}</p>
         ) : null}
-        {!loading && !error ? (
+        {!isLoading && !displayError && displayedPatterns.length === 0 ? (
+          <p className="text-sm text-gray-500">
+            {searchQuery
+              ? `No results for "${searchQuery}"`
+              : 'No designs found.'}
+          </p>
+        ) : null}
+        {!isLoading && !displayError ? (
           <PatternGrid
-            patterns={filteredPatterns}
+            patterns={displayedPatterns}
             selectedPatternId={textureManager.selectedPatternId}
-            onSelectPattern={(patternId) => textureManager.setSelectedPattern(patternId)}
+            onSelectPattern={(patternId) =>
+              textureManager.setSelectedPattern(patternId)
+            }
           />
         ) : null}
+
         <button
           type="button"
           onClick={() => setIsMobileSearchOpen((prev) => !prev)}
           className="absolute bottom-3 right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-[#f2f5f4] text-primary shadow-sm md:hidden"
-          aria-label="Toggle search"
-        >
+          aria-label="Toggle search">
           <SearchIcon className="h-5 w-5" />
         </button>
       </div>

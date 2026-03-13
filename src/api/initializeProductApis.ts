@@ -362,3 +362,44 @@ const parseLeashLengthLabel = (
   }
   return null;
 };
+export const searchPatterns = async (
+  textureManager: TextureManager,
+  productType: ProductType,
+  search: string,
+  collectionIds?: number[],
+): Promise<void> => {
+  const baseUrl = String(import.meta.env.VITE_API_BASE_URL ?? '').replace(
+    /\/$/,
+    '',
+  );
+  const endPoints = apiEndPointMap[productType];
+
+  const params = new URLSearchParams({ search });
+
+  if (collectionIds && collectionIds.length > 0) {
+    params.set('collectionId', collectionIds.join(',')); // ✅ "123,456"
+  }
+
+  const data = await fetchJson<CollectionProductsApiResponse>(
+    baseUrl,
+    `${endPoints.search}?${params.toString()}`,
+    'search patterns',
+  );
+
+  parseSearchPatterns(data, textureManager);
+};
+
+const parseSearchPatterns = (
+  response: CollectionProductsApiResponse,
+  textureManager: TextureManager,
+) => {
+  const patterns: PatternType[] = response.products.map((product) => ({
+    id: parseInt(product.id),
+    name: product.name,
+    dataX: product.dataX,
+    pngImage: product.png_image,
+    preview: product.preview,
+  }));
+
+  textureManager.setSearchPatterns(patterns); // ✅ separate from collection patterns
+};

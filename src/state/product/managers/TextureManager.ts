@@ -11,6 +11,8 @@ export class TextureManager {
   private _availablePatterns: Map<number, PatternType[]> = new Map();
   private _selectedPatternId: number | null = null;
 
+  private _searchPatterns: PatternType[] | null = null;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -24,7 +26,8 @@ export class TextureManager {
       return this._availableCollections.get(this._activeCollectionId) ?? null;
     }
     return (
-      this._availableCollections.get(this._selectedCollectionIds[0] ?? -1) ?? null
+      this._availableCollections.get(this._selectedCollectionIds[0] ?? -1) ??
+      null
     );
   }
 
@@ -39,7 +42,9 @@ export class TextureManager {
   get selectedCollections() {
     return this._selectedCollectionIds
       .map((id) => this._availableCollections.get(id))
-      .filter((collection): collection is Collection => collection !== undefined);
+      .filter(
+        (collection): collection is Collection => collection !== undefined,
+      );
   }
 
   get selectedPatternId() {
@@ -54,6 +59,10 @@ export class TextureManager {
       (collectionId) => this._availablePatterns.get(collectionId) ?? [],
     );
     return mergedPatterns;
+  }
+
+  get searchPatterns(): PatternType[] | null {
+    return this._searchPatterns; 
   }
 
   setSelectedCollection(id: number) {
@@ -132,5 +141,14 @@ export class TextureManager {
     this._selectedCollectionIds = [];
     this._activeCollectionId = null;
     this._selectedPatternId = null;
+    this._searchPatterns = null;
+  }
+
+  setSearchPatterns(patterns: PatternType[]) {
+    this._searchPatterns = patterns; 
+  }
+
+  clearSearchPatterns() {
+    this._searchPatterns = null; 
   }
 }
