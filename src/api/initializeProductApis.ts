@@ -5,6 +5,7 @@ import { BuckleManager } from '../state/product/managers/BuckleManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
 import { TextureManager } from '../state/product/managers/TextureManager';
 import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
+import { UiManager } from '../state/ui/UiManager';
 import {
   Collection,
   ColorDescription,
@@ -40,8 +41,11 @@ const fetchJson = async <T>(
 
 export const initializeProductApis = async (
   productManager: ProductManager,
+  uiManager: UiManager,
   productType: ProductType = 'DOG_COLLAR',
 ) => {
+  uiManager.setDataLoading(true);
+  uiManager.setDataError(null);
   console.log(
     `[product-init] Starting API initialization for product type: ${productType}`,
   );
@@ -123,8 +127,11 @@ export const initializeProductApis = async (
 
     console.log('[product-init] API initialization completed successfully');
   } catch (error) {
+    uiManager.setDataError('Could not load product data. Please try again.');
     // eslint-disable-next-line no-console
     console.error('[product-init] API initialization failed', error);
+  } finally {
+    uiManager.setDataLoading(false);
   }
 };
 
