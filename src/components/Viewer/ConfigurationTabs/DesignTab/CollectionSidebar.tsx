@@ -1,5 +1,6 @@
 import { Collection } from '../../../../state/product/types';
 import { SelectedItemIcon } from '../../../icons/Icons';
+import { LazyImage } from '../../../shared/LazyImage';
 
 type CollectionSidebarProps = {
   collections: Collection[];
@@ -29,7 +30,7 @@ export const CollectionSidebar = ({
               }`}
               onClick={() => onToggleCollection(collection.id)}>
               <div className="mb-1.5 flex items-center justify-center overflow-hidden md:mb-2">
-                <img
+                <LazyImage
                   src={collection.image}
                   alt={collection.title}
                   className="h-7 w-7 rounded-md object-cover md:h-8 md:w-8"
