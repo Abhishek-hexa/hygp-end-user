@@ -1,5 +1,6 @@
 import { PatternType } from '../../../../state/product/types';
 import { SelectedItemIcon } from '../../../icons/Icons';
+import { LazyImage } from '../../../shared/LazyImage';
 
 type PatternGridProps = {
   onSelectPattern: (id: number) => void;
@@ -29,7 +30,7 @@ export const PatternGrid = ({
                 ? 'border-primary ring-2 ring-primary/2'
                 : 'border-gray-200 hover:border-primary/2'
             }`}>
-            <img
+            <LazyImage
               src={pattern.preview}
               alt={pattern.name}
               className="aspect-square w-full object-cover"
