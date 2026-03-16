@@ -34,7 +34,7 @@ export const FeatureTabsHeader = ({
       <button
         type="button"
         onClick={scrollLeft}
-        className="hidden text-primaryOrange/50 transition-colors hover:text-primaryOrange lg:block">
+        className="hidden text-primary-orange/50 transition-colors hover:text-primary-orange lg:block">
         <LeftArrowIcon />
       </button>
       <div
@@ -53,7 +53,7 @@ export const FeatureTabsHeader = ({
       <button
         type="button"
         onClick={scrollRight}
-        className="hidden text-primaryOrange/50 transition-colors hover:text-primaryOrange lg:block">
+        className="hidden text-primary-orange/50 transition-colors hover:text-primary-orange lg:block">
         <RightArrowIcon />
       </button>
     </div>

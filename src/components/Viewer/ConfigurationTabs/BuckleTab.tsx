@@ -14,9 +14,13 @@ export const BuckleTab = observer(() => {
   return (
     <div className="space-y-3 p-3 text-gray-700 lg:space-y-6 lg:p-4">
       <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">Buckle Customization</h3>
+        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
+          Buckle Customization
+        </h3>
+
         <p className="text-xs text-gray-500 lg:text-sm">
-          Select {availableBuckleMaterials.length > 0 && 'material and'} finish for hardware.
+          Select {availableBuckleMaterials.length > 0 && 'material and'} finish
+          for hardware.
         </p>
       </section>
 

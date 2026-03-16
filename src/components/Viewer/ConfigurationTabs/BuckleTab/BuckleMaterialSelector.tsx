@@ -15,7 +15,9 @@ export const BuckleMaterialSelector = ({
 }: BuckleMaterialSelectorProps) => {
   return (
     <section className="space-y-2 lg:space-y-3">
-      <h4 className="text-sm font-semibold text-gray-400 lg:text-md">Buckle Material</h4>
+      <h4 className="text-sm font-semibold text-gray-400 lg:text-md">
+        Buckle Material
+      </h4>
       <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
         {availableBuckleMaterials.map((type) => (
           <button

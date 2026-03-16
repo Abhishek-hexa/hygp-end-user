@@ -13,7 +13,7 @@ export const CollectionSidebar = ({
   selectedCollectionIds,
 }: CollectionSidebarProps) => {
   return (
-    <div className="md:w-[30%] md:max-w-[150px] md:min-w-[130px] md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200">
+    <div className="md:w-[30%] max-w-37.5 md:min-w-32.5 md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200">
       <div className="feature-tabs-scroll flex overflow-x-auto md:block md:space-y-1 md:overflow-visible">
         {collections.map((collection) => {
           const isSelected = selectedCollectionIds.includes(collection.id);
@@ -22,7 +22,7 @@ export const CollectionSidebar = ({
             <button
               key={collection.id}
               type="button"
-              className={`border border-gray-200 group relative w-[78px] shrink-0 border-b bg-white p-1.5 text-left text-[11px] transition-all md:w-full md:border-b-0 md:p-2 md:text-xs ${
+              className={`border border-gray-200 group relative w-19.5 shrink-0 border-b bg-white p-1.5 text-left text-[11px] transition-all md:w-full md:border-b-0 md:p-2 md:text-xs ${
                 isSelected
                   ? 'border-b-2 border-b-primary text-primary md:rounded-l-md md:border-l-2 md:border-l-primary'
                   : 'text-gray-600 hover:border-primary hover:bg-primary/10'
@@ -35,7 +35,7 @@ export const CollectionSidebar = ({
                   className="h-7 w-7 rounded-md object-cover md:h-8 md:w-8"
                 />
               </div>
-              <span className="block truncate text-center text-xs font-medium md:text-md">
+              <span className="block truncate text-center text-xs font-semibold md:text-md">
                 {collection.title}
               </span>
               {isSelected ? (

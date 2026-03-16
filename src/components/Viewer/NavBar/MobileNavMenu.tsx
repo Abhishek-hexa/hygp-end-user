@@ -14,7 +14,6 @@ type MobileNavMenuProps = {
   onShopSelect: (productType: ProductType) => void;
 };
 
-
 export const MobileNavMenu = ({
   shopItems,
   currentProductType,
@@ -26,7 +25,10 @@ export const MobileNavMenu = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
         setIsMobileMenuOpen(false);
         setIsMobileShopsOpen(false);
       }
@@ -50,7 +52,7 @@ export const MobileNavMenu = ({
     <div ref={mobileMenuRef} className="relative lg:hidden">
       <button
         type="button"
-        className="font-ranchers inline-flex items-center gap-2 rounded-full bg-[#fbf2e8] px-4 py-1.5 text-lg uppercase leading-none tracking-wider text-primaryOrange lg:gap-3 lg:px-5 lg:py-2 lg:text-xl"
+        className="font-ranchers inline-flex items-center gap-2 rounded-full bg-[#fbf2e8] px-4 py-1.5 text-lg uppercase leading-none tracking-wider text-primary-orange lg:gap-3 lg:px-5 lg:py-2 lg:text-xl"
         aria-label="Toggle menu"
         aria-expanded={isMobileMenuOpen}
         onClick={() => {
@@ -58,22 +60,21 @@ export const MobileNavMenu = ({
           if (isMobileMenuOpen) {
             setIsMobileShopsOpen(false);
           }
-        }}
-      >
+        }}>
         <span>Menu</span>
         <span className="relative block h-3.5 w-5">
           <span
-            className={`absolute left-0 top-0 h-0.5 w-5 bg-primaryOrange transition-transform duration-200 ${
+            className={`absolute left-0 top-0 h-0.5 w-5 bg-primary-orange transition-transform duration-200 ${
               isMobileMenuOpen ? 'translate-y-[6px] rotate-45' : ''
             }`}
           />
           <span
-            className={`absolute left-0 top-[6px] h-0.5 w-5 bg-primaryOrange transition-opacity duration-200 ${
+            className={`absolute left-0 top-[6px] h-0.5 w-5 bg-primary-orange transition-opacity duration-200 ${
               isMobileMenuOpen ? 'opacity-0' : 'opacity-100'
             }`}
           />
           <span
-            className={`absolute left-0 top-[12px] h-0.5 w-5 bg-primaryOrange transition-transform duration-200 ${
+            className={`absolute left-0 top-[12px] h-0.5 w-5 bg-primary-orange transition-transform duration-200 ${
               isMobileMenuOpen ? '-translate-y-[6px] -rotate-45' : ''
             }`}
           />
@@ -88,8 +89,7 @@ export const MobileNavMenu = ({
             <button
               type="button"
               className="flex items-center justify-between uppercase"
-              onClick={() => setIsMobileShopsOpen((prev) => !prev)}
-            >
+              onClick={() => setIsMobileShopsOpen((prev) => !prev)}>
               Shops
               <ChevronDownIcon />
             </button>
@@ -100,8 +100,9 @@ export const MobileNavMenu = ({
                     key={shopItem.productType}
                     type="button"
                     className="text-left transition-opacity hover:opacity-80"
-                    onClick={() => handleMobileShopSelect(shopItem.productType)}
-                  >
+                    onClick={() =>
+                      handleMobileShopSelect(shopItem.productType)
+                    }>
                     {shopItem.label}
                   </button>
                 ))}
@@ -116,8 +117,7 @@ export const MobileNavMenu = ({
           </button>
           <button
             type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700"
-          >
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">
             <CartIcon />
           </button>
         </nav>

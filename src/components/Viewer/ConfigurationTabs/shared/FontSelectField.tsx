@@ -69,7 +69,7 @@ export const FontSelectField = ({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 z-50 mt-2 max-h-80 overflow-y-auto rounded-lg border border-primaryOrange bg-white shadow-lg">
+        <div className="absolute left-0 right-0 z-50 mt-2 max-h-80 overflow-y-auto rounded-lg border border-primary-orange bg-white shadow-lg">
           {fonts.map((font, index) => {
             const isSelected = selectedFont === font.id;
             return (
@@ -81,13 +81,12 @@ export const FontSelectField = ({
                   isSelected
                     ? 'bg-primary text-white'
                     : 'text-gray-800 hover:bg-gray-50'
-                } ${index !== fonts.length - 1 ? 'border-b border-primary/50' : ''}`}
-              >
-                <div className='h-8 w-full flex items-center justify-center'>
-                  <img  
+                } ${index !== fonts.length - 1 ? 'border-b border-primary/50' : ''}`}>
+                <div className="h-8 w-full flex items-center justify-center">
+                  <img
                     className={`max-h-full max-w-full object-contain ${isSelected ? 'brightness-0 invert' : ''}`}
-                    src={font.preview} 
-                    alt={font.name} 
+                    src={font.preview}
+                    alt={font.name}
                   />
                 </div>
               </button>

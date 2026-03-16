@@ -39,7 +39,10 @@ export const NavBar = observer(() => {
       if (!shopsMenuRef.current) {
         setIsShopsOpen(false);
       }
-      if (shopsMenuRef.current && !shopsMenuRef.current.contains(event.target as Node)) {
+      if (
+        shopsMenuRef.current &&
+        !shopsMenuRef.current.contains(event.target as Node)
+      ) {
         setIsShopsOpen(false);
       }
     };
@@ -71,16 +74,14 @@ export const NavBar = observer(() => {
           onShopSelect={handleShopSelect}
         />
         <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
-          <button type="button" className="uppercase">Size Guide</button>
-          <div
-            ref={shopsMenuRef}
-            className="relative"
-          >
+          <button type="button" className="uppercase">
+            Size Guide
+          </button>
+          <div ref={shopsMenuRef} className="relative">
             <button
               type="button"
               className="uppercase flex items-center gap-1"
-              onClick={() => setIsShopsOpen((prev) => !prev)}
-            >
+              onClick={() => setIsShopsOpen((prev) => !prev)}>
               Shops <ChevronDownIcon />
             </button>
             {isShopsOpen ? (
@@ -91,8 +92,7 @@ export const NavBar = observer(() => {
                       key={shopItem.productType}
                       type="button"
                       className="text-left transition-opacity hover:opacity-80"
-                      onClick={() => handleShopSelect(shopItem.productType)}
-                    >
+                      onClick={() => handleShopSelect(shopItem.productType)}>
                       {shopItem.label}
                     </button>
                   ))}
@@ -100,12 +100,15 @@ export const NavBar = observer(() => {
               </div>
             ) : null}
           </div>
-          <button type="button" className="uppercase">Sell Your Own</button>
-          <button type="button" className="uppercase">More</button>
+          <button type="button" className="uppercase">
+            Sell Your Own
+          </button>
+          <button type="button" className="uppercase">
+            More
+          </button>
           <button
             type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700"
-          >
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">
             <CartIcon />
           </button>
         </nav>

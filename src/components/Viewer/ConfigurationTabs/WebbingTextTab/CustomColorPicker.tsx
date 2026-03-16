@@ -13,7 +13,10 @@ type CustomColorPickerProps = {
   onChange: (color: string) => void;
 };
 
-export const CustomColorPicker = ({ selectedColor, onChange }: CustomColorPickerProps) => {
+export const CustomColorPicker = ({
+  selectedColor,
+  onChange,
+}: CustomColorPickerProps) => {
   const normalized = normalizeHexColor(selectedColor) ?? '#374B67';
 
   return (
@@ -26,7 +29,7 @@ export const CustomColorPicker = ({ selectedColor, onChange }: CustomColorPicker
             type="button"
             onClick={() => onChange(color.toUpperCase())}
             className={`h-7 w-7 rounded-full border-2 transition-colors lg:h-8 lg:w-8 ${
-              isSelected ? 'border-primaryOrange' : 'border-primary/40'
+              isSelected ? 'border-primary-orange' : 'border-primary/40'
             }`}
             style={{ background: color }}
             aria-label={`Text color ${index + 1}`}
@@ -39,8 +42,7 @@ export const CustomColorPicker = ({ selectedColor, onChange }: CustomColorPicker
         style={{
           background:
             'conic-gradient(from 0deg, #ff3b30, #ff9500, #ffcc00, #34c759, #00c7be, #007aff, #5856d6, #ff2d55, #ff3b30)',
-        }}
-      >
+        }}>
         <input
           type="color"
           value={normalized}

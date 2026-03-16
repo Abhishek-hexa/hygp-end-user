@@ -49,7 +49,8 @@ export const DesignTab = observer(() => {
           <label htmlFor="pattern-search" className="sr-only">
             Search pattern
           </label>
-          <div className={`${isMobileSearchOpen ? 'relative block' : 'hidden'} md:block`}>
+          <div
+            className={`relative ${isMobileSearchOpen ? ' block' : 'hidden'} md:block`}>
             <input
               id="pattern-search"
               type="text"
@@ -79,15 +80,16 @@ export const DesignTab = observer(() => {
           <PatternGrid
             patterns={filteredPatterns}
             selectedPatternId={textureManager.selectedPatternId}
-            onSelectPattern={(patternId) => textureManager.setSelectedPattern(patternId)}
+            onSelectPattern={(patternId) =>
+              textureManager.setSelectedPattern(patternId)
+            }
           />
         ) : null}
         <button
           type="button"
           onClick={() => setIsMobileSearchOpen((prev) => !prev)}
           className="absolute bottom-3 right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-[#f2f5f4] text-primary shadow-sm md:hidden"
-          aria-label="Toggle search"
-        >
+          aria-label="Toggle search">
           <SearchIcon className="h-5 w-5" />
         </button>
       </div>

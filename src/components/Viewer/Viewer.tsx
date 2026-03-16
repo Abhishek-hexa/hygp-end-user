@@ -2,15 +2,15 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useMainContext } from '../../hooks/useMainContext';
-import { CanvasPanel } from './CanvasPanel';
-import { ConfigurationPanel } from './ConfigurationPanel';
-import { NavBar } from './NavBar/NavBar';
 import { initializeProductApis } from '../../api/initializeProductApis';
+import { useMainContext } from '../../hooks/useMainContext';
 import {
   defaultProductSlug,
   productSlugToType,
 } from '../../state/product/productRouting';
+import { CanvasPanel } from './CanvasPanel';
+import { ConfigurationPanel } from './ConfigurationPanel';
+import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
   const mainContext = useMainContext();
