@@ -1,15 +1,18 @@
 import { type ComponentProps } from 'react';
 
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import { useLazyImage } from '../../hooks/useLazyImage';
 
 type LazyImageProps = ComponentProps<'img'>;
 
 export const LazyImage = ({ src = '', alt, className, ...rest }: LazyImageProps) => {
-  const { imgSrc, status } = useLazyImage(src);
+  const { ref, isVisible } = useIntersectionObserver<HTMLDivElement>();
+  const { imgSrc, status } = useLazyImage(src, isVisible);
 
-  if (status === 'loading') {
+  if (status === 'idle' || status === 'loading') {
     return (
       <div
+        ref={ref}
         className={`skeleton-image ${className ?? ''}`}
         role="img"
         aria-label={alt ?? ''}
