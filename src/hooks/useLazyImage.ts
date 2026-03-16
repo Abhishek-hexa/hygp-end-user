@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-type ImageStatus = 'loading' | 'loaded' | 'error';
+type ImageStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 const cache = new Map<string, string>();
 const pending = new Map<string, Promise<string>>();
@@ -26,18 +26,28 @@ function load(src: string): Promise<string> {
   return p;
 }
 
-export function useLazyImage(src: string) {
-  const [status, setStatus] = useState<ImageStatus>(cache.has(src) ? 'loaded' : 'loading');
+export function useLazyImage(src: string, isVisible = true) {
+  const [status, setStatus] = useState<ImageStatus>(
+    cache.has(src) ? 'loaded' : isVisible ? 'loading' : 'idle',
+  );
   const [imgSrc, setImgSrc] = useState<string | undefined>(cache.get(src));
   const latest = useRef(src);
 
   useEffect(() => {
     latest.current = src;
 
+    // Get cahched Image
     const cached = cache.get(src);
     if (cached) {
       setStatus('loaded');
       setImgSrc(cached);
+      return;
+    }
+
+    // Don't fetch until the element is visible in the viewport
+    if (!isVisible) {
+      setStatus('idle');
+      setImgSrc(undefined);
       return;
     }
 
@@ -54,7 +64,7 @@ export function useLazyImage(src: string) {
         if (latest.current !== src) return;
         setStatus('error');
       });
-  }, [src]);
+  }, [src, isVisible]);
 
   return { imgSrc, status };
 }
