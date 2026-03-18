@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { SearchIcon } from '../../icons/Icons';
@@ -11,6 +12,8 @@ import { usePatternLoader } from './DesignTab/usePatternLoader';
 export const DesignTab = observer(() => {
   const { designManager } = useMainContext();
   const textureManager = designManager.productManager.textureManager;
+  const navigate = useNavigate();
+  const { productSlug } = useParams<{ productSlug: string }>();
   const collections = Array.from(textureManager.availableCollections.values());
   const selectedCollectionIds = textureManager.selectedCollectionIds;
   const selectedCollections = textureManager.selectedCollections;
@@ -80,9 +83,13 @@ export const DesignTab = observer(() => {
           <PatternGrid
             patterns={filteredPatterns}
             selectedPatternId={textureManager.selectedPatternId}
-            onSelectPattern={(patternId) =>
-              textureManager.setSelectedPattern(patternId)
-            }
+            onSelectPattern={(patternId) => {
+              textureManager.setSelectedPattern(patternId);
+              if (!productSlug) {
+                return;
+              }
+              navigate(`/${productSlug}/pattern/${patternId}`);
+            }}
           />
         ) : null}
         <button
