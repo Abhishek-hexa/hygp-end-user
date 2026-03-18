@@ -14,7 +14,7 @@ export const CollectionSidebar = ({
   selectedCollectionIds,
 }: CollectionSidebarProps) => {
   return (
-    <div className="md:w-[30%] max-w-37.5 md:min-w-32.5 md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200">
+    <div className="md:w-[30%] max-w-full md:min-w-32.5 md:overflow-y-auto md:overflow-x-hidden md:border-r md:border-gray-200">
       <div className="feature-tabs-scroll flex overflow-x-auto md:block md:space-y-1 md:overflow-visible">
         {collections.map((collection) => {
           const isSelected = selectedCollectionIds.includes(collection.id);
