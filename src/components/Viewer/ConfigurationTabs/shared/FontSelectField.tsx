@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { FontDescription } from '../../../../state/product/types';
 import { AIcon, ChevronDownIcon } from '../../../icons/Icons';
+import { LazyImage } from '../../../shared/LazyImage';
 
 type FontSelectFieldProps = {
   ariaLabel: string;
@@ -83,7 +84,7 @@ export const FontSelectField = ({
                     : 'text-gray-800 hover:bg-gray-50'
                 } ${index !== fonts.length - 1 ? 'border-b border-primary/50' : ''}`}>
                 <div className="h-8 w-full flex items-center justify-center">
-                  <img
+                  <LazyImage
                     className={`max-h-full max-w-full object-contain ${isSelected ? 'brightness-0 invert' : ''}`}
                     src={font.preview}
                     alt={font.name}
