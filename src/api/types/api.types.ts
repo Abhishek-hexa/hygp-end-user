@@ -165,3 +165,28 @@ export interface CollectionProductsApiResponse {
 
   pageInfo: CollectionProductsPageInfo
 }
+
+//    Product by ID API
+//    GET /product/{productId}
+
+export interface ProductByIdApiItem {
+  id: string
+  name: string
+  description: string
+  tags: string[]
+  status: string
+  images: string[]
+  dataX: string
+  cropValue: string
+  image: {
+    src: string
+  }
+  collectionId: string
+  png_image: string
+  preview: string
+}
+
+export interface ProductByIdApiResponse {
+  success: boolean
+  product: ProductByIdApiItem
+}
