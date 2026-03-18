@@ -52,8 +52,8 @@ export interface SizeDescription {
 
 export interface ColorDescription {
   id: number;
-  material_id: number;
-  material_type: {
+  materialId: number;
+  materialType: {
     id: string;
     name: string;
   };
@@ -64,6 +64,7 @@ export interface ColorDescription {
 
 export interface PatternType {
   id: number;
+  collectionId: number;
   name: string;
   dataX: string;
   pngImage: string;

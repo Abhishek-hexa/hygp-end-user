@@ -244,9 +244,9 @@ const parseBuckles = (
     if (buckle.metal_color) {
       const parsedMetalColor = {
         id: buckle.id,
-        material_id: buckle.material_id,
+        materialId: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type
+        materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
@@ -261,9 +261,9 @@ const parseBuckles = (
     if (buckle.plastic_color) {
       const parsedPlasticColor = {
         id: buckle.id,
-        material_id: buckle.material_id,
+        materialId: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type
+        materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
@@ -278,9 +278,9 @@ const parseBuckles = (
     if (buckle.breakaway_color) {
       const parsedBreakawayColor = {
         id: buckle.id,
-        material_id: buckle.material_id,
+        materialId: buckle.material_id,
         name: buckle.name,
-        material_type: buckle.material_type
+        materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
@@ -307,6 +307,7 @@ const parsePatterns = (
   products.forEach((product) => {
     const parsedProduct: PatternType = {
       id: parseInt(product.id),
+      collectionId: parseInt(product.collection_Id),
       name: product.name,
       dataX: product.dataX,
       pngImage: product.png_image,

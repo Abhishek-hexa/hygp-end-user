@@ -135,13 +135,13 @@ export interface ShopifyCollectionsApiResponse {
 
 export interface CollectionProductApiItem {
   id: string
+  collection_Id: string
 
   name: string
 
   preview: string
   png_image: string
 
-  collectionId: string
 
   dataX: string
 }
