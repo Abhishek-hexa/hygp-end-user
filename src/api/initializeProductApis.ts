@@ -22,6 +22,7 @@ import {
   CollectionProductsApiResponse,
   EngravingFontsApiResponse,
   LeashVariantsApiResponse,
+  ProductByIdApiResponse,
   ProductVariantApiItem,
   ProductVariantsApiResponse,
   ShopifyCollectionApiItem,
@@ -43,6 +44,7 @@ export const initializeProductApis = async (
   productManager: ProductManager,
   uiManager: UiManager,
   productType: ProductType = 'DOG_COLLAR',
+  initialPatternId: number | null = null,
 ) => {
   uiManager.setDataLoading(true);
   uiManager.setDataError(null);
@@ -94,19 +96,6 @@ export const initializeProductApis = async (
           : Promise.resolve<LeashVariantsApiResponse | null>(null),
       ]);
 
-    // Fetch patterns for the first collection by default.
-    const firstCollectionId = collections?.custom_collections?.[0]?.id;
-    let firstCollectionProducts: CollectionProductsApiResponse | null = null;
-
-    if (firstCollectionId !== undefined && firstCollectionId !== null) {
-      const res = await fetchJson<CollectionProductsApiResponse>(
-        baseUrl,
-        `/shopify-collection/products/${String(firstCollectionId)}`,
-        'collection products',
-      );
-      firstCollectionProducts = res;
-    }
-
     parseFonts(
       engravingFonts,
       productManager.webbingText,
@@ -117,8 +106,60 @@ export const initializeProductApis = async (
     parseCollections(collections, productManager.textureManager);
     parseBuckles(buckles, productManager.buckleManager);
 
-    if (firstCollectionProducts) {
-      parsePatterns(firstCollectionProducts, productManager.textureManager);
+    const selectedPatternId =
+      typeof initialPatternId === 'number' && Number.isFinite(initialPatternId)
+        ? initialPatternId
+        : null;
+
+    let targetPatternId = selectedPatternId;
+    let collectionProducts: CollectionProductsApiResponse | null = null;
+
+    if (selectedPatternId !== null) {
+      try {
+        const selectedPatternResponse = await fetchJson<ProductByIdApiResponse>(
+          baseUrl,
+          `/product/${selectedPatternId}`,
+          'pattern by id',
+        );
+
+        const selectedPattern = selectedPatternResponse.product;
+        const selectedCollectionId = parseInt(selectedPattern.collectionId);
+
+        if (selectedCollectionId !== null) {
+          collectionProducts = await fetchJson<CollectionProductsApiResponse>(
+            baseUrl,
+            `/shopify-collection/products/${selectedCollectionId}`,
+            'collection products',
+          );
+        } else {
+          targetPatternId = null;
+        }
+      } catch (error) {
+        targetPatternId = null;
+        // eslint-disable-next-line no-console
+        console.warn('[product-init] Failed to resolve deep-link pattern', error);
+      }
+    }
+
+    if (!collectionProducts) {
+      const firstCollectionId = collections?.custom_collections?.[0]?.id;
+
+      if (firstCollectionId !== undefined && firstCollectionId !== null) {
+        collectionProducts = await fetchJson<CollectionProductsApiResponse>(
+          baseUrl,
+          `/shopify-collection/products/${String(firstCollectionId)}`,
+          'collection products',
+        );
+      }
+      targetPatternId = null;
+    }
+
+    if (collectionProducts) {
+      parsePatterns(
+        collectionProducts,
+        productManager.textureManager,
+        targetPatternId,
+      );
     }
 
     if (productType === 'DOG_COLLAR' && leashes) {
@@ -300,6 +341,7 @@ const parseBuckles = (
 const parsePatterns = (
   collectionProductsResponse: CollectionProductsApiResponse,
   textureManager: TextureManager,
+  preferredPatternId: number | null = null,
 ) => {
   const { collectionId, products } = collectionProductsResponse;
   const patterns: PatternType[] = [];
@@ -316,9 +358,14 @@ const parsePatterns = (
     patterns.push(parsedProduct);
   });
   const parsedCollectionId = parseInt(collectionId);
-  textureManager.setSelectedCollection(parsedCollectionId);
+  textureManager.setSelectedCollections([parsedCollectionId]);
   textureManager.setAvailablePatterns(parsedCollectionId, patterns);
-  textureManager.setSelectedPattern(patterns[0]?.id ?? null);
+  const matchedPatternId =
+    preferredPatternId !== null &&
+    patterns.some((pattern) => pattern.id === preferredPatternId)
+      ? preferredPatternId
+      : patterns[0]?.id ?? null;
+  textureManager.setSelectedPattern(matchedPatternId);
 };
 
 const parseLeashVariants = (

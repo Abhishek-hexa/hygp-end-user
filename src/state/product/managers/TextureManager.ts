@@ -116,7 +116,7 @@ export class TextureManager {
     }
   }
 
-  setSelectedPattern(inPatternId: number) {
+  setSelectedPattern(inPatternId: number | null) {
     this._selectedPatternId = inPatternId;
   }
 
