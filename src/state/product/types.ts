@@ -77,3 +77,45 @@ export interface FontDescription {
   preview: string;
   font_path: string;
 }
+
+export type SerializedSizeConfig = {
+  size: ProductSizeType | null;
+  length: LeashLengthType | null;
+};
+
+export type SerializedBuckleConfig = {
+  material: BuckleMaterialType | null;
+  color: number | null;
+};
+
+export type SerializedEngravingLine = {
+  text: string;
+  font: number | null;
+};
+
+export type SerializedEngravingConfig = {
+  lines: SerializedEngravingLine[];
+};
+
+export type SerializedWebbingConfig = {
+  value: string;
+  size: TextSize;
+  font: number | null;
+  color: string;
+};
+
+export type SerializedTextureConfig = {
+  pattern: number | null;
+  collections: number;
+};
+
+export type SerializedProductConfiguration = {
+  productId: ProductType;
+  price: string | null;
+  qty: number;
+  size: SerializedSizeConfig;
+  buckle: SerializedBuckleConfig;
+  engraving: SerializedEngravingConfig;
+  webbing: SerializedWebbingConfig;
+  texture: SerializedTextureConfig;
+};

@@ -60,9 +60,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const selectedLeashPriceNumber = selectedLeashLength
     ? parsePrice(sizeManager.lengthPrices.get(selectedLeashLength))
     : 0;
-  const totalPriceNumber = isDogCollar
-    ? selectedSizePriceNumber + selectedLeashPriceNumber
-    : selectedSizePriceNumber;
+  const totalPriceNumber = parsePrice(sizeManager.totalPrice);
 
   const selectedLeashLabel = selectedLeashLength
     ? `${leashLabelMap[selectedLeashLength] ?? `${selectedLeashLength} Foot`} LEASH`
