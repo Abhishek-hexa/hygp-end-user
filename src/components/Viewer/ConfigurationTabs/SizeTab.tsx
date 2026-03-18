@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { SelectedItemIcon } from '../../icons/Icons';
+import { LazyImage } from '../../shared/LazyImage';
 
 const sizeLabelMap: Record<string, string> = {
   EXTRA_SMALL: 'Extra Small',
@@ -61,7 +62,7 @@ export const SizeTab = observer(() => {
       </div>
 
       <div className="mt-6 flex justify-center border-t border-gray-200 lg:mt-8">
-        <img
+        <LazyImage
           src="/size/belt 1.png"
           alt="Collar Measurement Guide"
           className="w-full max-w-md object-contain"

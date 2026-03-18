@@ -6,6 +6,7 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import { productTypeToSlug } from '../../../state/product/productRouting';
 import { ProductType } from '../../../state/product/types';
 import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
+import { LazyImage } from '../../shared/LazyImage';
 import { MobileNavMenu } from './MobileNavMenu';
 
 const shopItems: Array<{ label: string; productType: ProductType }> = [
@@ -57,12 +58,12 @@ export const NavBar = observer(() => {
     <header className="fixed left-0 top-0 z-50 h-16 w-full bg-primary lg:h-20">
       <div className="mx-auto flex h-full w-full items-center justify-between px-3 lg:px-5">
         <div className="flex items-center">
-          <img
+          <LazyImage
             src="/logo/mobileNavbar.png"
             alt="Here You Go Pup Logo"
             className="h-8 w-auto lg:hidden"
           />
-          <img
+          <LazyImage
             src="/logo/desktopNavbar.png"
             alt="Here You Go Pup Logo"
             className="hidden h-16 w-auto lg:block"
