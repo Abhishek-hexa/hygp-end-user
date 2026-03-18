@@ -106,7 +106,7 @@ export type SerializedWebbingConfig = {
 
 export type SerializedTextureConfig = {
   pattern: number | null;
-  collections: number[];
+  collections: number;
 };
 
 export type SerializedProductConfiguration = {

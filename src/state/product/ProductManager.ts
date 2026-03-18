@@ -106,7 +106,7 @@ export class ProductManager {
       },
       texture: {
         pattern: this.textureManager.selectedPatternId,
-        collections: [...this.textureManager.selectedCollectionIds],
+        collections: this.textureManager.selectedCollectionIds[0],
       }
     };
 

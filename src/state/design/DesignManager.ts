@@ -20,6 +20,10 @@ export class DesignManager {
     return this._productManager;
   }
 
+  get productStore() {
+    return this._productStore;
+  }
+
   get availableFeatures() {
     return this._productManager.getAllFeatures();
   }
