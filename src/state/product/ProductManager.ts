@@ -6,7 +6,11 @@ import { SizeManager } from './managers/SizeManager';
 import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
-import { Features, ProductType } from './types';
+import {
+  Features,
+  SerializedProductConfiguration,
+  ProductType,
+} from './types';
 
 export class ProductManager {
   private _productId: ProductType = defaultProductId;
@@ -76,6 +80,35 @@ export class ProductManager {
 
   setActiveFeature(feature: Features | null) {
     this._activeFeature = feature;
+  }
+
+  serializeConfiguration(): SerializedProductConfiguration {
+    const productConfig: SerializedProductConfiguration = {
+      productId: this._productId,
+      size: {
+        size: this.sizeManager.selectedSize,
+        length: this.sizeManager.selectedLength,
+      },
+      buckle: {
+        material: this.buckleManager.material,
+        color: this.buckleManager.selectedColor,
+      },
+      engraving: {
+        lines: this.engravingManager.lines.map((line) => ({ ...line })),
+      },
+      webbing: {
+        value: this.webbingText.value,
+        size: this.webbingText.size,
+        font: this.webbingText.selectedFont,
+        color: this.webbingText.selectedColor,
+      },
+      texture: {
+        pattern: this.textureManager.selectedPatternId,
+        collections: [...this.textureManager.selectedCollectionIds],
+      }
+    };
+
+    return productConfig;
   }
 
   reset() {
