@@ -85,6 +85,8 @@ export class ProductManager {
   serializeConfiguration(): SerializedProductConfiguration {
     const productConfig: SerializedProductConfiguration = {
       productId: this._productId,
+      price: this.sizeManager.totalPrice,
+      qty: 1,
       size: {
         size: this.sizeManager.selectedSize,
         length: this.sizeManager.selectedLength,

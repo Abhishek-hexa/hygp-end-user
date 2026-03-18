@@ -111,6 +111,8 @@ export type SerializedTextureConfig = {
 
 export type SerializedProductConfiguration = {
   productId: ProductType;
+  price: string | null;
+  qty: number;
   size: SerializedSizeConfig;
   buckle: SerializedBuckleConfig;
   engraving: SerializedEngravingConfig;

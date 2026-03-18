@@ -34,6 +34,17 @@ export class SizeManager {
     return this._lengthPrices;
   }
 
+  get totalPrice() {
+    const lengthPrice = this._selectedLength
+      ? this._lengthPrices.get(this._selectedLength) ?? '0'
+      : '0';
+    const sizePrice = this._selectedSize 
+      ? this._availableSizes.get(this._selectedSize)?.price ?? '0'
+      : '0';
+    return String((parseFloat(lengthPrice) + parseFloat(sizePrice)).toFixed(2));
+  }
+
+
   setSize(inSize: ProductSizeType) {
     this._selectedSize = inSize;
   }
