@@ -13,6 +13,7 @@ export const Router = observer(() => {
           path={NavigationRoutes.Default}
           element={<Navigate to={`/${defaultProductSlug}`} replace />}
         />
+        <Route path={NavigationRoutes.ProductPattern} element={<Viewer />} />
         <Route path={NavigationRoutes.Product} element={<Viewer />} />
         <Route
           path={NavigationRoutes.NotFound}

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { initializeProductApis } from '../../api/initializeProductApis';
@@ -18,8 +18,14 @@ export const Viewer = observer(() => {
   const productManager = mainContext.designManager.productManager;
   const uiManager = mainContext.uiManager;
   const navigate = useNavigate();
-  const { productSlug } = useParams<{ productSlug: string }>();
+  const { patternID, productSlug } = useParams<{
+    patternID?: string;
+    productSlug: string;
+  }>();
   const selectedProductType = productSlugToType(productSlug);
+  const lastInitializedProductSlugRef = useRef<string | null>(null);
+  const selectedPatternIdFromUrl = parsePatternId(patternID);
+  const selectedPatternId = productManager.textureManager.selectedPatternId;
 
   useEffect(() => {
     if (!selectedProductType) {
@@ -27,8 +33,43 @@ export const Viewer = observer(() => {
       return;
     }
 
-    void initializeProductApis(productManager, uiManager, selectedProductType);
-  }, [navigate, productManager, selectedProductType, uiManager]);
+    // Avoid re-initializing on pattern-only URL changes.
+    if (lastInitializedProductSlugRef.current === productSlug) {
+      return;
+    }
+
+    lastInitializedProductSlugRef.current = productSlug ?? null;
+    void initializeProductApis(
+      productManager,
+      uiManager,
+      selectedProductType,
+      selectedPatternIdFromUrl,
+    );
+  }, [
+    navigate,
+    productManager,
+    productSlug,
+    selectedPatternIdFromUrl,
+    selectedProductType,
+    uiManager,
+  ]);
+
+  useEffect(() => {
+    if (!productSlug || selectedPatternId === null) {
+      return;
+    }
+
+    if (selectedPatternIdFromUrl === selectedPatternId) {
+      return;
+    }
+
+    navigate(`/${productSlug}/pattern/${selectedPatternId}`, { replace: true });
+  }, [
+    navigate,
+    productSlug,
+    selectedPatternId,
+    selectedPatternIdFromUrl,
+  ]);
 
   return (
     <div className="relative h-dvh w-full bg-white pt-16 lg:pt-20">
@@ -52,3 +93,11 @@ export const Viewer = observer(() => {
     </div>
   );
 });
+
+const parsePatternId = (patternID: string | undefined): number | null => {
+  if (!patternID) {
+    return null;
+  }
+  const parsedPatternId = Number.parseInt(patternID, 10);
+  return Number.isFinite(parsedPatternId) ? parsedPatternId : null;
+};
