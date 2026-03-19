@@ -60,7 +60,7 @@ export const FontSelectField = ({
         className="flex w-full items-center rounded-lg border border-primary bg-white px-3 py-2 text-primary">
         <AIcon className="h-5 w-5 text-primary" />
         <span
-          className="flex-1 truncate text-center text-lg"
+          className="flex-1 truncate text-center text-base"
           style={
             selectedFontName ? { fontFamily: selectedFontName } : undefined
           }>

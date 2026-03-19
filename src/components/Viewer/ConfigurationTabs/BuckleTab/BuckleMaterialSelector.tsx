@@ -26,14 +26,13 @@ export const BuckleMaterialSelector = ({
             onClick={() => onSelectMaterial(type)}
             className={`relative w-full min-w-0 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-w-24 md:w-auto md:px-6 ${
               selectedMaterial === type
-                ? 'border-primary bg-primary/10 text-gray-900'
+                ? 'border-primary-dark bg-primary/10 text-gray-900'
                 : 'border-gray-200 bg-white text-gray-700'
             }`}>
             {buckleLabelMap[type]}
             {selectedMaterial === type ? (
               <SelectedItemIcon
                 className="absolute right-1.5 top-1.5 h-3.5 w-3.5"
-                fillColor="#5b9084"
               />
             ) : null}
           </button>

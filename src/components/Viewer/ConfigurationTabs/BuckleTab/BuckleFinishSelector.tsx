@@ -25,8 +25,8 @@ export const BuckleFinishSelector = ({
               key={color.id}
               type="button"
               onClick={() => onSelectColor(color.id)}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border-2 lg:h-12 lg:w-12 ${
-                isSelected ? 'border-primary-orange' : 'border-gray-300'
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border lg:h-12 lg:w-12 transition-all duration-150 ease-in-out ${
+                isSelected ? 'ring-2 ring-pink border-0' : 'border-primary-dark'
               }`}
               style={{ backgroundColor: color.hex || '#d9d9d9' }}
               title={color.name}>

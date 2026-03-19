@@ -6,7 +6,7 @@ import { FontSelectField } from './shared/FontSelectField';
 import { TextInputWithCounter } from './shared/TextInputWithCounter';
 
 const linePlaceholders = [
-  'PET NAME',
+  'Pet Name',
   'Phone Number 1',
   'Phone Number 2',
   'Type Text 4 Here',
@@ -36,7 +36,7 @@ export const EngravingTab = observer(() => {
               <button
                 type="button"
                 onClick={() => engravingManager.setActiveLine(index)}
-                className={`flex h-10 w-10 shrink-0 items-center justify-center border-2 rounded-full border text-2xl font-semibold ${
+                className={`flex h-10 w-10 shrink-0 items-center justify-center border-2 rounded-full text-2xl font-semibold ${
                   isActive
                     ? 'border-primary bg-primary/10 text-primary'
                     : isCompleted
@@ -62,7 +62,7 @@ export const EngravingTab = observer(() => {
             placeholder={linePlaceholders[activeLineIndex] ?? `Line ${activeLineIndex + 1}`}
             onFocus={() => engravingManager.setActiveLine(activeLineIndex)}
             onChange={(value) => engravingManager.setLineText(activeLineIndex, value)}
-            inputClassName="placeholder:normal-case"
+            inputClassName="placeholder"
           />
 
           <FontSelectField
@@ -80,7 +80,7 @@ export const EngravingTab = observer(() => {
         {engravingManager.lines.map((line, index) => (
           <div
             key={index}
-            className="rounded-xl border bg-gray-100/50 p-3"
+            className="rounded-xl border bg-gray-custom-light p-3 border-gray-200"
           >
             <div className="flex items-start gap-3">
               <div className="pt-3 text-primary">
@@ -94,7 +94,7 @@ export const EngravingTab = observer(() => {
                   placeholder={linePlaceholders[index] ?? `Line ${index + 1}`}
                   onFocus={() => engravingManager.setActiveLine(index)}
                   onChange={(value) => engravingManager.setLineText(index, value)}
-                  inputClassName="placeholder:uppercase"
+                  inputClassName="placeholder"
                 />
 
                 <FontSelectField

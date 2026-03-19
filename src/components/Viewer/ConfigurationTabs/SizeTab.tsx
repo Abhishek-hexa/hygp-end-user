@@ -43,7 +43,7 @@ export const SizeTab = observer(() => {
             onClick={() => productManager.sizeManager.setSize(size)}
             className={`relative flex font-roboto min-w-32.5 shrink-0 flex-col items-start justify-center rounded-lg border border-gray-300 p-2.5 transition-colors lg:min-w-0 lg:p-3 ${
               selectedSize === size
-                ? 'border-primary bg-primary/10 text-primary'
+                ? 'border-primary-dark bg-primary-dark/10 text-primary'
                 : ''
             }`}>
             <span className="text-[11px] font-semibold leading-tight whitespace-nowrap text-left text-zinc-900 lg:text-xs">
