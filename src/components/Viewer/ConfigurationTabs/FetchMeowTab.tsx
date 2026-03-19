@@ -2,50 +2,27 @@ import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { LeashLengthType } from '../../../state/product/types';
 import { SelectedItemIcon } from '../../icons/Icons';
+import {
+  fetchReviewCopy,
+  FetchFeature,
+  formatPrice,
+  getFetchHeading,
+  leashLabelMap,
+  parsePrice,
+  productSummaryLabelMap,
+  shippingCopy,
+  sizeLabelMap,
+} from './shared/fetchSummary';
 
 type FetchMeowTabProps = {
-  feature: 'FETCH' | 'MEOW';
+  feature: FetchFeature;
 };
-
-const leashLabelMap: Record<LeashLengthType, string> = {
-  '3': '3 Foot',
-  '4': '4 Foot',
-  '5': '5 Foot',
-  '6': '6 Foot',
-};
-
-const sizeLabelMap: Record<string, string> = {
-  EXTRA_SMALL: 'Extra Small',
-  LARGE: 'Large',
-  MEDIUM: 'Medium',
-  MEDIUM_NARROW: 'Medium Narrow',
-  MEDIUM_WIDE: 'Medium Wide',
-  SMALL: 'Small',
-  XLARGE: 'XLarge',
-  XXLARGE: 'XXLarge',
-};
-
-const productSummaryLabelMap: Record<string, string> = {
-  BANDANA: 'CUSTOM BANDANA',
-  CAT_COLLAR: 'CUSTOM COLLAR',
-  DOG_COLLAR: 'CUSTOM COLLAR',
-  HARNESS: 'CUSTOM HARNESS',
-  LEASH: 'CUSTOM LEASH',
-  MARTINGALE: 'CUSTOM MARTINGALE COLLAR',
-};
-
-const parsePrice = (value: string | null | undefined): number => {
-  const parsed = Number.parseFloat(String(value ?? '').replace(/[^0-9.]/g, ''));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
 
 export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
   const { sizeManager } = productManager;
-  const heading = feature === 'MEOW' ? 'Ready to Meow!' : 'Ready to Fetch!';
+  const heading = getFetchHeading(feature);
   const isDogCollar = productManager.productId === 'DOG_COLLAR';
 
   const selectedSize = sizeManager.selectedSize;
@@ -85,7 +62,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
     <div className="flex min-h-[520px] flex-col p-4 text-gray-700">
       <section className="space-y-1">
         <h3 className="text-base font-semibold text-gray-900">{heading}</h3>
-        <p className="text-xs text-gray-500">Review your design and add matching items.</p>
+        <p className="text-xs text-gray-500">{fetchReviewCopy}</p>
       </section>
 
       {isDogCollar && (
@@ -141,9 +118,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
           <span>{formatPrice(totalPriceNumber)}</span>
         </div>
 
-        <p className="mt-3 text-center text-sm text-[#58AB88]">
-          Includes standard shipping and handling
-        </p>
+        <p className="mt-3 text-center text-sm text-[#58AB88]">{shippingCopy}</p>
       </section>
     </div>
   );

@@ -3,17 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { SelectedItemIcon } from '../../icons/Icons';
 import { LazyImage } from '../../shared/LazyImage';
-
-const sizeLabelMap: Record<string, string> = {
-  EXTRA_SMALL: 'Extra Small',
-  LARGE: 'Large',
-  MEDIUM: 'Medium',
-  MEDIUM_NARROW: 'Medium Narrow',
-  MEDIUM_WIDE: 'Medium Wide',
-  SMALL: 'Small',
-  XLARGE: 'XLarge',
-  XXLARGE: 'XXLarge',
-};
+import { sizeLabelMap } from './shared/fetchSummary';
 
 export const SizeTab = observer(() => {
   const mainContext = useMainContext();
