@@ -2,9 +2,13 @@
 
 @theme {
   --color-primary: #86a69e;
+  --color-primary-dark: #558A7E;
   --color-primary-orange: #f28783;
   --color-yellow: #f6bc60;
   --color-white: #ffffff;
+  --color-pink: #F28582;
+  --color-gray-custom: #808080;
+  --color-gray-custom-light: #FCFCFC;
   --color-background: #eaf5f3;
   --font-ranchers: 'Ranchers', cursive;
   --font-roboto: 'Roboto', sans-serif;

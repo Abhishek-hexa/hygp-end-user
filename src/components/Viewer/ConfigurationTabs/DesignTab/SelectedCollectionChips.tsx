@@ -17,7 +17,7 @@ export const SelectedCollectionChips = ({
           key={`chip-${collection.id}`}
           type="button"
           onClick={() => onRemoveCollection(collection.id)}
-          className="inline-flex items-center gap-1 rounded-full border border-primary bg-background px-3 py-1 text-xs text-primary">
+          className="inline-flex items-center justify-center gap-1 rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs text-black">
           <span className="font-roboto font-normal">{collection.title}</span>
           <CancelIcon className="h-3 w-3" />
         </button>

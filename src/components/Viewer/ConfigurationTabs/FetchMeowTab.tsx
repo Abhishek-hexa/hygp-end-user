@@ -106,7 +106,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
                 }
                 className={`relative min-w-[130px] shrink-0 rounded-md border px-4 py-3 text-left transition-colors md:min-w-0 ${
                   option.selected
-                    ? 'border-primary bg-primary/5'
+                    ? 'border-primary-dark bg-primary/5'
                     : 'border-gray-200 bg-white hover:border-primary/40'
                 }`}>
                 <div className="text-xs font-semibold text-gray-900">{option.name}</div>
@@ -120,8 +120,8 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
         </section>
       )}
 
-      <section className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-5">
-        <div className="space-y-2 text-xs font-semibold text-primary">
+      <section className="mt-6 rounded-xl border border-primary/20 bg-primary-dark/5 p-5">
+        <div className="space-y-2 text-xs font-semibold text-primary-dark">
           <div className="flex items-center justify-between">
             <span>
               {`${productSummaryLabelMap[productManager.productId] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
@@ -136,14 +136,14 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
           )}
         </div>
 
-        <div className="my-4 border-t border-primary/40" />
+        <div className="my-4 border-t-2 border-primary-dark/40" />
 
         <div className="flex items-center justify-between text-lg font-semibold text-gray-700">
           <span>TOTAL AMOUNT</span>
           <span>{formatPrice(totalPriceNumber)}</span>
         </div>
 
-        <p className="mt-3 text-center text-sm text-primary/80">
+        <p className="mt-3 text-center text-sm text-[#58AB88]">
           Includes standard shipping and handling
         </p>
       </section>

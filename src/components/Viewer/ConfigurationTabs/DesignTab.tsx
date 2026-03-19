@@ -37,7 +37,7 @@ export const DesignTab = observer(() => {
   }, [patterns, searchQuery]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2 md:flex-row md:gap-3">
+    <div className="flex h-full min-h-0 flex-col gap-2 md:flex-row md:gap-2">
       <CollectionSidebar
         collections={collections}
         selectedCollectionIds={selectedCollectionIds}
@@ -60,7 +60,7 @@ export const DesignTab = observer(() => {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search"
-              className="w-full rounded-full border border-primary bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
+              className="w-full rounded-full border border-primary-dark bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
             />
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>

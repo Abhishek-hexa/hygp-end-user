@@ -36,7 +36,7 @@ export const RightArrowIcon = ({ className }: { className?: string }) => (
 
 export const SelectedItemIcon = ({
   className,
-  fillColor = '#86a69e',
+  fillColor = '#558A7E',
   version = 'default',
 }: {
   className?: string;
