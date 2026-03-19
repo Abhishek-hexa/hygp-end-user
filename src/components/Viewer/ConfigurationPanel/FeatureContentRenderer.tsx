@@ -1,5 +1,9 @@
+import { observer } from 'mobx-react-lite';
+
+import { useMainContext } from '../../../hooks/useMainContext';
 import { Features } from '../../../state/product/types';
 import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
+import { BulkFetchTab } from '../ConfigurationTabs/BulkFetchTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
 import { EngravingTab } from '../ConfigurationTabs/EngravingTab';
 import { FetchMeowTab } from '../ConfigurationTabs/FetchMeowTab';
@@ -11,9 +15,11 @@ type FeatureContentRendererProps = {
   activeFeature: Features | null;
 };
 
-export const FeatureContentRenderer = ({
+export const FeatureContentRenderer = observer(({
   activeFeature,
 }: FeatureContentRendererProps) => {
+  const { uiManager } = useMainContext();
+
   if (!activeFeature) {
     return <div className="text-sm text-gray-500">Select a feature to configure.</div>;
   }
@@ -43,6 +49,9 @@ export const FeatureContentRenderer = ({
     return <BuckleTab />;
   }
   if (activeFeature === 'FETCH' || activeFeature === 'MEOW') {
+    if (uiManager.isBulkMode) {
+      return <BulkFetchTab feature={activeFeature} />;
+    }
     return <FetchMeowTab feature={activeFeature} />;
   }
 
@@ -51,4 +60,4 @@ export const FeatureContentRenderer = ({
       {featureLabelMap[activeFeature]} configuration coming soon.
     </div>
   );
-};
+});
