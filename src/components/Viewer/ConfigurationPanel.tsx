@@ -9,6 +9,7 @@ import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
 export const ConfigurationPanel = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
+  const uiManager = mainContext.uiManager;
   const sizeManager = productManager.sizeManager;
   const features = productManager.getAllFeatures();
   const activeFeature = productManager.activeFeature;
@@ -40,12 +41,30 @@ export const ConfigurationPanel = observer(() => {
         <FeatureContentRenderer activeFeature={activeFeature} />
       </div>
       <div className="hidden border-t border-primary bg-white px-3 py-1 lg:block lg:px-4 lg:py-3">
-        <button
-          type="button"
-          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
-          <CartIcon stroke={'#fff'} />
-          <span>Add to Cart - ${addToCartPrice}</span>
-        </button>
+        {uiManager.isBulkMode ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="flex h-10 flex-1 items-center justify-center rounded-full border-primary-orange border px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-primary-orange transition-opacity hover:opacity-95">
+              <span>Add to Bundle</span>
+            </button>
+            <button
+              type="button"
+              className="flex h-10 flex-1 items-center justify-center rounded-full border border-primary-orange bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
+              <span className='flex gap-2 justify-center items-center'> 
+                <CartIcon stroke={'#fff'} />
+                Review Bundle
+              </span>
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
+            <CartIcon stroke={'#fff'} />
+            <span>Add to Cart - ${addToCartPrice}</span>
+          </button>
+        )}
       </div>
     </aside>
   );

@@ -18,16 +18,15 @@ type FetchMeowTabProps = {
 
 export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
   const mainContext = useMainContext();
-  const productManager = mainContext.designManager.productManager;
-  const { sizeManager } = productManager;
+  const { productStore } = mainContext.designManager;
   const heading = getFetchHeading(feature);
+  const storeProducts = productStore.products ?? [];
+  const activeStoreProduct = storeProducts[storeProducts.length - 1] ?? null;
 
-  const selectedSize = sizeManager.selectedSize;
-  const selectedSizeDescription = selectedSize
-    ? sizeManager.availableSizes.get(selectedSize)
-    : null;
-  const selectedSizePriceNumber = parsePrice(selectedSizeDescription?.price);
+  const selectedSize = activeStoreProduct?.size.size ?? null;
+  const selectedSizePriceNumber = parsePrice(activeStoreProduct?.price);
   const selectedSizePriceLabel = formatPrice(selectedSizePriceNumber);
+  const totalAmountNumber = parsePrice(productStore.totalPrice);
 
   return (
     <div className="flex min-h-[520px] flex-col p-4 text-gray-700">
@@ -40,7 +39,7 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
         <div className="space-y-2 text-xs font-semibold text-primary-dark">
           <div className="flex items-center justify-between">
             <span>
-              {`${productSummaryLabelMap[productManager.productId] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
+              {`${productSummaryLabelMap[activeStoreProduct?.productId ?? ''] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
             </span>
             <span>{selectedSizePriceLabel}</span>
           </div>
@@ -50,7 +49,7 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
 
         <div className="flex items-center justify-between text-lg font-semibold text-gray-700">
           <span>TOTAL AMOUNT</span>
-          <span>{formatPrice(selectedSizePriceNumber)}</span>
+          <span>{formatPrice(totalAmountNumber)}</span>
         </div>
 
         <p className="mt-3 text-center text-sm text-[#58AB88]">{shippingCopy}</p>
