@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useMainContext } from '../../../hooks/useMainContext';
+import { buildPatternPath } from '../../../state/product/productRouting';
 import { SearchIcon } from '../../icons/Icons';
 import { CollectionSidebar } from './DesignTab/CollectionSidebar';
 import { PatternGrid } from './DesignTab/PatternGrid';
@@ -10,7 +11,7 @@ import { SelectedCollectionChips } from './DesignTab/SelectedCollectionChips';
 import { usePatternLoader } from './DesignTab/usePatternLoader';
 
 export const DesignTab = observer(() => {
-  const { designManager } = useMainContext();
+  const { designManager, uiManager } = useMainContext();
   const textureManager = designManager.productManager.textureManager;
   const navigate = useNavigate();
   const { productSlug } = useParams<{ productSlug: string }>();
@@ -88,7 +89,7 @@ export const DesignTab = observer(() => {
               if (!productSlug) {
                 return;
               }
-              navigate(`/${productSlug}/pattern/${patternId}`);
+              navigate(buildPatternPath(productSlug, patternId, uiManager.isBulkMode));
             }}
           />
         ) : null}

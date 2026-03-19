@@ -34,3 +34,12 @@ export const productSlugToType = (
 
   return productTypeBySlug[productSlug] ?? null;
 };
+
+export const buildPatternPath = (
+  productSlug: string,
+  patternId: number,
+  isBulkMode: boolean,
+): string =>
+  isBulkMode
+    ? `/${productSlug}/bulk/patterns/${patternId}`
+    : `/${productSlug}/pattern/${patternId}`;

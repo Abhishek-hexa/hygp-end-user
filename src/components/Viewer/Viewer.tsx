@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { initializeProductApis } from '../../api/initializeProductApis';
 import { useMainContext } from '../../hooks/useMainContext';
 import {
+  buildPatternPath,
   defaultProductSlug,
   productSlugToType,
 } from '../../state/product/productRouting';
@@ -17,6 +18,7 @@ export const Viewer = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
   const uiManager = mainContext.uiManager;
+  const location = useLocation();
   const navigate = useNavigate();
   const { patternID, productSlug } = useParams<{
     patternID?: string;
@@ -26,6 +28,13 @@ export const Viewer = observer(() => {
   const lastInitializedProductSlugRef = useRef<string | null>(null);
   const selectedPatternIdFromUrl = parsePatternId(patternID);
   const selectedPatternId = productManager.textureManager.selectedPatternId;
+  const isBulkPath = /\/bulk(\/|$)/.test(location.pathname);
+
+  useEffect(() => {
+    if (isBulkPath && !uiManager.isBulkMode) {
+      uiManager.setBulkMode(true);
+    }
+  }, [isBulkPath, uiManager, uiManager.isBulkMode]);
 
   useEffect(() => {
     if (!selectedProductType) {
@@ -59,16 +68,22 @@ export const Viewer = observer(() => {
       return;
     }
 
-    if (selectedPatternIdFromUrl === selectedPatternId) {
+    const targetPath = buildPatternPath(
+      productSlug,
+      selectedPatternId,
+      uiManager.isBulkMode,
+    );
+    if (location.pathname === targetPath) {
       return;
     }
 
-    navigate(`/${productSlug}/pattern/${selectedPatternId}`, { replace: true });
+    navigate(targetPath, { replace: true });
   }, [
+    location.pathname,
     navigate,
     productSlug,
     selectedPatternId,
-    selectedPatternIdFromUrl,
+    uiManager.isBulkMode,
   ]);
 
   return (
