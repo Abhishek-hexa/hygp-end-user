@@ -21,11 +21,7 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
   const { productStore } = mainContext.designManager;
   const heading = getFetchHeading(feature);
   const storeProducts = productStore.products ?? [];
-  const activeStoreProduct = storeProducts[storeProducts.length - 1] ?? null;
 
-  const selectedSize = activeStoreProduct?.size.size ?? null;
-  const selectedSizePriceNumber = parsePrice(activeStoreProduct?.price);
-  const selectedSizePriceLabel = formatPrice(selectedSizePriceNumber);
   const totalAmountNumber = parsePrice(productStore.totalPrice);
 
   return (
@@ -36,14 +32,71 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
       </section>
 
       <section className="mt-6 rounded-xl border border-primary/20 bg-primary-dark/5 p-5">
-        <div className="space-y-2 text-xs font-semibold text-primary-dark">
-          <div className="flex items-center justify-between">
-            <span>
-              {`${productSummaryLabelMap[activeStoreProduct?.productId ?? ''] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
-            </span>
-            <span>{selectedSizePriceLabel}</span>
-          </div>
-        </div>
+
+        <section className="space-y-3">
+          <h4 className="text-sm font-semibold uppercase tracking-wide text-primary-dark">
+            Manage Items
+          </h4>
+          {storeProducts.length === 0 ? (
+            <p className="text-sm text-gray-500">No items in bundle yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {storeProducts.map((product) => {
+                const itemPrice = parsePrice(product.price);
+                const itemTotal = itemPrice * product.qty;
+                const itemSize = product.size.size;
+                return (
+                  <div
+                    key={product.key}
+                    className="rounded-lg border border-primary/20 bg-white px-3 py-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold uppercase text-primary-dark">
+                          {productSummaryLabelMap[product.productId] ?? 'PRODUCT'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {sizeLabelMap[itemSize ?? ''] ?? 'No Size'}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-700">
+                        {formatPrice(itemTotal)}
+                      </p>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            productStore.decreaseQuantity(product.key)
+                          }
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-primary/30 text-sm font-semibold text-primary-dark">
+                          -
+                        </button>
+                        <span className="min-w-6 text-center text-sm font-semibold text-gray-700">
+                          {product.qty}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            productStore.increaseQuantity(product.key)
+                          }
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-primary/30 text-sm font-semibold text-primary-dark">
+                          +
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => productStore.removeProduct(product.key)}
+                        className="text-xs font-semibold uppercase text-red-500">
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
 
         <div className="my-4 border-t-2 border-primary-dark/40" />
 

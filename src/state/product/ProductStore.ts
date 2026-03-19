@@ -28,28 +28,28 @@ export class ProductStore {
         }
     }
 
-    removeProduct(productId: string) {
+    removeProduct(productKey: string) {
         if (this._products === null) {
             return;
         }
-        this._products = this._products.filter((p) => p.productId !== productId);
+        this._products = this._products.filter((p) => p.key !== productKey);
     }
 
-    increaseQuantity(productId: string) {
+    increaseQuantity(productKey: string) {
         if (this._products === null) {
             return;
         }
-        const product = this._products.find((p) => p.productId === productId);
+        const product = this._products.find((p) => p.key === productKey);
         if (product) {
             product.qty += 1;
         }
     }
 
-    decreaseQuantity(productId: string) {
+    decreaseQuantity(productKey: string) {
         if (this._products === null) {
             return;
         }
-        const product = this._products.find((p) => p.productId === productId);
+        const product = this._products.find((p) => p.key === productKey);
         if (product && product.qty > 1) {
             product.qty -= 1;
         }

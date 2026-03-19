@@ -110,6 +110,7 @@ export type SerializedTextureConfig = {
 };
 
 export type SerializedProductConfiguration = {
+  key: string;
   productId: ProductType;
   price: string | null;
   qty: number;

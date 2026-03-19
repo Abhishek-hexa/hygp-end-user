@@ -84,6 +84,7 @@ export class ProductManager {
 
   serializeConfiguration(): SerializedProductConfiguration {
     const productConfig: SerializedProductConfiguration = {
+      key: globalThis.crypto.randomUUID(),
       productId: this._productId,
       price: this.sizeManager.totalPrice,
       qty: 1,

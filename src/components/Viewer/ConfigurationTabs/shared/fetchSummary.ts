@@ -21,12 +21,12 @@ export const sizeLabelMap: Record<string, string> = {
 };
 
 export const productSummaryLabelMap: Record<string, string> = {
-  BANDANA: 'CUSTOM BANDANA',
-  CAT_COLLAR: 'CUSTOM COLLAR',
-  DOG_COLLAR: 'CUSTOM COLLAR',
-  HARNESS: 'CUSTOM HARNESS',
-  LEASH: 'CUSTOM LEASH',
-  MARTINGALE: 'CUSTOM MARTINGALE COLLAR',
+  BANDANA: 'BANDANA',
+  CAT_COLLAR: 'CAT COLLAR',
+  DOG_COLLAR: 'DOG COLLAR',
+  HARNESS: 'HARNESS',
+  LEASH: 'LEASH',
+  MARTINGALE: 'MARTINGALE COLLAR',
 };
 
 export const parsePrice = (value: string | null | undefined): number => {
