@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ProductType } from '../../../state/product/types';
 import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
 
+const moreItems = ['Bulk Order', 'Contact US', 'FAQ'] as const;
+
 type ShopItem = {
   label: string;
   productType: ProductType;
@@ -21,6 +23,7 @@ export const MobileNavMenu = ({
 }: MobileNavMenuProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileShopsOpen, setIsMobileShopsOpen] = useState(false);
+  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +34,7 @@ export const MobileNavMenu = ({
       ) {
         setIsMobileMenuOpen(false);
         setIsMobileShopsOpen(false);
+        setIsMobileMoreOpen(false);
       }
     };
 
@@ -45,6 +49,7 @@ export const MobileNavMenu = ({
       onShopSelect(productType);
     }
     setIsMobileShopsOpen(false);
+    setIsMobileMoreOpen(false);
     setIsMobileMenuOpen(false);
   };
 
@@ -59,6 +64,7 @@ export const MobileNavMenu = ({
           setIsMobileMenuOpen((prev) => !prev);
           if (isMobileMenuOpen) {
             setIsMobileShopsOpen(false);
+            setIsMobileMoreOpen(false);
           }
         }}>
         <span>Menu</span>
@@ -89,7 +95,10 @@ export const MobileNavMenu = ({
             <button
               type="button"
               className="flex items-center justify-between uppercase"
-              onClick={() => setIsMobileShopsOpen((prev) => !prev)}>
+              onClick={() => {
+                setIsMobileShopsOpen((prev) => !prev);
+                setIsMobileMoreOpen(false);
+              }}>
               Shops
               <ChevronDownIcon />
             </button>
@@ -112,9 +121,30 @@ export const MobileNavMenu = ({
           <button type="button" className="text-left uppercase">
             Sell Your Own
           </button>
-          <button type="button" className="text-left uppercase">
-            More
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              className="flex items-center justify-between uppercase"
+              onClick={() => {
+                setIsMobileMoreOpen((prev) => !prev);
+                setIsMobileShopsOpen(false);
+              }}>
+              More
+              <ChevronDownIcon />
+            </button>
+            {isMobileMoreOpen ? (
+              <div className="flex flex-col gap-3 pl-3 text-lg text-[#fbf2e8]">
+                {moreItems.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className="text-left transition-opacity hover:opacity-80">
+                    {item}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
           <button
             type="button"
             className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">

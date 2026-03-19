@@ -18,12 +18,16 @@ const shopItems: Array<{ label: string; productType: ProductType }> = [
   { label: 'Martingale Collars', productType: 'MARTINGALE' },
 ];
 
+const moreItems = ['Bulk Order', 'Contact US', 'FAQ'] as const;
+
 export const NavBar = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
   const navigate = useNavigate();
   const [isShopsOpen, setIsShopsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const shopsMenuRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
 
   const handleShopSelect = (productType: ProductType) => {
     if (productManager.productId === productType) {
@@ -40,11 +44,20 @@ export const NavBar = observer(() => {
       if (!shopsMenuRef.current) {
         setIsShopsOpen(false);
       }
+      if (!moreMenuRef.current) {
+        setIsMoreOpen(false);
+      }
       if (
         shopsMenuRef.current &&
         !shopsMenuRef.current.contains(event.target as Node)
       ) {
         setIsShopsOpen(false);
+      }
+      if (
+        moreMenuRef.current &&
+        !moreMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMoreOpen(false);
       }
     };
 
@@ -82,7 +95,10 @@ export const NavBar = observer(() => {
             <button
               type="button"
               className="uppercase flex items-center gap-1"
-              onClick={() => setIsShopsOpen((prev) => !prev)}>
+              onClick={() => {
+                setIsShopsOpen((prev) => !prev);
+                setIsMoreOpen(false);
+              }}>
               Shops <ChevronDownIcon />
             </button>
             {isShopsOpen ? (
@@ -104,9 +120,31 @@ export const NavBar = observer(() => {
           <button type="button" className="uppercase">
             Sell Your Own
           </button>
-          <button type="button" className="uppercase">
-            More
-          </button>
+          <div ref={moreMenuRef} className="relative">
+            <button
+              type="button"
+              className="uppercase flex items-center gap-1"
+              onClick={() => {
+                setIsMoreOpen((prev) => !prev);
+                setIsShopsOpen(false);
+              }}>
+              More <ChevronDownIcon />
+            </button>
+            {isMoreOpen ? (
+              <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                  {moreItems.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className="text-left transition-opacity hover:opacity-80">
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
           <button
             type="button"
             className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">
