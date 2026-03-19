@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
+import { Features } from '../../state/product/types';
 import { CartIcon } from '../icons/Icons';
 import { FeatureContentRenderer } from './ConfigurationPanel/FeatureContentRenderer';
 import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
@@ -30,6 +31,20 @@ export const ConfigurationPanel = observer(() => {
     }
   }, [activeFeature, features, productManager]);
 
+  const handleAddToBundle = () => {
+    const serializedConfiguration = productManager.serializeConfiguration();
+    mainContext.designManager.productStore.addProduct(serializedConfiguration);
+  };
+
+  const handleReviewBundle = () => {
+    const reviewFeature = (['FETCH', 'MEOW'] as Features[]).find((feature) =>
+      features.includes(feature),
+    );
+    if (reviewFeature) {
+      productManager.setActiveFeature(reviewFeature);
+    }
+  };
+
   return (
     <aside className="flex h-full min-h-0 min-w-0 flex-col text-primary">
       <FeatureTabsHeader
@@ -45,11 +60,13 @@ export const ConfigurationPanel = observer(() => {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={handleAddToBundle}
               className="flex h-10 flex-1 items-center justify-center rounded-full border-primary-orange border px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-primary-orange transition-opacity hover:opacity-95">
               <span>Add to Bundle</span>
             </button>
             <button
               type="button"
+              onClick={handleReviewBundle}
               className="flex h-10 flex-1 items-center justify-center rounded-full border border-primary-orange bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
               <span className='flex gap-2 justify-center items-center'> 
                 <CartIcon stroke={'#fff'} />
