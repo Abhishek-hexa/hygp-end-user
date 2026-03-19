@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { useMainContext } from '../../../hooks/useMainContext';
 import { ProductType } from '../../../state/product/types';
 import { CartIcon, ChevronDownIcon } from '../../icons/Icons';
 
 const moreItems = ['Bulk Order', 'Contact US', 'FAQ'] as const;
+type MoreItem = (typeof moreItems)[number];
 
 type ShopItem = {
   label: string;
@@ -21,6 +23,8 @@ export const MobileNavMenu = ({
   currentProductType,
   onShopSelect,
 }: MobileNavMenuProps) => {
+  const mainContext = useMainContext();
+  const uiManager = mainContext.uiManager;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileShopsOpen, setIsMobileShopsOpen] = useState(false);
   const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
@@ -49,6 +53,12 @@ export const MobileNavMenu = ({
       onShopSelect(productType);
     }
     setIsMobileShopsOpen(false);
+    setIsMobileMoreOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleMobileMoreSelect = (item: MoreItem) => {
+    uiManager.setBulkMode(item === 'Bulk Order');
     setIsMobileMoreOpen(false);
     setIsMobileMenuOpen(false);
   };
@@ -138,7 +148,8 @@ export const MobileNavMenu = ({
                   <button
                     key={item}
                     type="button"
-                    className="text-left transition-opacity hover:opacity-80">
+                    className="text-left transition-opacity hover:opacity-80"
+                    onClick={() => handleMobileMoreSelect(item)}>
                     {item}
                   </button>
                 ))}

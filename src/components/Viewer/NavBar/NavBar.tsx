@@ -19,10 +19,12 @@ const shopItems: Array<{ label: string; productType: ProductType }> = [
 ];
 
 const moreItems = ['Bulk Order', 'Contact US', 'FAQ'] as const;
+type MoreItem = (typeof moreItems)[number];
 
 export const NavBar = observer(() => {
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
+  const uiManager = mainContext.uiManager;
   const navigate = useNavigate();
   const [isShopsOpen, setIsShopsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -37,6 +39,11 @@ export const NavBar = observer(() => {
 
     setIsShopsOpen(false);
     navigate(`/${productTypeToSlug(productType)}`);
+  };
+
+  const handleMoreSelect = (item: MoreItem) => {
+    uiManager.setBulkMode(item === 'Bulk Order');
+    setIsMoreOpen(false);
   };
 
   useEffect(() => {
@@ -137,7 +144,8 @@ export const NavBar = observer(() => {
                     <button
                       key={item}
                       type="button"
-                      className="text-left transition-opacity hover:opacity-80">
+                      className="text-left transition-opacity hover:opacity-80"
+                      onClick={() => handleMoreSelect(item)}>
                       {item}
                     </button>
                   ))}
