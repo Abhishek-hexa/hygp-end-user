@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { Features } from '../../state/product/types';
+import { SizeDescription } from '../../state/product/types';
 import { CartIcon } from '../icons/Icons';
 import { FeatureContentRenderer } from './ConfigurationPanel/FeatureContentRenderer';
 import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
@@ -14,10 +15,8 @@ export const ConfigurationPanel = observer(() => {
   const sizeManager = productManager.sizeManager;
   const features = productManager.getAllFeatures();
   const activeFeature = productManager.activeFeature;
-  const selectedSize = sizeManager.selectedSize;
-  const selectedSizePrice = selectedSize
-    ? sizeManager.availableSizes.get(selectedSize)?.price
-    : null;
+  const selectedSize = sizeManager.selectedSizeData as SizeDescription | null;
+  const selectedSizePrice = selectedSize ? selectedSize.price : null;
   const addToCartPrice = selectedSizePrice ?? '44.98';
 
   useEffect(() => {

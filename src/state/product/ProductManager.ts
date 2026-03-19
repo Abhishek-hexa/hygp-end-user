@@ -6,11 +6,7 @@ import { SizeManager } from './managers/SizeManager';
 import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
-import {
-  Features,
-  SerializedProductConfiguration,
-  ProductType,
-} from './types';
+import { Features, ProductType, SerializedProductConfiguration } from './types';
 
 export class ProductManager {
   private _productId: ProductType = defaultProductId;
@@ -59,12 +55,12 @@ export class ProductManager {
   }
 
   getModelPath() {
-    const selectedSize = this._sizeManager.selectedSize;
+    const selectedSize = this._sizeManager.selectedSizeData;
     if (!selectedSize) {
       return null;
     }
 
-    return this._sizeManager.availableSizes.get(selectedSize)?.model ?? null;
+    return selectedSize?.model ?? null;
   }
 
   setProduct(inProductId: ProductType) {
@@ -89,7 +85,7 @@ export class ProductManager {
       price: this.sizeManager.totalPrice,
       qty: 1,
       size: {
-        size: this.sizeManager.selectedSize,
+        size: this.sizeManager.selectedSizeData,
         length: this.sizeManager.selectedLength,
       },
       buckle: {
@@ -108,7 +104,7 @@ export class ProductManager {
       texture: {
         pattern: this.textureManager.selectedPatternId,
         collections: this.textureManager.selectedCollectionIds[0],
-      }
+      },
     };
 
     this.resetSelections();

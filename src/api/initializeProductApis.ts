@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-import { ProductManager } from '../state/product/ProductManager';
 import { BuckleManager } from '../state/product/managers/BuckleManager';
 import { EngravingManager } from '../state/product/managers/EngravingManager';
 import { TextureManager } from '../state/product/managers/TextureManager';
 import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
-import { UiManager } from '../state/ui/UiManager';
+import { ProductManager } from '../state/product/ProductManager';
 import {
   Collection,
   ColorDescription,
@@ -16,6 +15,7 @@ import {
   ProductType,
   SizeDescription,
 } from '../state/product/types';
+import { UiManager } from '../state/ui/UiManager';
 import { apiEndPointMap } from './ApiEndPointMap';
 import {
   BuckleApiItem,
@@ -36,7 +36,7 @@ const fetchJson = async <T>(
   label: string,
 ): Promise<T> => {
   const { data } = await axios.get<T>(`${baseUrl}${path}`);
-  // eslint-disable-next-line no-console
+
   // console.log(`[product-init] ${label}`, data);
   return data;
 };
@@ -135,7 +135,10 @@ export const initializeProductApis = async (
       } catch (error) {
         targetPatternId = null;
         // eslint-disable-next-line no-console
-        console.warn('[product-init] Failed to resolve deep-link pattern', error);
+        console.warn(
+          '[product-init] Failed to resolve deep-link pattern',
+          error,
+        );
       }
     }
 
@@ -186,18 +189,18 @@ const parseFonts = (
   fontOptions.forEach((font) => {
     if (font.use_case.includes('webbing')) {
       webbingFonts.set(font.id, {
+        font_path: font.font_path,
         id: font.id,
         name: font.name,
         preview: font.preview,
-        font_path: font.font_path,
       });
     }
     if (font.use_case.includes('buckle')) {
       engravingFonts.set(font.id, {
+        font_path: font.font_path,
         id: font.id,
         name: font.name,
         preview: font.preview,
-        font_path: font.font_path,
       });
     }
   });
@@ -221,9 +224,11 @@ const parseSizes = (
 
     const sizeDescription: SizeDescription = {
       id: typeof size.id === 'string' ? parseInt(size.id) : size.id,
-      price: size.price ? size.price : size.withoutBellPrice,
       model: size.model,
       plasticModel: size.plasticModel,
+      price: size.price ? size.price : size.withoutBellPrice,
+      size: size.size as ProductSizeType,
+      sizeImage: size.sizeImage ? size.sizeImage : '',
     };
 
     sizeMap.set(parsedSize, sizeDescription);
@@ -240,10 +245,10 @@ const recordValue = (size: ProductVariantApiItem): ProductSizeType | null => {
 
   const sizeLookup: Record<string, ProductSizeType> = {
     EXTRASMALL: 'EXTRA_SMALL',
-    SMALL: 'SMALL',
+    LARGE: 'LARGE',
     MEDIUMNARROW: 'MEDIUM_NARROW',
     MEDIUMWIDE: 'MEDIUM_WIDE',
-    LARGE: 'LARGE',
+    SMALL: 'SMALL',
     XLARGE: 'XLARGE',
     XXLARGE: 'XXLARGE',
   };
@@ -281,16 +286,16 @@ const parseBuckles = (
   buckles.forEach((buckle: BuckleApiItem) => {
     if (buckle.metal_color) {
       const parsedMetalColor = {
+        hex: buckle.metal_color,
         id: buckle.id,
         materialId: buckle.material_id,
-        name: buckle.name,
         materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
             }
           : { id: 0, name: 'METAL' },
-        hex: buckle.metal_color,
+        name: buckle.name,
         preview: buckle.preview,
       };
       metalColors.push(parsedMetalColor);
@@ -298,16 +303,16 @@ const parseBuckles = (
 
     if (buckle.plastic_color) {
       const parsedPlasticColor = {
+        hex: buckle.plastic_color,
         id: buckle.id,
         materialId: buckle.material_id,
-        name: buckle.name,
         materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
             }
           : { id: 0, name: 'PLASTIC' },
-        hex: buckle.plastic_color,
+        name: buckle.name,
         preview: buckle.preview,
       };
       plasticColors.push(parsedPlasticColor);
@@ -315,16 +320,16 @@ const parseBuckles = (
 
     if (buckle.breakaway_color) {
       const parsedBreakawayColor = {
+        hex: buckle.breakaway_color,
         id: buckle.id,
         materialId: buckle.material_id,
-        name: buckle.name,
         materialType: buckle.material_type
           ? {
               id: buckle.material_type.id,
               name: buckle.material_type.name,
             }
           : { id: 0, name: 'BREAKAWAY' },
-        hex: buckle.breakaway_color,
+        name: buckle.name,
         preview: buckle.preview,
       };
       breakawayColors.push(parsedBreakawayColor);
@@ -345,10 +350,10 @@ const parsePatterns = (
 
   products.forEach((product) => {
     const parsedProduct: PatternType = {
-      id: parseInt(product.id),
       collectionId: parseInt(product.collection_Id),
-      name: product.name,
       dataX: product.dataX,
+      id: parseInt(product.id),
+      name: product.name,
       pngImage: product.png_image,
       preview: product.preview,
     };
@@ -361,7 +366,7 @@ const parsePatterns = (
     preferredPatternId !== null &&
     patterns.some((pattern) => pattern.id === preferredPatternId)
       ? preferredPatternId
-      : patterns[0]?.id ?? null;
+      : (patterns[0]?.id ?? null);
   textureManager.setSelectedPattern(matchedPatternId);
 };
 
@@ -400,16 +405,9 @@ const parseLeashVariants = (
   sizeManager.setLengthPrices(orderedLengthPrices);
 };
 
-const parseLeashLengthLabel = (
-  lengthLabel: string,
-): LeashLengthType | null => {
+const parseLeashLengthLabel = (lengthLabel: string): LeashLengthType | null => {
   const parsed = String(lengthLabel).match(/[3-6]/)?.[0];
-  if (
-    parsed === '3' ||
-    parsed === '4' ||
-    parsed === '5' ||
-    parsed === '6'
-  ) {
+  if (parsed === '3' || parsed === '4' || parsed === '5' || parsed === '6') {
     return parsed;
   }
   return null;

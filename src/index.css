@@ -110,3 +110,7 @@
   animation: shimmer 1.6s infinite linear;
   border-radius: 6px;
 }
+
+button{
+  cursor: pointer;
+}

@@ -1,192 +1,187 @@
 export interface ApiResponse<T> {
-  data: T
-  message?: string
+  data: T;
+  message?: string;
 }
 
 //    Buckles API
 //    GET /buckle
 
 export interface BuckleMaterialType {
-  id: number
-  name: string
-  createdAt: string
-  updatedAt: string
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BuckleApiItem {
-  id: number
-  name: string
+  id: number;
+  name: string;
 
-  material_id: number
-  material_type: BuckleMaterialType
+  material_id: number;
+  material_type: BuckleMaterialType;
 
-  metal_color: string | null
-  plastic_color: string | null
-  breakaway_color?: string | null
+  metal_color: string | null;
+  plastic_color: string | null;
+  breakaway_color?: string | null;
 
-  preview: string
+  preview: string;
 
-  display_order: number
+  display_order: number;
 
-  createdAt: string
-  updatedAt: string
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type BucklesApiResponse = ApiResponse<BuckleApiItem[]>
-
+export type BucklesApiResponse = ApiResponse<BuckleApiItem[]>;
 
 //    Engraving Fonts API
 //    GET /engraving-fonts
 
-export type FontUseCase = 'webbing' | 'buckle'
+export type FontUseCase = 'webbing' | 'buckle';
 
 export interface EngravingFontApiItem {
-  id: number
+  id: number;
 
-  name: string
-  longName: string
+  name: string;
+  longName: string;
 
-  file_name: string
-  trueFontName: string
+  file_name: string;
+  trueFontName: string;
 
-  font_path: string
-  preview: string
+  font_path: string;
+  preview: string;
 
-  display_order: number
-  isVisible: boolean
+  display_order: number;
+  isVisible: boolean;
 
-  use_case: FontUseCase[]
+  use_case: FontUseCase[];
 
-  createdAt: string
-  updatedAt: string
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type EngravingFontsApiResponse = ApiResponse<EngravingFontApiItem[]>
-
+export type EngravingFontsApiResponse = ApiResponse<EngravingFontApiItem[]>;
 
 //    Product Variants API
 //    GET /product/variants/{id}
 
 export interface ProductVariantApiItem {
-  id: number
+  id: number;
 
-  size: string
-  prefix: string
+  size: string;
+  prefix: string;
 
-  price: string
+  price: string;
 
-  model: string
-  plasticModel: string
+  model: string;
+  plasticModel: string;
 
-  sizeImage?: string
+  sizeImage?: string;
 
-  width: number | null
-  length: number | null
-  withoutBellPrice: string
+  width: number | null;
+  length: number | null;
+  withoutBellPrice: string;
 }
 
 export interface ProductVariantsApiResponse {
-  success: boolean
-  variants: ProductVariantApiItem[]
-  data: ProductVariantApiItem[] // For backward compatibility, to be removed in the future
+  success: boolean;
+  variants: ProductVariantApiItem[];
+  data: ProductVariantApiItem[]; // For backward compatibility, to be removed in the future
 }
 
 //    Leash Variants API
 //    GET /leashes.varients
 
 export interface LeashVariantApiItem {
-  id: number
-  size: string
-  prefix: string
-  price: string
-  model: string
-  sizeImage?: string | null
-  length: string[]
+  id: number;
+  size: string;
+  prefix: string;
+  price: string;
+  model: string;
+  sizeImage?: string | null;
+  length: string[];
 }
 
-export type LeashVariantsApiResponse = ApiResponse<LeashVariantApiItem[]>
-
+export type LeashVariantsApiResponse = ApiResponse<LeashVariantApiItem[]>;
 
 //    Shopify Collections API
 //    GET /shopify-collection
 
 export interface ShopifyCollectionApiItem {
-  gid: string
-  id: string
+  gid: string;
+  id: string;
 
-  title: string
-  handle: string
+  title: string;
+  handle: string;
 
-  image: string
+  image: string;
 
-  Default_collection?: boolean
-  Default_product?: string
+  Default_collection?: boolean;
+  Default_product?: string;
 
-  star_pattern?: string
+  star_pattern?: string;
 }
 
 export interface ShopifyCollectionsApiResponse {
-  custom_collections: ShopifyCollectionApiItem[]
+  custom_collections: ShopifyCollectionApiItem[];
 }
-
 
 //    Collection Products API
 //    GET /shopify-collection/products/{collectionId}
 
 export interface CollectionProductApiItem {
-  id: string
-  collection_Id: string
+  id: string;
+  collection_Id: string;
 
-  name: string
+  name: string;
 
-  preview: string
-  png_image: string
+  preview: string;
+  png_image: string;
 
-
-  dataX: string
+  dataX: string;
 }
 
 export interface CollectionProductsPageInfo {
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-  lastCursor: string
-  startCursor: string
-  productCount: number
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  lastCursor: string;
+  startCursor: string;
+  productCount: number;
 }
 
 export interface CollectionProductsApiResponse {
-  success: boolean
+  success: boolean;
 
-  collectionId: string
+  collectionId: string;
 
-  totalProducts: number
+  totalProducts: number;
 
-  products: CollectionProductApiItem[]
+  products: CollectionProductApiItem[];
 
-  pageInfo: CollectionProductsPageInfo
+  pageInfo: CollectionProductsPageInfo;
 }
 
 //    Product by ID API
 //    GET /product/{productId}
 
 export interface ProductByIdApiItem {
-  id: string
-  name: string
-  description: string
-  tags: string[]
-  status: string
-  images: string[]
-  dataX: string
-  cropValue: string
+  id: string;
+  name: string;
+  description: string;
+  tags: string[];
+  status: string;
+  images: string[];
+  dataX: string;
+  cropValue: string;
   image: {
-    src: string
-  }
-  collectionId: string
-  png_image: string
-  preview: string
+    src: string;
+  };
+  collectionId: string;
+  png_image: string;
+  preview: string;
 }
 
 export interface ProductByIdApiResponse {
-  success: boolean
-  product: ProductByIdApiItem
+  success: boolean;
+  product: ProductByIdApiItem;
 }

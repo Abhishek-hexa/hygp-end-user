@@ -45,9 +45,11 @@ export interface Collection {
 
 export interface SizeDescription {
   id: number;
+  size: ProductSizeType;
   price: string;
   model: string;
   plasticModel: string;
+  sizeImage: string;
 }
 
 export interface ColorDescription {
@@ -79,7 +81,7 @@ export interface FontDescription {
 }
 
 export type SerializedSizeConfig = {
-  size: ProductSizeType | null;
+  size: SizeDescription | null;
   length: LeashLengthType | null;
 };
 
@@ -114,7 +116,7 @@ export type SerializedProductConfiguration = {
   productId: ProductType;
   price: string | null;
   qty: number;
-  size: SerializedSizeConfig;
+  size: SerializedSizeConfig | null;
   buckle: SerializedBuckleConfig;
   engraving: SerializedEngravingConfig;
   webbing: SerializedWebbingConfig;

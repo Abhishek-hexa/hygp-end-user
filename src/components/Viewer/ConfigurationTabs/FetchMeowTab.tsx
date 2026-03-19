@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
+
 import { useMainContext } from '../../../hooks/useMainContext';
-import { LeashLengthType } from '../../../state/product/types';
+import { LeashLengthType, SizeDescription } from '../../../state/product/types';
 import { SelectedItemIcon } from '../../icons/Icons';
 import {
   fetchReviewCopy,
@@ -25,11 +26,8 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const heading = getFetchHeading(feature);
   const isDogCollar = productManager.productId === 'DOG_COLLAR';
 
-  const selectedSize = sizeManager.selectedSize;
-  const selectedSizeDescription = selectedSize
-    ? sizeManager.availableSizes.get(selectedSize)
-    : null;
-  const selectedSizePriceNumber = parsePrice(selectedSizeDescription?.price);
+  const selectedSize = sizeManager.selectedSizeData as SizeDescription | null;
+  const selectedSizePriceNumber = parsePrice(selectedSize?.price);
   const selectedSizePriceLabel = formatPrice(selectedSizePriceNumber);
 
   const leashLengths = sizeManager.availableLengths;
@@ -59,7 +57,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   ];
 
   return (
-    <div className="flex min-h-[520px] flex-col p-4 text-gray-700">
+    <div className="flex min-h-130 flex-col p-4 text-gray-700">
       <section className="space-y-1">
         <h3 className="text-base font-semibold text-gray-900">{heading}</h3>
         <p className="text-xs text-gray-500">{fetchReviewCopy}</p>
@@ -67,24 +65,31 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
 
       {isDogCollar && (
         <section className="mt-6 space-y-3">
-          <h4 className="text-sm font-semibold text-gray-600">Matching Leash?</h4>
+          <h4 className="text-sm font-semibold text-gray-600">
+            Matching Leash?
+          </h4>
           <div
             className="feature-tabs-scroll -mx-1 flex gap-3 overflow-x-auto px-1 whitespace-nowrap md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0"
-            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
-          >
+            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
             {leashOptions.map((option) => (
               <button
                 key={option.id}
                 type="button"
                 onClick={() =>
-                  sizeManager.setLength(option.id === 'none' ? null : (option.id as LeashLengthType))
+                  sizeManager.setLength(
+                    option.id === 'none'
+                      ? null
+                      : (option.id as LeashLengthType),
+                  )
                 }
-                className={`relative min-w-[130px] shrink-0 rounded-md border px-4 py-3 text-left transition-colors md:min-w-0 ${
+                className={`relative min-w-32.5 shrink-0 rounded-md border px-4 py-3 text-left transition-colors md:min-w-0 ${
                   option.selected
                     ? 'border-primary-dark bg-primary/5'
                     : 'border-gray-200 bg-white hover:border-primary/40'
                 }`}>
-                <div className="text-xs font-semibold text-gray-900">{option.name}</div>
+                <div className="text-xs font-semibold text-gray-900">
+                  {option.name}
+                </div>
                 <div className="text-xs text-gray-600">{option.price}</div>
                 {option.selected ? (
                   <SelectedItemIcon className="absolute right-1 top-1" />
@@ -99,14 +104,18 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
         <div className="space-y-2 text-xs font-semibold text-primary-dark">
           <div className="flex items-center justify-between">
             <span>
-              {`${productSummaryLabelMap[productManager.productId] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize ?? ''] ?? 'No Size'})`}
+              {`${productSummaryLabelMap[productManager.productId] ?? 'CUSTOM PRODUCT'} (${sizeLabelMap[selectedSize?.size ?? ''] ?? 'No Size'})`}
             </span>
             <span>{selectedSizePriceLabel}</span>
           </div>
           {isDogCollar && (
             <div className="flex items-center justify-between">
               <span>{selectedLeashLabel}</span>
-              <span>{selectedLeashLength ? formatPrice(selectedLeashPriceNumber) : '$0.00'}</span>
+              <span>
+                {selectedLeashLength
+                  ? formatPrice(selectedLeashPriceNumber)
+                  : '$0.00'}
+              </span>
             </div>
           )}
         </div>
