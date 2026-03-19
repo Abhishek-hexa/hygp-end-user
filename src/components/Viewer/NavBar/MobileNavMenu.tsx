@@ -58,7 +58,11 @@ export const MobileNavMenu = ({
   };
 
   const handleMobileMoreSelect = (item: MoreItem) => {
-    uiManager.setBulkMode(item === 'Bulk Order');
+    if (item === 'Bulk Order') {
+      uiManager.setBulkMode(!uiManager.isBulkMode);
+    } else {
+      uiManager.setBulkMode(false);
+    }
     setIsMobileMoreOpen(false);
     setIsMobileMenuOpen(false);
   };
@@ -148,8 +152,11 @@ export const MobileNavMenu = ({
                   <button
                     key={item}
                     type="button"
-                    className="text-left transition-opacity hover:opacity-80"
+                    className="flex items-center gap-2 text-left transition-opacity hover:opacity-80"
                     onClick={() => handleMobileMoreSelect(item)}>
+                    {item === 'Bulk Order' && uiManager.isBulkMode ? (
+                      <span className="h-2 w-2 rounded-full bg-[#6f9e9d]" />
+                    ) : null}
                     {item}
                   </button>
                 ))}

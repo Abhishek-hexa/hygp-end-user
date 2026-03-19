@@ -26,17 +26,20 @@ export const Viewer = observer(() => {
   }>();
   const selectedProductType = productSlugToType(productSlug);
   const lastInitializedProductSlugRef = useRef<string | null>(null);
+  const lastPathnameRef = useRef<string | null>(null);
   const selectedPatternIdFromUrl = parsePatternId(patternID);
   const selectedPatternId = productManager.textureManager.selectedPatternId;
   const isBulkPath = /\/bulk(\/|$)/.test(location.pathname);
 
-  useEffect(() => {
-    if (isBulkPath && !uiManager.isBulkMode) {
-      uiManager.setBulkMode(true);
+  useEffect(() => { // setting bulk mode on the basis of url 
+    if (lastPathnameRef.current === location.pathname) {
+      return;
     }
-  }, [isBulkPath, uiManager, uiManager.isBulkMode]);
+    lastPathnameRef.current = location.pathname;
+    uiManager.setBulkMode(isBulkPath);
+  }, [isBulkPath, location.pathname, uiManager]);
 
-  useEffect(() => {
+  useEffect(() => { // initialization of product APIs
     if (!selectedProductType) {
       navigate(`/${defaultProductSlug}`, { replace: true });
       return;
@@ -63,14 +66,18 @@ export const Viewer = observer(() => {
     uiManager,
   ]);
 
-  useEffect(() => {
-    if (!productSlug || selectedPatternId === null) {
+  useEffect(() => { // syncing url with selected pattern and bulk mode
+    if (!productSlug) {
+      return;
+    }
+    const effectivePatternId = selectedPatternId ?? selectedPatternIdFromUrl;
+    if (effectivePatternId === null) {
       return;
     }
 
     const targetPath = buildPatternPath(
       productSlug,
-      selectedPatternId,
+      effectivePatternId,
       uiManager.isBulkMode,
     );
     if (location.pathname === targetPath) {
@@ -83,6 +90,7 @@ export const Viewer = observer(() => {
     navigate,
     productSlug,
     selectedPatternId,
+    selectedPatternIdFromUrl,
     uiManager.isBulkMode,
   ]);
 
