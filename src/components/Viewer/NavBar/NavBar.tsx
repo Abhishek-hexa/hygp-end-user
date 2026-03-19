@@ -75,91 +75,100 @@ export const NavBar = observer(() => {
   }, []);
 
   return (
-    <header className="fixed left-0 top-0 z-50 h-16 w-full bg-primary lg:h-20">
-      <div className="mx-auto flex h-full w-full items-center justify-between px-3 lg:px-5">
-        <div className="flex items-center">
-          <LazyImage
-            src="/logo/mobileNavbar.png"
-            alt="Here You Go Pup Logo"
-            className="h-8 w-auto lg:hidden"
+    <header className="fixed left-0 top-0 z-50 w-full">
+      <div className="h-16 w-full bg-primary lg:h-20">
+        <div className="mx-auto flex h-full w-full items-center justify-between px-3 lg:px-5">
+          <div className="flex items-center">
+            <LazyImage
+              src="/logo/mobileNavbar.png"
+              alt="Here You Go Pup Logo"
+              className="h-8 w-auto lg:hidden"
+            />
+            <LazyImage
+              src="/logo/desktopNavbar.png"
+              alt="Here You Go Pup Logo"
+              className="hidden h-16 w-auto lg:block"
+            />
+          </div>
+          <MobileNavMenu
+            shopItems={shopItems}
+            currentProductType={productManager.productId}
+            onShopSelect={handleShopSelect}
           />
-          <LazyImage
-            src="/logo/desktopNavbar.png"
-            alt="Here You Go Pup Logo"
-            className="hidden h-16 w-auto lg:block"
-          />
+          <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
+            <button type="button" className="uppercase">
+              Size Guide
+            </button>
+            <div ref={shopsMenuRef} className="relative">
+              <button
+                type="button"
+                className="uppercase flex items-center gap-1"
+                onClick={() => {
+                  setIsShopsOpen((prev) => !prev);
+                  setIsMoreOpen(false);
+                }}>
+                Shops <ChevronDownIcon />
+              </button>
+              {isShopsOpen ? (
+                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                  <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                    {shopItems.map((shopItem) => (
+                      <button
+                        key={shopItem.productType}
+                        type="button"
+                        className="text-left transition-opacity hover:opacity-80"
+                        onClick={() => handleShopSelect(shopItem.productType)}>
+                        {shopItem.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <button type="button" className="uppercase">
+              Sell Your Own
+            </button>
+            <div ref={moreMenuRef} className="relative">
+              <button
+                type="button"
+                className="uppercase flex items-center gap-1"
+                onClick={() => {
+                  setIsMoreOpen((prev) => !prev);
+                  setIsShopsOpen(false);
+                }}>
+                More <ChevronDownIcon />
+              </button>
+              {isMoreOpen ? (
+                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                  <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                    {moreItems.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        className="text-left transition-opacity hover:opacity-80"
+                        onClick={() => handleMoreSelect(item)}>
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">
+              <CartIcon />
+            </button>
+          </nav>
         </div>
-        <MobileNavMenu
-          shopItems={shopItems}
-          currentProductType={productManager.productId}
-          onShopSelect={handleShopSelect}
-        />
-        <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
-          <button type="button" className="uppercase">
-            Size Guide
-          </button>
-          <div ref={shopsMenuRef} className="relative">
-            <button
-              type="button"
-              className="uppercase flex items-center gap-1"
-              onClick={() => {
-                setIsShopsOpen((prev) => !prev);
-                setIsMoreOpen(false);
-              }}>
-              Shops <ChevronDownIcon />
-            </button>
-            {isShopsOpen ? (
-              <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
-                <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
-                  {shopItems.map((shopItem) => (
-                    <button
-                      key={shopItem.productType}
-                      type="button"
-                      className="text-left transition-opacity hover:opacity-80"
-                      onClick={() => handleShopSelect(shopItem.productType)}>
-                      {shopItem.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-          <button type="button" className="uppercase">
-            Sell Your Own
-          </button>
-          <div ref={moreMenuRef} className="relative">
-            <button
-              type="button"
-              className="uppercase flex items-center gap-1"
-              onClick={() => {
-                setIsMoreOpen((prev) => !prev);
-                setIsShopsOpen(false);
-              }}>
-              More <ChevronDownIcon />
-            </button>
-            {isMoreOpen ? (
-              <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
-                <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
-                  {moreItems.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      className="text-left transition-opacity hover:opacity-80"
-                      onClick={() => handleMoreSelect(item)}>
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow text-sm font-semibold text-gray-700">
-            <CartIcon />
-          </button>
-        </nav>
       </div>
+      {uiManager.isBulkMode ? (
+        <div className="flex h-8 w-full items-center justify-center bg-[#e6c8a2] px-3">
+          <p className="font-ranchers text-base uppercase tracking-[0.16em] text-[#6f9e9d] lg:text-[1.45rem]">
+            Bulk Order Mode Active
+          </p>
+        </div>
+      ) : null}
     </header>
   );
 });
