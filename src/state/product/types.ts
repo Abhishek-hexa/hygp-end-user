@@ -54,7 +54,7 @@ export interface ColorDescription {
   id: number;
   materialId: number;
   materialType: {
-    id: string;
+    id: number;
     name: string;
   };
   name: string;

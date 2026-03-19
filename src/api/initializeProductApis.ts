@@ -18,6 +18,7 @@ import {
 } from '../state/product/types';
 import { apiEndPointMap } from './ApiEndPointMap';
 import {
+  BuckleApiItem,
   BucklesApiResponse,
   CollectionProductsApiResponse,
   EngravingFontsApiResponse,
@@ -281,7 +282,7 @@ const parseBuckles = (
   const plasticColors: ColorDescription[] = [];
   const breakawayColors: ColorDescription[] = [];
 
-  buckles.forEach((buckle: any) => {
+  buckles.forEach((buckle: BuckleApiItem) => {
     if (buckle.metal_color) {
       const parsedMetalColor = {
         id: buckle.id,
