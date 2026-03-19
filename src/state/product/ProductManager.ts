@@ -111,6 +111,8 @@ export class ProductManager {
       }
     };
 
+    this.resetSelections();
+
     return productConfig;
   }
 
@@ -120,5 +122,13 @@ export class ProductManager {
     this._engravingManager.reset();
     this._webbingTextManager.reset();
     this._textureManager.reset();
+  }
+
+  resetSelections() {
+    this._sizeManager.resetSelection();
+    this._buckleManager.resetSelection();
+    this._engravingManager.resetSelection();
+    this._webbingTextManager.resetSelection();
+    this._textureManager.resetSelection();
   }
 }

@@ -88,6 +88,14 @@ export class EngravingManager {
     this._availableFonts = inFonts;
   }
 
+  resetSelection() {
+    this._lines = Array.from({ length: EngravingManager.MAX_LINES }, () => ({
+      font: null,
+      text: '',
+    }));
+    this._activeLineIndex = 0;
+  }
+
   reset() {
     this._lines = Array.from({ length: EngravingManager.MAX_LINES }, () => ({
       font: null,

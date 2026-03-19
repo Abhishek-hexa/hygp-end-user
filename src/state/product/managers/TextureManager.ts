@@ -128,6 +128,11 @@ export class TextureManager {
     return this._availablePatterns.has(collectionId);
   }
 
+  resetSelection() {
+    this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
+    this._selectedPatternId = this.availablePatterns?.[0]?.id ?? null;
+  }
+
   reset() {
     this._selectedCollectionIds = [];
     this._activeCollectionId = null;

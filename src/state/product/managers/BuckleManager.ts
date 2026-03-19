@@ -97,6 +97,12 @@ export class BuckleManager {
     this._selectedColor = inColor;
   }
 
+  resetSelection() {
+    this._material = null;
+    this._selectedColor = null;
+    this.syncSelection();
+  }
+
   reset() {
     this._material = null;
     this._selectedColor = null;

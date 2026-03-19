@@ -72,6 +72,11 @@ export class SizeManager {
     this._lengthPrices = inLengthPrices;
   }
 
+  resetSelection() {
+    this._selectedSize = this._availableSizes.keys().next().value || null;
+    this._selectedLength = null;
+  }
+
   reset() {
     this._selectedSize = null;
     this._selectedLength = null;

@@ -55,6 +55,13 @@ export class WebbingTextManager {
     this._availableFonts = inAvailableFonts;
   }
 
+  resetSelection() {
+    this._value = '';
+    this._size = 'MEDIUM';
+    this._selectedFont = null;
+    this._selectedColor = DEFAULT_TEXT_COLOR;
+  }
+
   reset() {
     this._value = '';
     this._size = 'MEDIUM';
