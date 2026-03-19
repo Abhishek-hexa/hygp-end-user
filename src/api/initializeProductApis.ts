@@ -49,9 +49,6 @@ export const initializeProductApis = async (
 ) => {
   uiManager.setDataLoading(true);
   uiManager.setDataError(null);
-  console.log(
-    `[product-init] Starting API initialization for product type: ${productType}`,
-  );
   productManager.setProduct(productType);
 
   const endPoints = apiEndPointMap[productType];
@@ -167,7 +164,6 @@ export const initializeProductApis = async (
       parseLeashVariants(leashes, productManager.sizeManager);
     }
 
-    console.log('[product-init] API initialization completed successfully');
   } catch (error) {
     uiManager.setDataError('Could not load product data. Please try again.');
     // eslint-disable-next-line no-console
