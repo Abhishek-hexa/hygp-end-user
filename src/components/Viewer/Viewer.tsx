@@ -10,7 +10,7 @@ import {
   productSlugToType,
 } from '../../state/product/productRouting';
 import CustomLoader from '../shared/CustomLoader';
-import { CanvasPanel } from './CanvasPanel';
+import { CanvasPanel } from './Canvas/CanvasPanel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 

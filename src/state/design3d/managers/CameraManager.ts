@@ -5,9 +5,9 @@ export type Vec3 = [number, number, number];
 export class CameraManager {
   private _position: Vec3 = [0, 0.25, 2.6];
   private _target: Vec3 = [0, 0, 0];
-  private _fov = 35;
+  private _fov = 26;
   private _near = 0.1;
-  private _far = 100;
+  private _far = 10000;
   private _isAutoRotate = false;
   private _autoRotateSpeed = 0.5;
 
