@@ -68,7 +68,6 @@ export class ProductManager {
     this._activeFeature = this.getAllFeatures()[0] ?? null;
     this.reset();
     this._buckleManager.setProductId(inProductId);
-    console.log(inProductId);
   }
 
   getAllFeatures() {

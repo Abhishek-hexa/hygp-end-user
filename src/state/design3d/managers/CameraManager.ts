@@ -69,35 +69,8 @@ export class CameraManager {
     return this._autoRotateSpeed;
   }
 
-  setPosition(position: Vec3) {
-    this._position = position;
-  }
-
-  applyProductCameraPosition(productId: ProductType) {
-    this._position = CAMERA_POSITIONS_BY_PRODUCT[productId];
-  }
-
   setTarget(target: Vec3) {
     this._target = target;
   }
 
-  setFov(fov: number) {
-    this._fov = fov;
-  }
-
-  setNear(near: number) {
-    this._near = near;
-  }
-
-  setFar(far: number) {
-    this._far = far;
-  }
-
-  setAutoRotate(isAutoRotate: boolean) {
-    this._isAutoRotate = isAutoRotate;
-  }
-
-  setAutoRotateSpeed(speed: number) {
-    this._autoRotateSpeed = speed;
-  }
 }

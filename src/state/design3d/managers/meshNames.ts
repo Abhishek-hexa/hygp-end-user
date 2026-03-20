@@ -40,7 +40,7 @@ export const visibleMeshNamesByProductType = {
   DOG_COLLAR: [
     'Buckle',
     'D_Ring',
-    'Plane',
+    // 'Plane',
     'Stiches',
     'Tri_Glide',
     'Web',
