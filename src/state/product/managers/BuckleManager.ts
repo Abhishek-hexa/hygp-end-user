@@ -66,6 +66,15 @@ export class BuckleManager {
     return this._selectedColor;
   }
 
+  get currentSelectedColorDescription() {
+    if (this._selectedColor === null) {
+      return null;
+    }
+    return (
+      this.currentColors.find((color) => color.id === this._selectedColor) ?? null
+    );
+  }
+
   get productId() {
     return this._productId;
   }
