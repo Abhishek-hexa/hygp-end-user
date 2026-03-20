@@ -1,13 +1,13 @@
-import { Suspense, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
+import { Suspense, useRef } from 'react';
+import { LinearToneMapping } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
 import { CanvasModel } from './CanvasModel';
-import { LinearToneMapping } from 'three';
-import { LoadCollar } from './LoadCollar';
+import { LoadCollar } from './LoadCollar/LoadCollar';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
