@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { FontDescription } from '../../../../state/product/types';
 import { AIcon, ChevronDownIcon } from '../../../icons/Icons';
 import { LazyImage } from '../../../shared/LazyImage';

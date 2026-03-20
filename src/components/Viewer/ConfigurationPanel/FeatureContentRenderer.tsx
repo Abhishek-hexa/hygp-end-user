@@ -15,49 +15,53 @@ type FeatureContentRendererProps = {
   activeFeature: Features | null;
 };
 
-export const FeatureContentRenderer = observer(({
-  activeFeature,
-}: FeatureContentRendererProps) => {
-  const { uiManager } = useMainContext();
+export const FeatureContentRenderer = observer(
+  ({ activeFeature }: FeatureContentRendererProps) => {
+    const { uiManager } = useMainContext();
 
-  if (!activeFeature) {
-    return <div className="text-sm text-gray-500">Select a feature to configure.</div>;
-  }
-
-  if (activeFeature === 'SIZE') {
-    return <SizeTab />;
-  }
-  if (activeFeature === 'DESIGN') {
-    return <DesignTab />;
-  }
-  if (activeFeature === 'COLLAR_TEXT') {
-    return <WebbingTextTab target="collar" />;
-  }
-  if (activeFeature === 'LEASH_TEXT') {
-    return <WebbingTextTab target="leash" />;
-  }
-  if (activeFeature === 'HARNESS_TEXT') {
-    return <WebbingTextTab target="harness" />;
-  }
-  if (activeFeature === 'ENGRAVING') {
-    return <EngravingTab />;
-  }
-  if (activeFeature === 'BUCKLE') {
-    return <BuckleTab />;
-  }
-  if (activeFeature === 'HARDWARE') {
-    return <BuckleTab />;
-  }
-  if (activeFeature === 'FETCH' || activeFeature === 'MEOW') {
-    if (uiManager.isBulkMode) {
-      return <BulkFetchTab feature={activeFeature} />;
+    if (!activeFeature) {
+      return (
+        <div className="text-sm text-gray-500">
+          Select a feature to configure.
+        </div>
+      );
     }
-    return <FetchMeowTab feature={activeFeature} />;
-  }
 
-  return (
-    <div className="text-sm text-gray-500">
-      {featureLabelMap[activeFeature]} configuration coming soon.
-    </div>
-  );
-});
+    if (activeFeature === 'SIZE') {
+      return <SizeTab />;
+    }
+    if (activeFeature === 'DESIGN') {
+      return <DesignTab />;
+    }
+    if (activeFeature === 'COLLAR_TEXT') {
+      return <WebbingTextTab target="collar" />;
+    }
+    if (activeFeature === 'LEASH_TEXT') {
+      return <WebbingTextTab target="leash" />;
+    }
+    if (activeFeature === 'HARNESS_TEXT') {
+      return <WebbingTextTab target="harness" />;
+    }
+    if (activeFeature === 'ENGRAVING') {
+      return <EngravingTab />;
+    }
+    if (activeFeature === 'BUCKLE') {
+      return <BuckleTab />;
+    }
+    if (activeFeature === 'HARDWARE') {
+      return <BuckleTab />;
+    }
+    if (activeFeature === 'FETCH' || activeFeature === 'MEOW') {
+      if (uiManager.isBulkMode) {
+        return <BulkFetchTab feature={activeFeature} />;
+      }
+      return <FetchMeowTab feature={activeFeature} />;
+    }
+
+    return (
+      <div className="text-sm text-gray-500">
+        {featureLabelMap[activeFeature]} configuration coming soon.
+      </div>
+    );
+  },
+);

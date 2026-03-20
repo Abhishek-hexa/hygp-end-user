@@ -5,7 +5,12 @@ import { useLazyImage } from '../../hooks/useLazyImage';
 
 type LazyImageProps = ComponentProps<'img'>;
 
-export const LazyImage = ({ src = '', alt, className, ...rest }: LazyImageProps) => {
+export const LazyImage = ({
+  src = '',
+  alt,
+  className,
+  ...rest
+}: LazyImageProps) => {
   const { ref, isVisible } = useIntersectionObserver<HTMLDivElement>();
   const { imgSrc, status } = useLazyImage(src, isVisible);
 

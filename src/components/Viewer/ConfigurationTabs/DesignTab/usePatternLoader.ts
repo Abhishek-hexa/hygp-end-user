@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-import { PatternType } from '../../../../state/product/types';
 import { TextureManager } from '../../../../state/product/managers/TextureManager';
+import { PatternType } from '../../../../state/product/types';
 
 type UsePatternLoaderResult = {
   clearError: () => void;
@@ -41,8 +41,10 @@ export const usePatternLoader = (
             const { data } = await axios.get<{
               products: Array<{
                 dataX: string;
-                id: string;
+                id: string | number;
                 name: string;
+                collection_Id?: string | number;
+                collectionId?: string | number;
                 png_image: string;
                 preview: string;
               }>;
@@ -50,8 +52,11 @@ export const usePatternLoader = (
 
             const nextPatterns: PatternType[] = (data.products ?? []).map(
               (product) => ({
+                collectionId:
+                  Number(product.collection_Id ?? product.collectionId) ||
+                  collectionId,
                 dataX: product.dataX,
-                id: parseInt(product.id, 10),
+                id: Number(product.id),
                 name: product.name,
                 pngImage: product.png_image,
                 preview: product.preview,

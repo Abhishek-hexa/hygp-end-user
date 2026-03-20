@@ -7,7 +7,11 @@ type TextSizeSelectorProps = {
   onSelectSize: (size: TextSize) => void;
 };
 
-export const TextSizeSelector = ({ selectedSize, sizes, onSelectSize }: TextSizeSelectorProps) => {
+export const TextSizeSelector = ({
+  selectedSize,
+  sizes,
+  onSelectSize,
+}: TextSizeSelectorProps) => {
   return (
     <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap">
       {sizes.map((size) => {
@@ -18,11 +22,14 @@ export const TextSizeSelector = ({ selectedSize, sizes, onSelectSize }: TextSize
             type="button"
             onClick={() => onSelectSize(size.value)}
             className={`relative w-full min-w-0 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-w-24 md:w-auto md:px-6 ${
-              isSelected ? 'border-primary bg-primary/10 text-gray-900' : 'border-gray-200 bg-white text-gray-700'
-            }`}
-          >
+              isSelected
+                ? 'border-primary bg-primary/10 text-gray-900'
+                : 'border-gray-200 bg-white text-gray-700'
+            }`}>
             {size.label}
-            {isSelected ? <SelectedItemIcon className="absolute right-1.5 top-1.5 h-3.5 w-3.5" /> : null}
+            {isSelected ? (
+              <SelectedItemIcon className="absolute right-1.5 top-1.5 h-3.5 w-3.5" />
+            ) : null}
           </button>
         );
       })}

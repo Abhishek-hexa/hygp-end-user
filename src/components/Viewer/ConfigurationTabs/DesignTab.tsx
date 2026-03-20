@@ -18,7 +18,7 @@ export const DesignTab = observer(() => {
   const collections = Array.from(textureManager.availableCollections.values());
   const selectedCollectionIds = textureManager.selectedCollectionIds;
   const selectedCollections = textureManager.selectedCollections;
-  const patterns = textureManager.availablePatterns ?? [];
+  const patterns = textureManager.availablePatterns;
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const { clearError, error, loading } = usePatternLoader(
@@ -27,12 +27,13 @@ export const DesignTab = observer(() => {
   );
 
   const filteredPatterns = useMemo(() => {
+    const availablePatterns = patterns ?? [];
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
-      return patterns;
+      return availablePatterns;
     }
 
-    return patterns.filter((pattern) =>
+    return availablePatterns.filter((pattern) =>
       pattern.name.toLowerCase().includes(query),
     );
   }, [patterns, searchQuery]);
@@ -89,7 +90,9 @@ export const DesignTab = observer(() => {
               if (!productSlug) {
                 return;
               }
-              navigate(buildPatternPath(productSlug, patternId, uiManager.isBulkMode));
+              navigate(
+                buildPatternPath(productSlug, patternId, uiManager.isBulkMode),
+              );
             }}
           />
         ) : null}

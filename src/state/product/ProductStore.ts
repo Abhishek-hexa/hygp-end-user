@@ -1,58 +1,65 @@
-import { makeAutoObservable } from "mobx";
-import { SerializedProductConfiguration } from "./types";
+import { makeAutoObservable } from 'mobx';
+
+import { SerializedProductConfiguration } from './types';
 
 export class ProductStore {
-    private _products: SerializedProductConfiguration[] | null = null;
+  private _products: SerializedProductConfiguration[] | null = null;
 
-    constructor() {
-        makeAutoObservable(this);
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  get products() {
+    return this._products;
+  }
+
+  get totalPrice() {
+    if (this._products === null) {
+      return '0';
     }
+    return String(
+      this._products
+        .reduce(
+          (total, product) =>
+            total + parseFloat(product.price || '0') * product.qty,
+          0,
+        )
+        .toFixed(2),
+    );
+  }
 
-    get products() {
-        return this._products;
+  addProduct(product: SerializedProductConfiguration) {
+    if (this._products === null) {
+      this._products = [product];
+    } else {
+      this._products.push(product);
     }
+  }
 
-    get totalPrice() {
-        if (this._products === null) {
-            return '0';
-        }
-        return String(this._products.reduce((total, product) => total + (parseFloat(product.price || '0') * product.qty), 0).toFixed(2));
+  removeProduct(productKey: string) {
+    if (this._products === null) {
+      return;
     }
+    this._products = this._products.filter((p) => p.key !== productKey);
+  }
 
-
-    addProduct(product: SerializedProductConfiguration) {
-        if (this._products === null) {
-            this._products = [product];
-        } else {
-            this._products.push(product);
-        }
+  increaseQuantity(productKey: string) {
+    if (this._products === null) {
+      return;
     }
-
-    removeProduct(productKey: string) {
-        if (this._products === null) {
-            return;
-        }
-        this._products = this._products.filter((p) => p.key !== productKey);
+    const product = this._products.find((p) => p.key === productKey);
+    if (product) {
+      product.qty += 1;
     }
+  }
 
-    increaseQuantity(productKey: string) {
-        if (this._products === null) {
-            return;
-        }
-        const product = this._products.find((p) => p.key === productKey);
-        if (product) {
-            product.qty += 1;
-        }
+  decreaseQuantity(productKey: string) {
+    if (this._products === null) {
+      return;
     }
-
-    decreaseQuantity(productKey: string) {
-        if (this._products === null) {
-            return;
-        }
-        const product = this._products.find((p) => p.key === productKey);
-        if (product && product.qty > 1) {
-            product.qty -= 1;
-        }
+    const product = this._products.find((p) => p.key === productKey);
+    if (product && product.qty > 1) {
+      product.qty -= 1;
     }
-
+  }
 }

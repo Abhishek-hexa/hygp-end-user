@@ -9,19 +9,18 @@ const CustomLoader: React.FC = () => {
           viewBox="0 0 100 100"
           width="200"
           height="200"
-          className="h-12 w-12 md:h-40 md:w-40"
-        >
+          className="h-12 w-12 md:h-40 md:w-40">
           <circle
             cx="50"
             cy="50"
             r="48"
             className="fill-none stroke-primary"
             style={{
-              strokeWidth: 4,
+              animation: 'dash 2s linear infinite',
               strokeDasharray: 200,
               strokeDashoffset: 200,
-              animation: 'dash 2s linear infinite',
               strokeLinecap: 'round',
+              strokeWidth: 4,
             }}
           />
           <text
@@ -30,8 +29,7 @@ const CustomLoader: React.FC = () => {
             alignmentBaseline="middle"
             textAnchor="middle"
             fill="currentColor"
-            className="animate-pulse text-lg font-semibold text-primary md:text-xl"
-          >
+            className="animate-pulse text-lg font-semibold text-primary md:text-xl">
             Loading...
           </text>
         </svg>

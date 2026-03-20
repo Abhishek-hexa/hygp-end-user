@@ -2,8 +2,8 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import {
-  fetchReviewCopy,
   FetchFeature,
+  fetchReviewCopy,
   formatPrice,
   getFetchHeading,
   parsePrice,
@@ -32,7 +32,6 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
       </section>
 
       <section className="mt-6 rounded-xl border border-primary/20 bg-primary-dark/5 p-5">
-
         <section className="space-y-3">
           <h4 className="text-sm font-semibold uppercase tracking-wide text-primary-dark">
             Manage Items
@@ -44,7 +43,7 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
               {storeProducts.map((product) => {
                 const itemPrice = parsePrice(product.price);
                 const itemTotal = itemPrice * product.qty;
-                const itemSize = product.size.size;
+                const itemSize = product.size?.size?.size;
                 return (
                   <div
                     key={product.key}
@@ -52,7 +51,8 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0">
                         <p className="truncate text-xs font-semibold uppercase text-primary-dark">
-                          {productSummaryLabelMap[product.productId] ?? 'PRODUCT'}
+                          {productSummaryLabelMap[product.productId] ??
+                            'PRODUCT'}
                         </p>
                         <p className="text-xs text-gray-500">
                           {sizeLabelMap[itemSize ?? ''] ?? 'No Size'}
@@ -105,7 +105,9 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
           <span>{formatPrice(totalAmountNumber)}</span>
         </div>
 
-        <p className="mt-3 text-center text-sm text-[#58AB88]">{shippingCopy}</p>
+        <p className="mt-3 text-center text-sm text-[#58AB88]">
+          {shippingCopy}
+        </p>
       </section>
     </div>
   );

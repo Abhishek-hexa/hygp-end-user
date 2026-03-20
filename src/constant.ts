@@ -1,10 +1,10 @@
 export const NavigationRoutes = {
   Default: '/',
-  Product: '/:productSlug',
-  ProductPattern: '/:productSlug/pattern/:patternID',
-  ProductBulk: '/:productSlug/bulk',
-  ProductBulkPattern: '/:productSlug/bulk/patterns/:patternID',
   Developer: '/developer',
   NotFound: '*',
+  Product: '/:productSlug',
+  ProductBulk: '/:productSlug/bulk',
+  ProductBulkPattern: '/:productSlug/bulk/patterns/:patternID',
+  ProductPattern: '/:productSlug/pattern/:patternID',
   User: '/user',
 } as const;

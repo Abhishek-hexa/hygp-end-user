@@ -217,7 +217,13 @@ export const TextIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const CartIcon = ({ className, stroke ='#333333' }: { className?: string, stroke?: string }) => (
+export const CartIcon = ({
+  className,
+  stroke = '#333333',
+}: {
+  className?: string;
+  stroke?: string;
+}) => (
   <svg
     width="24"
     height="24"
@@ -234,4 +240,3 @@ export const CartIcon = ({ className, stroke ='#333333' }: { className?: string,
     />
   </svg>
 );
-

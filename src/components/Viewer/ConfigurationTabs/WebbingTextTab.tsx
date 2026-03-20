@@ -2,12 +2,17 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { TextIcon } from '../../icons/Icons';
+import { FontSelectField } from './shared/FontSelectField';
+import { TextInputWithCounter } from './shared/TextInputWithCounter';
 import { ColorSwatches } from './WebbingTextTab/ColorSwatches';
 import { CustomColorPicker } from './WebbingTextTab/CustomColorPicker';
 import { TextSizeSelector } from './WebbingTextTab/TextSizeSelector';
-import { copyByTarget, textColors, textSizes, WebbingTextTarget } from './WebbingTextTab/webbingTextConfig';
-import { FontSelectField } from './shared/FontSelectField';
-import { TextInputWithCounter } from './shared/TextInputWithCounter';
+import {
+  copyByTarget,
+  textColors,
+  textSizes,
+  WebbingTextTarget,
+} from './WebbingTextTab/webbingTextConfig';
 
 const MAX_TEXT_LENGTH = 20;
 
@@ -22,7 +27,9 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
   return (
     <div className="space-y-4 p-3 text-gray-700 lg:space-y-5 lg:p-4">
       <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">{copy.title}</h3>
+        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
+          {copy.title}
+        </h3>
         <p className="text-xs text-gray-500">{copy.description}</p>
       </section>
 
@@ -55,9 +62,16 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
       <section className="space-y-3">
         <h4 className="text-sm font-semibold text-gray-400">Color of text</h4>
         {target === 'collar' ? (
-          <CustomColorPicker selectedColor={webbingText.selectedColor} onChange={webbingText.setColor.bind(webbingText)} />
+          <CustomColorPicker
+            selectedColor={webbingText.selectedColor}
+            onChange={webbingText.setColor.bind(webbingText)}
+          />
         ) : (
-          <ColorSwatches colors={textColors} selectedColor={webbingText.selectedColor} onSelectColor={webbingText.setColor.bind(webbingText)} />
+          <ColorSwatches
+            colors={textColors}
+            selectedColor={webbingText.selectedColor}
+            onSelectColor={webbingText.setColor.bind(webbingText)}
+          />
         )}
       </section>
 
@@ -65,9 +79,12 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
       <section className="space-y-3">
         <h4 className="text-sm font-semibold text-gray-400">Size of text</h4>
-        <TextSizeSelector selectedSize={webbingText.size} sizes={textSizes} onSelectSize={webbingText.setSize.bind(webbingText)} />
+        <TextSizeSelector
+          selectedSize={webbingText.size}
+          sizes={textSizes}
+          onSelectSize={webbingText.setSize.bind(webbingText)}
+        />
       </section>
     </div>
   );
 });
-

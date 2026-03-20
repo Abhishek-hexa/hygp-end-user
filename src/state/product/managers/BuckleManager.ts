@@ -1,11 +1,11 @@
 import { makeAutoObservable } from 'mobx';
 
-import { BuckleMaterialType, ColorDescription, ProductType } from '../types';
 import { defaultProductId, productConfigs } from '../productConfig';
+import { BuckleMaterialType, ColorDescription, ProductType } from '../types';
 
 export class BuckleManager {
   private _material: BuckleMaterialType | null = null;
-  private _productId: ProductType =  defaultProductId;
+  private _productId: ProductType = defaultProductId;
 
   private _selectedColor: number | null = null;
   private _metalColors: ColorDescription[] = [];
@@ -26,7 +26,9 @@ export class BuckleManager {
     }
 
     const colors = this.currentColors;
-    const hasSelectedColor = colors.some((color) => color.id === this._selectedColor);
+    const hasSelectedColor = colors.some(
+      (color) => color.id === this._selectedColor,
+    );
 
     if (!hasSelectedColor) {
       this._selectedColor = colors[0]?.id ?? null;

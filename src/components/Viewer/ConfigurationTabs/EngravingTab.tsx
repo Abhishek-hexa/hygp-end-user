@@ -22,17 +22,24 @@ export const EngravingTab = observer(() => {
   return (
     <div className="space-y-4 p-3 text-gray-700 lg:space-y-5 lg:p-4">
       <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">Buckle Engraving</h3>
-        <p className="text-sm text-gray-500 lg:text-sm">Add your pet's details for safety.</p>
+        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
+          Buckle Engraving
+        </h3>
+        <p className="text-sm text-gray-500 lg:text-sm">
+          Add your pet's details for safety.
+        </p>
       </section>
 
       <div className="flex items-center gap-2 lg:hidden">
         {engravingManager.lines.map((_, index) => {
           const isActive = activeLineIndex === index;
-          const isCompleted = engravingManager.lines[index].text.trim().length > 0;
+          const isCompleted =
+            engravingManager.lines[index].text.trim().length > 0;
 
           return (
-            <div key={`step-${index}`} className="flex min-w-0 flex-1 items-center">
+            <div
+              key={`step-${index}`}
+              className="flex min-w-0 flex-1 items-center">
               <button
                 type="button"
                 onClick={() => engravingManager.setActiveLine(index)}
@@ -42,8 +49,7 @@ export const EngravingTab = observer(() => {
                     : isCompleted
                       ? 'border-primary/60 bg-white text-primary/80'
                       : 'border-gray-300 bg-gray-100 text-gray-400'
-                }`}
-              >
+                }`}>
                 {index + 1}
               </button>
               {index < engravingManager.lines.length - 1 ? (
@@ -59,9 +65,13 @@ export const EngravingTab = observer(() => {
           <TextInputWithCounter
             value={activeLine?.text ?? ''}
             maxLength={20}
-            placeholder={linePlaceholders[activeLineIndex] ?? `Line ${activeLineIndex + 1}`}
+            placeholder={
+              linePlaceholders[activeLineIndex] ?? `Line ${activeLineIndex + 1}`
+            }
             onFocus={() => engravingManager.setActiveLine(activeLineIndex)}
-            onChange={(value) => engravingManager.setLineText(activeLineIndex, value)}
+            onChange={(value) =>
+              engravingManager.setLineText(activeLineIndex, value)
+            }
             inputClassName="placeholder"
           />
 
@@ -80,8 +90,7 @@ export const EngravingTab = observer(() => {
         {engravingManager.lines.map((line, index) => (
           <div
             key={index}
-            className="rounded-xl border bg-gray-custom-light p-3 border-gray-200"
-          >
+            className="rounded-xl border bg-gray-custom-light p-3 border-gray-200">
             <div className="flex items-start gap-3">
               <div className="pt-3 text-primary">
                 <TextIcon className="h-5 w-5 text-primary/80" />
@@ -93,7 +102,9 @@ export const EngravingTab = observer(() => {
                   maxLength={20}
                   placeholder={linePlaceholders[index] ?? `Line ${index + 1}`}
                   onFocus={() => engravingManager.setActiveLine(index)}
-                  onChange={(value) => engravingManager.setLineText(index, value)}
+                  onChange={(value) =>
+                    engravingManager.setLineText(index, value)
+                  }
                   inputClassName="placeholder"
                 />
 

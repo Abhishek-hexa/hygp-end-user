@@ -10,47 +10,47 @@ export type ProductApiEndpoints = {
 };
 
 export const apiEndPointMap: Record<ProductType, ProductApiEndpoints> = {
-  DOG_COLLAR: {
-    productVariants: '/product/variants/8969048817879',
-    leashVariants: '/product/dog-leases/8870433947863',
-    buckles: '/buckle',
-    engravingFonts: '/engraving-fonts',
-    collections: '/shopify-collection/',
-    patternById: '/product',
-  },
   BANDANA: {
-    productVariants: '/product/dog-bandanas/9022848696535',
     buckles: '/buckle',
-    engravingFonts: '/engraving-fonts',
     collections: '/shopify-collection/',
+    engravingFonts: '/engraving-fonts',
     patternById: '/product',
+    productVariants: '/product/dog-bandanas/9022848696535',
   },
   CAT_COLLAR: {
-    productVariants: '/product/cat-collar/454325797079',
     buckles: '/cat-buckle',
-    engravingFonts: '/engraving-fonts',
     collections: '/shopify-collection/',
+    engravingFonts: '/engraving-fonts',
     patternById: '/product',
+    productVariants: '/product/cat-collar/454325797079',
   },
-  MARTINGALE: {
-    productVariants: '/product/martingale/8975172141271',
+  DOG_COLLAR: {
     buckles: '/buckle',
-    engravingFonts: '/engraving-fonts',
     collections: '/shopify-collection/',
-    patternById: '/product',
-  },
-  LEASH: {
-    productVariants: '/product/dog-leases/8870433947863',
     engravingFonts: '/engraving-fonts',
-    collections: '/shopify-collection/',
+    leashVariants: '/product/dog-leases/8870433947863',
     patternById: '/product',
+    productVariants: '/product/variants/8969048817879',
   },
   HARNESS: {
-    productVariants: '/product/collar/9116181463255',
     buckles: '/harness-buckle',
-    engravingFonts: '/engraving-fonts',
     collections: '/shopify-collection/',
+    engravingFonts: '/engraving-fonts',
     patternById: '/product',
+    productVariants: '/product/collar/9116181463255',
+  },
+  LEASH: {
+    collections: '/shopify-collection/',
+    engravingFonts: '/engraving-fonts',
+    patternById: '/product',
+    productVariants: '/product/dog-leases/8870433947863',
+  },
+  MARTINGALE: {
+    buckles: '/buckle',
+    collections: '/shopify-collection/',
+    engravingFonts: '/engraving-fonts',
+    patternById: '/product',
+    productVariants: '/product/martingale/8975172141271',
   },
 };
 

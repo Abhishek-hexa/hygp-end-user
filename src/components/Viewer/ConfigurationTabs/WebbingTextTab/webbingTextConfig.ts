@@ -11,26 +11,32 @@ type WebbingTextCopy = {
 
 export const copyByTarget: Record<WebbingTextTarget, WebbingTextCopy> = {
   collar: {
-    title: 'Collar Custom Text',
     description: 'Make it unique with custom text on the collar.',
     fontAriaLabel: 'Select collar text font',
     inputPlaceholder: 'Type your collar text here',
-  },
-  leash: {
-    title: 'Leash Custom Text',
-    description: 'Make it unique with custom text on the leash.',
-    fontAriaLabel: 'Select leash text font',
-    inputPlaceholder: 'Type your leash text here',
+    title: 'Collar Custom Text',
   },
   harness: {
-    title: 'Harness Custom Text',
     description: 'Make it unique with custom text on the harness.',
     fontAriaLabel: 'Select harness text font',
     inputPlaceholder: 'Type your harness text here',
+    title: 'Harness Custom Text',
+  },
+  leash: {
+    description: 'Make it unique with custom text on the leash.',
+    fontAriaLabel: 'Select leash text font',
+    inputPlaceholder: 'Type your leash text here',
+    title: 'Leash Custom Text',
   },
 };
 
-export const textColors = ['#2d9ce6', '#374b67', '#4dc4b4', '#dfb029', '#44ddd7'];
+export const textColors = [
+  '#2d9ce6',
+  '#374b67',
+  '#4dc4b4',
+  '#dfb029',
+  '#44ddd7',
+];
 
 export const textSizes: Array<{ label: string; value: TextSize }> = [
   { label: 'Small', value: 'SMALL' },

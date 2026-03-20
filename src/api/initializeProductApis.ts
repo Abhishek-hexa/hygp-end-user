@@ -33,7 +33,7 @@ import {
 const fetchJson = async <T>(
   baseUrl: string,
   path: string,
-  label: string,
+  _label: string,
 ): Promise<T> => {
   const { data } = await axios.get<T>(`${baseUrl}${path}`);
 
@@ -166,7 +166,6 @@ export const initializeProductApis = async (
     if (productType === 'DOG_COLLAR' && leashes) {
       parseLeashVariants(leashes, productManager.sizeManager);
     }
-
   } catch (error) {
     uiManager.setDataError('Could not load product data. Please try again.');
     // eslint-disable-next-line no-console

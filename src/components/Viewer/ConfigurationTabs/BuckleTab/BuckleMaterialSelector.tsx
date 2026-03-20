@@ -31,9 +31,7 @@ export const BuckleMaterialSelector = ({
             }`}>
             {buckleLabelMap[type]}
             {selectedMaterial === type ? (
-              <SelectedItemIcon
-                className="absolute right-1.5 top-1.5 h-3.5 w-3.5"
-              />
+              <SelectedItemIcon className="absolute right-1.5 top-1.5 h-3.5 w-3.5" />
             ) : null}
           </button>
         ))}

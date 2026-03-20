@@ -31,7 +31,8 @@ export const Viewer = observer(() => {
   const selectedPatternId = productManager.textureManager.selectedPatternId;
   const isBulkPath = /\/bulk(\/|$)/.test(location.pathname);
 
-  useEffect(() => { // setting bulk mode on the basis of url 
+  // setting bulk mode on the basis of url
+  useEffect(() => {
     if (lastPathnameRef.current === location.pathname) {
       return;
     }
@@ -39,7 +40,8 @@ export const Viewer = observer(() => {
     uiManager.setBulkMode(isBulkPath);
   }, [isBulkPath, location.pathname, uiManager]);
 
-  useEffect(() => { // initialization of product APIs
+  // initialization of product APIs
+  useEffect(() => {
     if (!selectedProductType) {
       navigate(`/${defaultProductSlug}`, { replace: true });
       return;
@@ -66,7 +68,8 @@ export const Viewer = observer(() => {
     uiManager,
   ]);
 
-  useEffect(() => { // syncing url with selected pattern and bulk mode
+  // syncing url with selected pattern and bulk mode
+  useEffect(() => {
     if (!productSlug) {
       return;
     }

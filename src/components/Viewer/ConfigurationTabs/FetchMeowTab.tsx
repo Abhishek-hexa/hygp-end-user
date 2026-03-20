@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { LeashLengthType, SizeDescription } from '../../../state/product/types';
+import { LeashLengthType } from '../../../state/product/types';
 import { SelectedItemIcon } from '../../icons/Icons';
 import {
-  fetchReviewCopy,
   FetchFeature,
+  fetchReviewCopy,
   formatPrice,
   getFetchHeading,
   leashLabelMap,
@@ -26,7 +26,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const heading = getFetchHeading(feature);
   const isDogCollar = productManager.productId === 'DOG_COLLAR';
 
-  const selectedSize = sizeManager.selectedSizeData as SizeDescription | null;
+  const selectedSize = sizeManager.selectedSizeData;
   const selectedSizePriceNumber = parsePrice(selectedSize?.price);
   const selectedSizePriceLabel = formatPrice(selectedSizePriceNumber);
 
@@ -127,7 +127,9 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
           <span>{formatPrice(totalPriceNumber)}</span>
         </div>
 
-        <p className="mt-3 text-center text-sm text-[#58AB88]">{shippingCopy}</p>
+        <p className="mt-3 text-center text-sm text-[#58AB88]">
+          {shippingCopy}
+        </p>
       </section>
     </div>
   );

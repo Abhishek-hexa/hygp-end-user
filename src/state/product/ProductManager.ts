@@ -80,30 +80,30 @@ export class ProductManager {
 
   serializeConfiguration(): SerializedProductConfiguration {
     const productConfig: SerializedProductConfiguration = {
-      key: globalThis.crypto.randomUUID(),
-      productId: this._productId,
-      price: this.sizeManager.totalPrice,
-      qty: 1,
-      size: {
-        size: this.sizeManager.selectedSizeData,
-        length: this.sizeManager.selectedLength,
-      },
       buckle: {
-        material: this.buckleManager.material,
         color: this.buckleManager.selectedColor,
+        material: this.buckleManager.material,
       },
       engraving: {
         lines: this.engravingManager.lines.map((line) => ({ ...line })),
       },
-      webbing: {
-        value: this.webbingText.value,
-        size: this.webbingText.size,
-        font: this.webbingText.selectedFont,
-        color: this.webbingText.selectedColor,
+      key: globalThis.crypto.randomUUID(),
+      price: this.sizeManager.totalPrice,
+      productId: this._productId,
+      qty: 1,
+      size: {
+        length: this.sizeManager.selectedLength,
+        size: this.sizeManager.selectedSizeData,
       },
       texture: {
-        pattern: this.textureManager.selectedPatternId,
         collections: this.textureManager.selectedCollectionIds[0],
+        pattern: this.textureManager.selectedPatternId,
+      },
+      webbing: {
+        color: this.webbingText.selectedColor,
+        font: this.webbingText.selectedFont,
+        size: this.webbingText.size,
+        value: this.webbingText.value,
       },
     };
 

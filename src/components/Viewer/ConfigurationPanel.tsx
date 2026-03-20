@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { Features } from '../../state/product/types';
-import { SizeDescription } from '../../state/product/types';
 import { CartIcon } from '../icons/Icons';
 import { FeatureContentRenderer } from './ConfigurationPanel/FeatureContentRenderer';
 import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
@@ -15,7 +14,7 @@ export const ConfigurationPanel = observer(() => {
   const sizeManager = productManager.sizeManager;
   const features = productManager.getAllFeatures();
   const activeFeature = productManager.activeFeature;
-  const selectedSize = sizeManager.selectedSizeData as SizeDescription | null;
+  const selectedSize = sizeManager.selectedSizeData;
   const selectedSizePrice = selectedSize ? selectedSize.price : null;
   const addToCartPrice = selectedSizePrice ?? '44.98';
 
@@ -67,7 +66,7 @@ export const ConfigurationPanel = observer(() => {
               type="button"
               onClick={handleReviewBundle}
               className="flex h-10 flex-1 items-center justify-center rounded-full border border-primary-orange bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
-              <span className='flex gap-2 justify-center items-center'> 
+              <span className="flex gap-2 justify-center items-center">
                 <CartIcon stroke={'#fff'} />
                 Review Bundle
               </span>

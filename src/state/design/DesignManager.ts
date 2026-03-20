@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 
 import { ProductManager } from '../product/ProductManager';
-import { StateManager } from '../StateManager';
 import { ProductStore } from '../product/ProductStore';
+import { StateManager } from '../StateManager';
 
 export class DesignManager {
   private _libState: StateManager;
