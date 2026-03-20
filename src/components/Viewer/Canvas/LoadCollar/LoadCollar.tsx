@@ -1,9 +1,9 @@
 import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
-import { useMainContext } from '../../../hooks/useMainContext';
-import { Buckle } from './Buckle';
+import { useMainContext } from '../../../../hooks/useMainContext';
 import { Stitches } from './Stitches';
 import { Web } from './Web';
+import { Buckle } from './Buckle';
 
 type LoadCollarProps = {
   url: string;
