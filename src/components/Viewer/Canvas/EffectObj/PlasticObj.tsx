@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import * as THREE from 'three'
+import { loadHdrEnvMapCached } from './hdrEnvMapCache'
 
 export interface PlasticObjProps {
   /**
@@ -126,12 +126,21 @@ export function PlasticObj({
       return
     }
 
-    const rgbeLoader = new RGBELoader()
-    rgbeLoader.load(hdrPath, (hdr) => {
-      hdr.mapping = THREE.EquirectangularReflectionMapping
-      matRef.current.envMap = hdr
-      matRef.current.needsUpdate = true
-    })
+    let isMounted = true
+
+    loadHdrEnvMapCached(hdrPath)
+      .then((hdr) => {
+        if (!isMounted) return
+        matRef.current.envMap = hdr
+        matRef.current.needsUpdate = true
+      })
+      .catch((error) => {
+        console.error(`Failed to load HDR env map: ${hdrPath}`, error)
+      })
+
+    return () => {
+      isMounted = false
+    }
   }, [hdrPath, envMapProp])
 
   useFrame(() => {

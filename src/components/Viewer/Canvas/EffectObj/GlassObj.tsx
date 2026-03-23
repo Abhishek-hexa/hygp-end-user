@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import * as THREE from 'three'
+import { loadHdrEnvMapCached, loadTextureCached } from './hdrEnvMapCache'
 
 export interface GlassObjProps {
   /**
@@ -79,13 +79,23 @@ export function GlassObj({
 
   // Load logo texture — sRGBEncoding + flipY: false (exact match)
   useEffect(() => {
-    const loader = new THREE.TextureLoader()
-    loader.load(logoTexturePath, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace // r152+ equivalent of sRGBEncoding
-      tex.flipY = false
-      matRef.current.map = tex
-      matRef.current.needsUpdate = true
-    })
+    let isMounted = true
+
+    loadTextureCached(logoTexturePath)
+      .then((tex) => {
+        if (!isMounted) return
+        tex.colorSpace = THREE.SRGBColorSpace // r152+ equivalent of sRGBEncoding
+        tex.flipY = false
+        matRef.current.map = tex
+        matRef.current.needsUpdate = true
+      })
+      .catch((error) => {
+        console.error(`Failed to load logo texture: ${logoTexturePath}`, error)
+      })
+
+    return () => {
+      isMounted = false
+    }
   }, [logoTexturePath])
 
   // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
@@ -96,12 +106,21 @@ export function GlassObj({
       return
     }
 
-    const rgbeLoader = new RGBELoader()
-    rgbeLoader.load(hdrPath, (hdr) => {
-      hdr.mapping = THREE.EquirectangularReflectionMapping
-      matRef.current.envMap = hdr
-      matRef.current.needsUpdate = true
-    })
+    let isMounted = true
+
+    loadHdrEnvMapCached(hdrPath)
+      .then((hdr) => {
+        if (!isMounted) return
+        matRef.current.envMap = hdr
+        matRef.current.needsUpdate = true
+      })
+      .catch((error) => {
+        console.error(`Failed to load HDR env map: ${hdrPath}`, error)
+      })
+
+    return () => {
+      isMounted = false
+    }
   }, [hdrPath, envMapProp])
 
   useFrame(() => {
