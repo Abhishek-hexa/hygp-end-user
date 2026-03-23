@@ -1,4 +1,5 @@
 import { useGLTF } from '@react-three/drei';
+import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
 import BuckleGroup from './BuckleGroup';
 import { observer } from 'mobx-react-lite';
@@ -12,7 +13,10 @@ const LoadHarness = observer(({ url }: LoadHarnessProps) => {
   const { design3DManager } = useMainContext();
   const meshManger = design3DManager.meshManager;
   const { scene } = useGLTF(url);
-  meshManger.setMeshGroup(url, scene);
+
+  useEffect(() => {
+    meshManger.setMeshGroup(url, scene);
+  }, [meshManger, scene, url]);
 
   return (
     <>
