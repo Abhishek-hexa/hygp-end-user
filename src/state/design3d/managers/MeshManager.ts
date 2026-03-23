@@ -107,6 +107,7 @@ export class MeshManager {
 
     group.traverse((child) => {
       if (child instanceof THREE.Mesh) {
+        console.log(child.name)
         if (
           (child.name as MeshName) === 'Buckle' ||
           (child.name as MeshName) === 'D_Ring' ||
@@ -114,7 +115,14 @@ export class MeshManager {
           (child.name as MeshName) === 'Plane' ||
           (child.name as MeshName) === 'Cat_Buckle' ||
           (child.name as MeshName) === 'Glass'  ||
-          (child.name as MeshName) === 'Hook' 
+          (child.name as MeshName) === 'glass'  ||
+          (child.name as MeshName) === 'Hook' ||
+          (child.name as MeshName) === 'dLink' ||
+          (child.name as MeshName) === 'aLink' ||
+          (child.name as MeshName) === 'buckle1' ||
+          (child.name as MeshName) === 'buckle2' ||
+          (child.name as MeshName) === 'triGlide1' ||
+          (child.name as MeshName) === 'triGlide2' 
         ) {
           bucket.buckleMeshes.set(child.name as MeshName, child);
         }
@@ -122,7 +130,12 @@ export class MeshManager {
         if (
           (child.name as MeshName) === 'Web' ||
           (child.name as MeshName) === 'Web_Text' ||
-          (child.name as MeshName) === 'Leash' 
+          (child.name as MeshName) === 'Leash' ||
+          (child.name as MeshName) === 'base1' ||
+          (child.name as MeshName) === 'base1Part' ||
+          (child.name as MeshName) === 'belts' ||
+          (child.name as MeshName) === 'bottom' ||
+          (child.name as MeshName) === 'base2'
         ) {
           bucket.webMeshes.set(child.name as MeshName, child);
         }

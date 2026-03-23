@@ -9,6 +9,7 @@ import { CameraSync } from './CameraSync';
 import { CanvasModel } from './CanvasModel';
 import { LoadCollar } from './LoadCollar/LoadCollar';
 import LoadLeash from './LoadLeash/LoadLeash';
+import LoadHarness from './LoadHarness/LoadHarness';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -29,6 +30,8 @@ export const CanvasPanel = observer(() => {
         return plasticModelUrl && <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />;
       case 'LEASH':
         return <LoadLeash url={modelUrl}/>;
+      case 'HARNESS':
+        return <LoadHarness url={modelUrl}/>;
       default:
         return <CanvasModel url={modelUrl} />;
     }
