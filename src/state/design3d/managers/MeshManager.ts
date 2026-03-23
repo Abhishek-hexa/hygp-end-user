@@ -95,8 +95,8 @@ export class MeshManager {
   }
 
   private parseMeshGroup(group: THREE.Group, variant: ModelVariant) {
-    const visibleNames = new Set(
-      visibleMeshNamesByProductType[this.productType] ?? [],
+    const visibleNames = new Set<MeshName>(
+      visibleMeshNamesByProductType[this.productType] as readonly MeshName[],
     );
     const shouldFilterByNames = visibleNames.size > 0;
     const bucket = this._meshBuckets[variant];
