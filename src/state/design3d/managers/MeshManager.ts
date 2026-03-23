@@ -4,12 +4,29 @@ import { StateManager } from '../../StateManager';
 import { ProductType } from '../../product/types';
 import { MeshName, visibleMeshNamesByProductType } from './meshNames';
 
+type ModelVariant = 'DEFAULT' | 'PLASTIC';
+
+type MeshBuckets = {
+  buckleMeshes: Map<MeshName, THREE.Mesh>;
+  webMeshes: Map<MeshName, THREE.Mesh>;
+  stitchMeshes: Map<MeshName, THREE.Mesh>;
+};
+
 export class MeshManager {
   private _libState: StateManager;
   private _meshGroups: Record<string, THREE.Group> = {};
-  private _buckleMeshes: THREE.Mesh[] = [];
-  private _webMeshes: THREE.Mesh[] = [];
-  private _stitchMeshes: THREE.Mesh[] = [];
+  private _meshBuckets: Record<ModelVariant, MeshBuckets> = {
+    DEFAULT: {
+      buckleMeshes: new Map(),
+      webMeshes: new Map(),
+      stitchMeshes: new Map(),
+    },
+    PLASTIC: {
+      buckleMeshes: new Map(),
+      webMeshes: new Map(),
+      stitchMeshes: new Map(),
+    },
+  };
 
   constructor(libState: StateManager) {
     this._libState = libState;
@@ -20,39 +37,77 @@ export class MeshManager {
     return this._libState.designManager.productManager.productId;
   }
 
-  get buckleMeshes(): THREE.Mesh[] {
-    return this._buckleMeshes;
+  private get shouldUsePlasticModel() {
+    return (
+      this.productType === 'DOG_COLLAR' &&
+      this._libState.designManager.productManager.buckleManager.material ===
+        'PLASTIC'
+    );
   }
 
-  get webMeshes(): THREE.Mesh[] {
-    return this._webMeshes;
+  private get activeVariant(): ModelVariant {
+    return this.shouldUsePlasticModel ? 'PLASTIC' : 'DEFAULT';
   }
 
-  get stitchMeshes(): THREE.Mesh[] {
-    return this._stitchMeshes;
+  get defaultBuckleMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.DEFAULT.buckleMeshes;
+  }
+
+  get plasticBuckleMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.PLASTIC.buckleMeshes;
+  }
+
+  get buckleMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets[this.activeVariant].buckleMeshes;
+  }
+
+  get defaultWebMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.DEFAULT.webMeshes;
+  }
+
+  get plasticWebMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.PLASTIC.webMeshes;
+  }
+
+  get webMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets[this.activeVariant].webMeshes;
+  }
+
+  get defaultStitchMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.DEFAULT.stitchMeshes;
+  }
+
+  get plasticStitchMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets.PLASTIC.stitchMeshes;
+  }
+
+  get stitchMeshes(): Map<MeshName, THREE.Mesh> {
+    return this._meshBuckets[this.activeVariant].stitchMeshes;
   }
 
   getMeshGroup(key: string): THREE.Group | undefined {
     return this._meshGroups[key];
   }
 
-  setMeshGroup(key: string, group: THREE.Group) {
+  setMeshGroup(key: string, group: THREE.Group, variant: ModelVariant = 'DEFAULT') {
     if (this._meshGroups[key] === group) {
       return;
     }
 
     this._meshGroups[key] = group;
-    this._buckleMeshes = [];
-    this._webMeshes = [];
-    this._stitchMeshes = [];
-    this.parseMeshGroup(group);
+    this.parseMeshGroup(group, variant);
   }
 
-  private parseMeshGroup(group: THREE.Group) {
+  private parseMeshGroup(group: THREE.Group, variant: ModelVariant) {
     const visibleNames = new Set(
       visibleMeshNamesByProductType[this.productType] ?? [],
     );
     const shouldFilterByNames = visibleNames.size > 0;
+    const bucket = this._meshBuckets[variant];
+
+    bucket.buckleMeshes = new Map();
+    bucket.webMeshes = new Map();
+    bucket.stitchMeshes = new Map();
 
     group.traverse((child) => {
       if (child instanceof THREE.Mesh) {
@@ -60,20 +115,22 @@ export class MeshManager {
           (child.name as MeshName) === 'Buckle' ||
           (child.name as MeshName) === 'D_Ring' ||
           (child.name as MeshName) === 'Tri_Glide' ||
-          (child.name as MeshName) === 'Plane'
+          (child.name as MeshName) === 'Plane' ||
+          (child.name as MeshName) === 'Cat_Buckle' ||
+          (child.name as MeshName) === 'Glass'
         ) {
-          this._buckleMeshes.push(child);
+          bucket.buckleMeshes.set(child.name as MeshName, child);
         }
 
         if (
           (child.name as MeshName) === 'Web' ||
           (child.name as MeshName) === 'Web_Text'
         ) {
-          this._webMeshes.push(child);
+          bucket.webMeshes.set(child.name as MeshName, child);
         }
 
         if ((child.name as MeshName) === 'Stiches') {
-          this._stitchMeshes.push(child);
+          bucket.stitchMeshes.set(child.name as MeshName, child);
         }
 
         child.visible =

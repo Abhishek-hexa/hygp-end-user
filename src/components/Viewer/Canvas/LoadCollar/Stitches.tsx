@@ -7,7 +7,7 @@ export const Stitches = observer(() => {
 
   return (
     <>
-      {meshManager.stitchMeshes.map((mesh) => (
+      {Array.from(meshManager.stitchMeshes.values()).map((mesh) => (
         <primitive key={mesh.uuid} object={mesh} />
       ))}
     </>

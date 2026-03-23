@@ -71,7 +71,7 @@ export class SizeManager {
   }
 
   resetSelection() {
-    this._selectedSize = this._availableSizes.keys().next().value || null;
+    this._selectedSizeData = this._availableSizes.values().next().value || null;
     this._selectedLength = null;
   }
 

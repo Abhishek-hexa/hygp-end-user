@@ -7,16 +7,20 @@ import { Buckle } from './Buckle';
 
 type LoadCollarProps = {
   url: string;
+  plasticUrl: string;
 };
 
-export const LoadCollar = ({ url }: LoadCollarProps) => {
+export const LoadCollar = ({ url, plasticUrl }: LoadCollarProps) => {
   const { design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
   const { scene } = useGLTF(url);
+  const plasticRes = useGLTF(plasticUrl);
+  const plasticScene = plasticRes.scene;
 
   useEffect(() => {
-    meshManager.setMeshGroup(url, scene);
-  }, [meshManager, scene, url]);
+    meshManager.setMeshGroup(url, scene, 'DEFAULT');
+    meshManager.setMeshGroup(plasticUrl, plasticScene, 'PLASTIC');
+  }, [meshManager, plasticScene, plasticUrl, scene, url]);
 
   return (
     <>
