@@ -113,14 +113,16 @@ export class MeshManager {
           (child.name as MeshName) === 'Tri_Glide' ||
           (child.name as MeshName) === 'Plane' ||
           (child.name as MeshName) === 'Cat_Buckle' ||
-          (child.name as MeshName) === 'Glass'
+          (child.name as MeshName) === 'Glass'  ||
+          (child.name as MeshName) === 'Hook' 
         ) {
           bucket.buckleMeshes.set(child.name as MeshName, child);
         }
 
         if (
           (child.name as MeshName) === 'Web' ||
-          (child.name as MeshName) === 'Web_Text'
+          (child.name as MeshName) === 'Web_Text' ||
+          (child.name as MeshName) === 'Leash' 
         ) {
           bucket.webMeshes.set(child.name as MeshName, child);
         }

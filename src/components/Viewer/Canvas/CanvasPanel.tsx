@@ -8,6 +8,7 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
 import { CanvasModel } from './CanvasModel';
 import { LoadCollar } from './LoadCollar/LoadCollar';
+import LoadLeash from './LoadLeash/LoadLeash';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -22,14 +23,12 @@ export const CanvasPanel = observer(() => {
       return null;
     }
 
-    if (!plasticModelUrl) {
-      return null;
-    }
-
     switch (productManager.productId) {
       case 'DOG_COLLAR':
       case 'CAT_COLLAR':
-        return <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />;
+        return plasticModelUrl && <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />;
+      case 'LEASH':
+        return <LoadLeash url={modelUrl}/>;
       default:
         return <CanvasModel url={modelUrl} />;
     }

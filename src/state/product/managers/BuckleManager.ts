@@ -56,9 +56,6 @@ export class BuckleManager {
   }
 
   get currentColors() {
-    if (this._material === 'PLASTIC') {
-      return this._plasticColors;
-    }
     return this._metalColors;
   }
 
@@ -70,8 +67,9 @@ export class BuckleManager {
     if (this._selectedColor === null) {
       return null;
     }
+    const currentColors = this.material === 'METAL' ? this._metalColors : this._plasticColors;
     return (
-      this.currentColors.find((color) => color.id === this._selectedColor) ?? null
+      currentColors.find((color) => color.id === this._selectedColor) ?? null
     );
   }
 
