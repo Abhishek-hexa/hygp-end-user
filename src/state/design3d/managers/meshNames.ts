@@ -69,7 +69,12 @@ export const visibleMeshNamesByProductType = {
     'Web',
     'Web_Text',
   ],
-  LEASH: ['Hook', 'Stiches', 'Leash', 'Web_Text'],
+  LEASH: [
+    'Hook', 
+    'Stiches', 
+    'Leash', 
+    // 'Web_Text'
+  ],
   BANDANA: [],
   HARNESS: [
     'aLink',

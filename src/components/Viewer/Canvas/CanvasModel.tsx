@@ -11,6 +11,6 @@ export const CanvasModel = observer(({ url }: CanvasModelProps) => {
   const { meshManager } = design3DManager;
   const { scene } = useGLTF(url);
   meshManager.setMeshGroup(url, scene);
-
+  console.log('hi')
   return <primitive object={scene} />;
 });
