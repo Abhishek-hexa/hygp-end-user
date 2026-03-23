@@ -122,7 +122,9 @@ export class MeshManager {
           (child.name as MeshName) === 'buckle1' ||
           (child.name as MeshName) === 'buckle2' ||
           (child.name as MeshName) === 'triGlide1' ||
-          (child.name as MeshName) === 'triGlide2' 
+          (child.name as MeshName) === 'triGlide2' ||
+          (child.name as MeshName) === 'Tri_Glide1' ||
+          (child.name as MeshName) === 'Tri_Glide2' 
         ) {
           bucket.buckleMeshes.set(child.name as MeshName, child);
         }
@@ -135,7 +137,8 @@ export class MeshManager {
           (child.name as MeshName) === 'base1Part' ||
           (child.name as MeshName) === 'belts' ||
           (child.name as MeshName) === 'bottom' ||
-          (child.name as MeshName) === 'base2'
+          (child.name as MeshName) === 'base2' ||
+          (child.name as MeshName) === 'Martingle'
         ) {
           bucket.webMeshes.set(child.name as MeshName, child);
         }
