@@ -1,9 +1,9 @@
 import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
-import { Stitches } from './Stitches';
-import { Web } from './Web';
+import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
+import { Stitches } from './Stitches';
 
 type LoadCollarProps = {
   url: string;
@@ -26,7 +26,7 @@ export const LoadCollar = ({ url, plasticUrl }: LoadCollarProps) => {
     <>
       <Buckle />
       <Stitches />
-      <Web />
+      <WebTextured texturedName="Web" />
     </>
   );
 };

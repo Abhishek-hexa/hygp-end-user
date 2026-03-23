@@ -1,8 +1,8 @@
 import { useGLTF } from '@react-three/drei';
 import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../../hooks/useMainContext';
+import WebTextured from '../EffectObj/WebTextured';
 import Hook from './Hook';
-import { Web } from './Web';
 
 interface LoadLeashProps {
   url: string;
@@ -16,9 +16,10 @@ const LoadLeash = observer(({ url }: LoadLeashProps) => {
 
   return (
     <>
-        <Hook />
-        <Web /> 
+      <Hook />
+      <WebTextured texturedName="Leash" />
     </>
-)});
+  );
+});
 
 export default LoadLeash;
