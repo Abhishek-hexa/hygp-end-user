@@ -15,16 +15,21 @@ export const CanvasPanel = observer(() => {
   const { productManager } = designManager;
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const modelUrl = productManager.getModelPath();
+  const plasticModelUrl = productManager.getPlasticModelPath()
 
   const renderModelByComponent = () => {
     if (!modelUrl) {
       return null;
     }
 
+    if (!plasticModelUrl) {
+      return null;
+    }
+
     switch (productManager.productId) {
       case 'DOG_COLLAR':
       case 'CAT_COLLAR':
-        return <LoadCollar url={modelUrl} />;
+        return <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />;
       default:
         return <CanvasModel url={modelUrl} />;
     }

@@ -7,7 +7,7 @@ export const Web = observer(() => {
 
   return (
     <>
-      {meshManager.webMeshes.map((mesh) => (
+      {Array.from(meshManager.webMeshes.values()).map((mesh) => (
         <primitive key={mesh.uuid} object={mesh} />
       ))}
     </>

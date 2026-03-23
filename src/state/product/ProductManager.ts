@@ -63,6 +63,15 @@ export class ProductManager {
     return selectedSize?.model ?? null;
   }
 
+  getPlasticModelPath() {
+    const selectedSize = this._sizeManager.selectedSizeData;
+    if (!selectedSize) {
+      return null;
+    }
+
+    return selectedSize?.plasticModel ?? null;
+  }
+
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
     this._activeFeature = this.getAllFeatures()[0] ?? null;

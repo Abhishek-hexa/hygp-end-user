@@ -32,6 +32,7 @@ export const allMeshNames = [
   'glass',
   'triGlide1',
   'triGlide2',
+  'Glass',
 ] as const;
 
 export type MeshName = (typeof allMeshNames)[number];
@@ -45,9 +46,10 @@ export const visibleMeshNamesByProductType = {
     'Tri_Glide',
     'Web',
     'Web_Text',
+    'Glass',
   ],
   CAT_COLLAR: [
-    // 'Buckle', // wil toggle buckle later
+    'Buckle', // wil toggle buckle later
     'Cat_Buckle',
     'D_Ring',
     // 'Plane',
@@ -55,6 +57,7 @@ export const visibleMeshNamesByProductType = {
     'Tri_Glide',
     'Web',
     'Web_Text',
+    'Glass',
   ],
   MARTINGALE: [
     'D_Ring',
