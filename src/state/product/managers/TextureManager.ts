@@ -48,6 +48,18 @@ export class TextureManager {
     return this._selectedPatternId;
   }
 
+  get selectedPattern(): PatternType | null {
+    if (this._selectedPatternId === null) {
+      return null;
+    }
+
+    return (
+      this.availablePatterns?.find(
+        (pattern) => pattern.id === this._selectedPatternId,
+      ) ?? null
+    );
+  }
+
   get availablePatterns(): PatternType[] | null {
     if (this._selectedCollectionIds.length === 0) {
       return null;

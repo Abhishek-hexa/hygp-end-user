@@ -45,7 +45,7 @@ export const visibleMeshNamesByProductType = {
     'Stiches',
     'Tri_Glide',
     'Web',
-    'Web_Text',
+    // 'Web_Text',
     'Glass',
   ],
   CAT_COLLAR: [
@@ -56,7 +56,7 @@ export const visibleMeshNamesByProductType = {
     'Stiches',
     'Tri_Glide',
     'Web',
-    'Web_Text',
+    // 'Web_Text',
     'Glass',
   ],
   MARTINGALE: [

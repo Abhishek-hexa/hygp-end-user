@@ -90,10 +90,6 @@ export class MeshManager {
   }
 
   setMeshGroup(key: string, group: THREE.Group, variant: ModelVariant = 'DEFAULT') {
-    if (this._meshGroups[key] === group) {
-      return;
-    }
-
     this._meshGroups[key] = group;
     this.parseMeshGroup(group, variant);
   }
