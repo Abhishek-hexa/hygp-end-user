@@ -107,7 +107,6 @@ export class MeshManager {
 
     group.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        console.log(child.name)
         if (
           (child.name as MeshName) === 'Buckle' ||
           (child.name as MeshName) === 'D_Ring' ||
