@@ -10,6 +10,7 @@ import { CanvasModel } from './CanvasModel';
 import { LoadCollar } from './LoadCollar/LoadCollar';
 import LoadLeash from './LoadLeash/LoadLeash';
 import LoadHarness from './LoadHarness/LoadHarness';
+import LoadMartingale from './LoadMartingale/LoadMartingale';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -32,6 +33,8 @@ export const CanvasPanel = observer(() => {
         return <LoadLeash url={modelUrl}/>;
       case 'HARNESS':
         return <LoadHarness url={modelUrl}/>;
+      case 'MARTINGALE':
+        return <LoadMartingale url={modelUrl}/>;
       default:
         return <CanvasModel url={modelUrl} />;
     }

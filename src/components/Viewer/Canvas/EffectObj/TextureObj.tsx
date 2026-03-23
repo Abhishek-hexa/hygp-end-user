@@ -215,8 +215,8 @@ const TextureObj = ({
     envMap,
     onTextureReady,
     side = THREE.FrontSide,
-    normalMapPath = '/assets/texture/webbingNormal.jpg',
-    normalRepeat = [0.7, 0.7],
+    normalMapPath = '/assets/texture/texture/webbingNormal.jpg',
+    normalRepeat = [5, 5],
 }: TextureObjProps) => {
     const { gl } = useThree();
     const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
@@ -241,7 +241,7 @@ const TextureObj = ({
         const mat = new THREE.MeshPhysicalMaterial();
         mat.normalMap = normalMap;
         mat.side = side;
-        mat.normalScale = new THREE.Vector2(1,-1);
+        mat.normalScale = new THREE.Vector2(30,-30);
         mat.color = new THREE.Color('#e8e8e8');
         if (envMap) {
             mat.envMap = envMap;

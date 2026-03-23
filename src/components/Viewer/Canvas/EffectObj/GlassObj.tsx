@@ -53,7 +53,7 @@ export interface GlassObjProps {
 export function GlassObj({
   mesh,
   logoTexturePath = '/assets/texture/texture/plasticLogo.png',
-  hdrPath = '/assets/texture/photo_studio_01_1k.hdr',
+  hdrPath = '/assets/texture/texture/photo_studio_01_1k.hdr',
   envMap: envMapProp = null,
   position,
   rotation,

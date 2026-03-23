@@ -15,7 +15,7 @@ export interface PlasticObjProps {
   color?: THREE.ColorRepresentation
   /**
    * Path to the HDR environment map.
-   * Mirrors RGBELoader('/assets/texture/photo_studio_01_1k.hdr').
+   * Mirrors RGBELoader('/assets/texture/texture/photo_studio_01_1k.hdr').
    */
   hdrPath?: string
   /**
@@ -64,7 +64,7 @@ export interface PlasticObjProps {
 export function PlasticObj({
   mesh,
   color,
-  hdrPath = '/assets/texture/photo_studio_01_1k.hdr',
+  hdrPath = '/assets/texture/texture/photo_studio_01_1k.hdr',
   envMap: envMapProp = null,
   roughness = 1,
   metalness = 0,
