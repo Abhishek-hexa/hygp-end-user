@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader'
 import * as THREE from 'three'
 
 export interface PlasticObjProps {
@@ -15,7 +15,7 @@ export interface PlasticObjProps {
   color?: THREE.ColorRepresentation
   /**
    * Path to the HDR environment map.
-   * Mirrors RGBELoader('/assets/texture/texture/photo_studio_01_1k.hdr').
+   * Mirrors HDRLoader('/assets/texture/texture/photo_studio_01_1k.hdr').
    */
   hdrPath?: string
   /**
@@ -54,7 +54,7 @@ export interface PlasticObjProps {
  *   toneMapped: false,
  *   normalScale: Vector2(0.8, -0.8),
  *   normalMap, roughnessMap, metalnessMap: inherited from nodes['Buckle'].material,
- *   envMap: RGBELoader HDR
+ *   envMap: HDRLoader HDR
  * }
  * ```
  *
@@ -118,7 +118,7 @@ export function PlasticObj({
     mat.needsUpdate = true
   }, [color, roughness, metalness, clearcoat, clearcoatRoughness, reflectivity, envMapIntensity, normalScaleX, normalScaleY])
 
-  // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
+  // Load HDR env map — mirrors HDRLoader + EquirectangularReflectionMapping
   useEffect(() => {
     if (envMapProp !== null) {
       matRef.current.envMap = envMapProp
@@ -126,8 +126,8 @@ export function PlasticObj({
       return
     }
 
-    const rgbeLoader = new RGBELoader()
-    rgbeLoader.load(hdrPath, (hdr) => {
+    const hdrLoader = new HDRLoader()
+    hdrLoader.load(hdrPath, (hdr) => {
       hdr.mapping = THREE.EquirectangularReflectionMapping
       matRef.current.envMap = hdr
       matRef.current.needsUpdate = true

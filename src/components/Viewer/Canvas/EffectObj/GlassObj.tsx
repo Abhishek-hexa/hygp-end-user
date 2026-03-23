@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader'
 import * as THREE from 'three'
 
 export interface GlassObjProps {
@@ -17,7 +17,7 @@ export interface GlassObjProps {
   logoTexturePath?: string
   /**
    * Path to the HDR environment map.
-   * Mirrors RGBELoader('/assets/texture/photo_studio_01_1k.hdr').
+   * Mirrors HDRLoader('/assets/texture/photo_studio_01_1k.hdr').
    * Default: '/assets/texture/photo_studio_01_1k.hdr'
    */
   hdrPath?: string
@@ -45,7 +45,7 @@ export interface GlassObjProps {
  *   reflectivity: 1,
  *   envMapIntensity: 1,
  *   toneMapped: false,
- *   envMap: RGBELoader HDR,
+ *   envMap: HDRLoader HDR,
  *   map: TextureLoader(plasticLogo.png) { encoding: sRGBEncoding, flipY: false }
  * }
  * ```
@@ -88,7 +88,7 @@ export function GlassObj({
     })
   }, [logoTexturePath])
 
-  // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
+  // Load HDR env map — mirrors HDRLoader + EquirectangularReflectionMapping
   useEffect(() => {
     if (envMapProp !== null) {
       matRef.current.envMap = envMapProp
@@ -96,8 +96,8 @@ export function GlassObj({
       return
     }
 
-    const rgbeLoader = new RGBELoader()
-    rgbeLoader.load(hdrPath, (hdr) => {
+    const hdrLoader = new HDRLoader()
+    hdrLoader.load(hdrPath, (hdr) => {
       hdr.mapping = THREE.EquirectangularReflectionMapping
       matRef.current.envMap = hdr
       matRef.current.needsUpdate = true
