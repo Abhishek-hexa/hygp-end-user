@@ -4,13 +4,15 @@ import { useMainContext } from '../../../../hooks/useMainContext';
 import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
+import EngravedBuckle from './EngravedBuckle';
+import { observer } from 'mobx-react-lite';
 
 type LoadCollarProps = {
   url: string;
   plasticUrl: string;
 };
 
-export const LoadCollar = ({ url, plasticUrl }: LoadCollarProps) => {
+export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const { design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
   const { scene } = useGLTF(url);
@@ -27,6 +29,7 @@ export const LoadCollar = ({ url, plasticUrl }: LoadCollarProps) => {
       <Buckle />
       <Stitches />
       <WebTextured texturedName="Web" />
+      <EngravedBuckle />
     </>
   );
-};
+})

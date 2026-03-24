@@ -8,6 +8,9 @@ const server = {};
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: ['fabric'],
+  },
   resolve: {
     alias: {
       '@src': resolve(new URL('./src', import.meta.url).pathname),
