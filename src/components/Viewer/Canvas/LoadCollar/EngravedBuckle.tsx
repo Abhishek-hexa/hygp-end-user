@@ -5,19 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { useMainContext } from '../../../../hooks/useMainContext';
-import { MetalObj } from '../EffectObj/MetalObj';
 
 const EngravedBuckle = observer(() => {
-  const { designManager, design3DManager } = useMainContext();
-  const planeMesh = design3DManager.meshManager.buckleMeshes.get('Plane');
-  const selectedColor = designManager.productManager.buckleManager.currentSelectedColorDescription?.hex;
-
-  return (
-    <>
-      {/* {planeMesh && <MetalObj mesh={planeMesh} metalColor={selectedColor}  />} */}
-      <EngravedMesh />
-    </>
-  );
+  return <EngravedMesh />;
 });
 
 export default EngravedBuckle;
@@ -28,62 +18,58 @@ const EngravedMesh = observer(function EngravedMesh() {
   const planeMesh = design3DManager.meshManager.buckleMeshes.get('Plane');
   const decalHostRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [decalTransform, setDecalTransform] = useState<{
+    position: [number, number, number];
+    scale: [number, number, number];
+  } | null>(null);
 
   useFrame(() => {
-    if (!decalHostRef.current || !planeMesh) {
-      return;
-    }
-
+    if (!decalHostRef.current || !planeMesh) return;
     decalHostRef.current.position.copy(planeMesh.position);
     decalHostRef.current.rotation.copy(planeMesh.rotation);
     decalHostRef.current.scale.copy(planeMesh.scale);
   });
 
+  // Compute decal transform from mesh bounding box
   useEffect(() => {
-    if (!manager.imageUrl && !manager.loading && !manager.error) {
-      void manager.refreshTexture();
-    }
-  }, [manager, manager.imageUrl, manager.loading, manager.error]);
+    if (!planeMesh) return;
+
+    const geometry = planeMesh.geometry;
+    geometry.computeBoundingBox();
+    const box = geometry.boundingBox;
+    if (!box) return;
+
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    setDecalTransform({
+      position: [center.x, center.y, center.z + 0.001],
+      scale: [size.x, size.y, size.z || 0.01],
+    });
+  }, [planeMesh, planeMesh?.geometry]);
 
   useEffect(() => {
-    if (!manager.imageUrl) {
-      setTexture(null);
-      return;
-    }
-
+    if (!manager.imageUrl) { setTexture(null); return; }
     let active = true;
     const loader = new THREE.TextureLoader();
     loader.load(
       manager.imageUrl,
       (loadedTexture) => {
-        if (!active) {
-          loadedTexture.dispose();
-          return;
-        }
+        if (!active) { loadedTexture.dispose(); return; }
         loadedTexture.colorSpace = THREE.SRGBColorSpace;
         loadedTexture.needsUpdate = true;
         setTexture(loadedTexture);
       },
       undefined,
-      () => {
-        if (!active) {
-          return;
-        }
-        setTexture(null);
-      },
+      () => { if (active) setTexture(null); },
     );
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [manager, manager.imageUrl]);
 
   useEffect(() => {
-    return () => {
-      if (texture) {
-        texture.dispose();
-      }
-    };
+    return () => { texture?.dispose(); };
   }, [texture]);
 
   return (
@@ -92,8 +78,12 @@ const EngravedMesh = observer(function EngravedMesh() {
         <mesh ref={decalHostRef} geometry={planeMesh.geometry}>
           <meshStandardMaterial transparent opacity={0} depthWrite={false} />
 
-          {texture && (
-            <Decal position={[0, 0, 0.001]} scale={13} rotation={[0, 0, 0]}>
+          {texture && decalTransform && (
+            <Decal
+              position={decalTransform.position}
+              scale={decalTransform.scale}
+              rotation={[0, 0, 0]}
+            >
               <meshBasicMaterial
                 map={texture}
                 transparent

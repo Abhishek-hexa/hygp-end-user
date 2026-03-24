@@ -86,6 +86,10 @@ export class EngravingManager {
 
   setAvailableFonts(inFonts: Map<number, FontDescription>) {
     this._availableFonts = inFonts;
+    const defaultFont = inFonts.keys().next().value;
+    defaultFont && this.lines.forEach((line) => {
+      line.font = defaultFont;
+    })
   }
 
   resetSelection() {
