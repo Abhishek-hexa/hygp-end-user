@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
 import { useGLTF } from '@react-three/drei';
 import MetalBuckles from './MetalBuckles';

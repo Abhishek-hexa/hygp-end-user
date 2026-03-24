@@ -6,6 +6,7 @@ import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
 import EngravedBuckle from './EngravedBuckle';
 import { observer } from 'mobx-react-lite';
+import WebbingText from './WebbingText';
 
 type LoadCollarProps = {
   url: string;
@@ -13,11 +14,15 @@ type LoadCollarProps = {
 };
 
 export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
-  const { design3DManager } = useMainContext();
+  const { designManager, design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
   const { scene } = useGLTF(url);
   const plasticRes = useGLTF(plasticUrl);
   const plasticScene = plasticRes.scene;
+
+  const webbingTextManager = designManager.productManager.webbingText;
+  const webText = meshManager.webMeshes.get('Web_Text');
+  const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
 
   useEffect(() => {
     meshManager.setMeshGroup(url, scene, 'DEFAULT');
@@ -30,6 +35,7 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
       <Stitches />
       <WebTextured texturedName="Web" />
       <EngravedBuckle />
+      <WebbingText mesh={webText} text={webbingTextManager.value} color={webbingTextManager.selectedColor} fontUrl={selectedFont} />
     </>
   );
 })

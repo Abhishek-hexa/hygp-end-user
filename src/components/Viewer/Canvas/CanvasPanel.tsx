@@ -57,7 +57,7 @@ export const CanvasPanel = observer(() => {
         }}>
         <Suspense fallback={null}>
           {renderModelByComponent()}
-          <Environment preset="city" />
+          <Environment files={'/assets/potsdamer_platz_1k.hdr'} />
         </Suspense>
         <CameraSync controlsRef={controlsRef} />
         <OrbitControls
