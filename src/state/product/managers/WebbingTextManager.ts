@@ -35,6 +35,11 @@ export class WebbingTextManager {
     return this._selectedColor;
   }
 
+  get selectedFontDescription() {
+    if(!this.selectedFont) return;
+    return this.availableFonts.get(this.selectedFont);
+  }
+
   setText(inValue: string) {
     this._value = inValue;
   }
