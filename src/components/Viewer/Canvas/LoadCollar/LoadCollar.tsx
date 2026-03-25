@@ -7,6 +7,7 @@ import { Stitches } from './Stitches';
 import EngravedBuckle from './EngravedBuckle';
 import { observer } from 'mobx-react-lite';
 import WebbingText from './WebbingText';
+import { TextSize } from '../../../../state/product/types';
 
 type LoadCollarProps = {
   url: string;
@@ -24,6 +25,9 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const webText = meshManager.webMeshes.get('Web_Text');
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
 
+  const selectedSize = webbingTextManager.size;
+  const fontSize = fontSizeRecord[selectedSize];
+
   useEffect(() => {
     meshManager.setMeshGroup(url, scene, 'DEFAULT');
     meshManager.setMeshGroup(plasticUrl, plasticScene, 'PLASTIC');
@@ -35,7 +39,19 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
       <Stitches />
       <WebTextured texturedName="Web" />
       <EngravedBuckle />
-      <WebbingText mesh={webText} text={webbingTextManager.value} color={webbingTextManager.selectedColor} fontUrl={selectedFont} />
+      <WebbingText
+        mesh={webText}
+        text={webbingTextManager.value}
+        color={webbingTextManager.selectedColor}
+        fontUrl={selectedFont}
+        fontSize={fontSize}
+      />
     </>
   );
-})
+});
+
+const fontSizeRecord: Record<TextSize, number> = {
+  SMALL: 200,
+  MEDIUM: 300,
+  LARGE: 400
+}

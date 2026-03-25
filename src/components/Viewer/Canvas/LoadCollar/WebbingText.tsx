@@ -25,14 +25,6 @@ export const WebbingText = observer(
     const meshRef = useRef<THREE.Mesh>(null);
     const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
-    const normalMap = useLoader(
-      THREE.TextureLoader,
-      '/assets/texture/texture/webbingNormal.jpg'
-    );
-    normalMap.flipY = false;
-    normalMap.wrapS = THREE.RepeatWrapping;
-    normalMap.wrapT = THREE.RepeatWrapping;
-    normalMap.repeat.set(5, 5);
 
     useFrame(() => {
       if (!meshRef.current || !mesh) return;
@@ -168,8 +160,6 @@ export const WebbingText = observer(
             depthWrite={false}
             polygonOffset
             polygonOffsetFactor={-1}
-            normalMap={normalMap}
-            normalScale={new THREE.Vector2(30, -30)}
             roughness={0.8}
             metalness={1}
             envMap={envMap}
