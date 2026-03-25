@@ -23,6 +23,7 @@ export interface MetalObjProps {
   position?: [number, number, number]
   rotation?: [number, number, number]
   scale?: [number, number, number]
+  side?: Boolean
 }
 
 /**
@@ -46,6 +47,7 @@ export function MetalObj({
   position,
   rotation,
   scale,
+  side = false,
 }: MetalObjProps) {
   const ref = useRef<THREE.Mesh>(null)
 
@@ -67,6 +69,7 @@ export function MetalObj({
     mat.metalness = metalness
     mat.roughness = roughness
     mat.needsUpdate = true
+    mat.side = side? THREE.DoubleSide : THREE.FrontSide
   }, [metalColor, metalness, roughness])
 
   // Mirror source-mesh world transform when no explicit override is given

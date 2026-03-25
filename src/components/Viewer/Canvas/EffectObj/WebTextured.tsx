@@ -6,9 +6,10 @@ import TextureObj from './TextureObj';
 
 interface WebTexturedProps {
   texturedName: MeshName;
+  side?: Boolean
 }
 
-const WebTextured = observer(({ texturedName }: WebTexturedProps) => {
+const WebTextured = observer(({ texturedName, side = false }: WebTexturedProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { productManager } = designManager;
   const { meshManager } = design3DManager;
@@ -38,6 +39,7 @@ const WebTextured = observer(({ texturedName }: WebTexturedProps) => {
       currentSize={currentSize}
       productKey={productKey}
       envMap={sourceMaterial?.envMap ?? null}
+      side={ side ? THREE.DoubleSide : THREE.FrontSide}
     />
   );
 });

@@ -10,7 +10,7 @@ export const CAMERA_POSITIONS_BY_PRODUCT: Record<ProductType, Vec3> = {
   MARTINGALE: [0, 0, 200],
   LEASH: [0, 0, 350],
   BANDANA: [0, 0, 300],
-  HARNESS: [0, 0, 600],
+  HARNESS: [0, 0, 500],
 };
 
 export class CameraManager {
@@ -18,8 +18,8 @@ export class CameraManager {
   private _position: Vec3;
   private _target: Vec3 = [0, 0, 0];
   private _fov = 26;
-  private _near = 0.1;
-  private _far = 10000;
+  private _near = 100;
+  private _far = 2000;
   private _isAutoRotate = false;
   private _autoRotateSpeed = 0.5;
 
