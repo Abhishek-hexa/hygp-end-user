@@ -1,4 +1,3 @@
-import { FabricText, StaticCanvas } from 'fabric';
 import {
   IReactionDisposer,
   makeAutoObservable,
@@ -7,6 +6,7 @@ import {
 } from 'mobx';
 
 import { StateManager } from '../../StateManager';
+import { Service3D } from '../services/Service3D';
 
 export type EngravingConfigLine = {
   text: string;
@@ -41,7 +41,6 @@ export const DEFAULT_ENGRAVING_CONFIG: EngravingConfig = {
   width: 1048,
 };
 
-const fontCache = new Map<string, FontFace>();
 
 const cloneLines = (lines: EngravingConfigLine[]): EngravingConfigLine[] =>
   lines.map((line) => ({ ...line }));
@@ -142,15 +141,23 @@ export class Engraving3Dmanager {
       .filter((line) => line.text.trim().length > 0)
       .slice(0, MAX_LINES);
 
-    await this.preloadLineFonts(renderLines);
+    const fontManager = this._libstate.design3DManager.fontLoadManager;
+    const fontUrls = renderLines
+      .map((line) => line.fontUrl)
+      .filter((url): url is string => !!url)
+      .filter((url, index, arr) => arr.indexOf(url) === index);
+      
+    if (fontUrls.length > 0) {
+      await fontManager.loadFonts(fontUrls);
+    }
 
-    const canvas = this.createCanvas(width, height);
+    const canvas = Service3D.createCanvas(width, height);
 
     try {
       if (renderLines.length === 0) {
         return {
           aspect: width / height,
-          imageUrl: await this.canvasToBlobUrl(canvas),
+          imageUrl: await Service3D.canvasToBlobUrl(canvas),
         };
       }
 
@@ -173,12 +180,12 @@ export class Engraving3Dmanager {
       );
 
       const textObjects = renderLines.map((line, i) =>
-        this.createTextObjectForBudget(
-          line,
+        Service3D.createTextObjectForBudget(
+          line.text,
           heightBudgets[i],
           usableWidth,
-          fontFamily,
-          fontWeight,
+          fontManager.getFontFamily(line.fontUrl, fontFamily),
+          line.fontWeight ?? fontWeight,
         ),
       );
 
@@ -194,9 +201,9 @@ export class Engraving3Dmanager {
             scaleY: (t.scaleY ?? 1) * scale,
           });
         });
-        this.positionTextObjects(textObjects, lineGap * scale, width, height);
+        Service3D.positionTextObjects(textObjects, lineGap * scale, width, height);
       } else {
-        this.positionTextObjects(textObjects, lineGap, width, height);
+        Service3D.positionTextObjects(textObjects, lineGap, width, height);
       }
 
       canvas.add(...textObjects);
@@ -204,118 +211,11 @@ export class Engraving3Dmanager {
 
       return {
         aspect: width / height,
-        imageUrl: await this.canvasToBlobUrl(canvas),
+        imageUrl: await Service3D.canvasToBlobUrl(canvas),
       };
     } finally {
       await canvas.dispose();
     }
-  }
-
-  private createTextObjectForBudget(
-    line: EngravingConfigLine,
-    heightBudget: number,
-    canvasWidth: number,
-    defaultFontFamily: string,
-    defaultFontWeight: string,
-  ): FabricText {
-    const resolvedFamily = this.getFontFamilyForLine(line, defaultFontFamily);
-    const resolvedWeight = line.fontWeight ?? defaultFontWeight;
-    const fontSize = Math.floor(heightBudget);
-
-    const textObj = new FabricText(line.text, {
-      fill: '#575757',
-      fontFamily: resolvedFamily,
-      fontSize,
-      fontWeight: resolvedWeight,
-      lineHeight: 1,
-      originX: 'center',
-      originY: 'center',
-      textAlign: 'center',
-    });
-
-    const renderedHeight = textObj.getScaledHeight();
-    const renderedWidth = textObj.getScaledWidth();
-
-    const heightScale =
-      renderedHeight > heightBudget ? heightBudget / renderedHeight : 1;
-    const scaledWidth = renderedWidth * heightScale;
-    const widthScale =
-      scaledWidth > canvasWidth ? canvasWidth / scaledWidth : 1;
-
-    textObj.set({
-      scaleX: heightScale * widthScale,
-      scaleY: heightScale,
-    });
-
-    return textObj;
-  }
-
-  private positionTextObjects(
-    textObjects: FabricText[],
-    lineGap: number,
-    width: number,
-    height: number,
-  ): void {
-    const totalHeight =
-      textObjects.reduce((sum, t) => sum + t.getScaledHeight(), 0) +
-      lineGap * (textObjects.length - 1);
-
-    let currentY = height / 2 - totalHeight / 2;
-
-    textObjects.forEach((textObj) => {
-      const textHeight = textObj.getScaledHeight();
-      textObj.set({ left: width / 2, top: currentY + textHeight / 2 });
-      currentY += textHeight + lineGap;
-    });
-  }
-
-  private getFontFamilyForLine(
-    line: EngravingConfigLine,
-    defaultFontFamily: string,
-  ): string {
-    if (line.fontUrl)
-      return `engraving-font-${this.urlToFamilySlug(line.fontUrl)}`;
-    return line.fontFamily ?? defaultFontFamily;
-  }
-
-  private urlToFamilySlug(url: string): string {
-    return url.replace(/[^a-zA-Z0-9]/g, '_');
-  }
-
-  private async preloadLineFonts(lines: EngravingConfigLine[]): Promise<void> {
-    const pending = lines
-      .filter((line) => line.fontUrl && !fontCache.has(line.fontUrl))
-      .map((line) => line.fontUrl as string)
-      .filter((url, index, arr) => arr.indexOf(url) === index);
-
-    if (pending.length === 0) return;
-
-    await Promise.all(pending.map((url) => this.loadFontFromUrl(url)));
-  }
-
-  private async loadFontFromUrl(url: string): Promise<void> {
-    const familyName = `engraving-font-${this.urlToFamilySlug(url)}`;
-    const fontFace = new FontFace(familyName, `url(${url})`);
-    await fontFace.load();
-    document.fonts.add(fontFace);
-    fontCache.set(url, fontFace);
-  }
-
-  private createCanvas(width: number, height: number): StaticCanvas {
-    const canvasEl = document.createElement('canvas');
-    canvasEl.width = width;
-    canvasEl.height = height;
-    return new StaticCanvas(canvasEl, {
-      height,
-      renderOnAddRemove: false,
-      width,
-    });
-  }
-
-  private async canvasToBlobUrl(canvas: StaticCanvas): Promise<string> {
-    const blob = await canvas.toBlob();
-    if (!blob) throw new Error('Failed to create blob');
-    return URL.createObjectURL(blob);
   }
 
   private getEngravingConfigLines(): EngravingConfigLine[] {

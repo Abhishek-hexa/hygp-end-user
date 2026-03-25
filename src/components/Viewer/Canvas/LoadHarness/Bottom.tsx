@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import { useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 import { useMainContext } from '../../../../hooks/useMainContext';
 
 const Bottom = observer(() => {
@@ -13,23 +13,20 @@ const Bottom = observer(() => {
       ? bottom.material
       : null;
 
-  const [baseColorMap, normalMap, metallicMap, roughnessMap] = useLoader(
-    THREE.TextureLoader,
-    [
-      '/assets/texture/texture/bottomBasecolor.jpg',
-      '/assets/texture/texture/bottomNormal.jpg',
-      '/assets/texture/texture/bottomMetallic.jpg',
-      '/assets/texture/texture/bottomRoughness.jpg',
-    ],
-  );
+  const baseColorMap = useMyTexture('/assets/texture/texture/bottomBasecolor.jpg');
+  const normalMap = useMyTexture('/assets/texture/texture/bottomNormal.jpg');
+  const metallicMap = useMyTexture('/assets/texture/texture/bottomMetallic.jpg');
+  const roughnessMap = useMyTexture('/assets/texture/texture/bottomRoughness.jpg');
 
   [baseColorMap, normalMap, metallicMap, roughnessMap].forEach((texture) => {
-    texture.flipY = false;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(5, 5);
+    if (texture) {
+      texture.flipY = false;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(5, 5);
+    }
   });
-  baseColorMap.colorSpace = THREE.SRGBColorSpace;
+  if (baseColorMap) baseColorMap.colorSpace = THREE.SRGBColorSpace;
 
   const material = useMemo(() => {
     const mat = new THREE.MeshPhysicalMaterial({
