@@ -26,7 +26,6 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
 
   const selectedSize = webbingTextManager.size;
-  const fontSize = fontSizeRecord[selectedSize];
 
   useEffect(() => {
     meshManager.setMeshGroup(url, scene, 'DEFAULT');
@@ -44,14 +43,8 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
         text={webbingTextManager.value}
         color={webbingTextManager.selectedColor}
         fontUrl={selectedFont}
-        fontSize={fontSize}
+        fontSize={selectedSize}
       />
     </>
   );
 });
-
-const fontSizeRecord: Record<TextSize, number> = {
-  SMALL: 200,
-  MEDIUM: 300,
-  LARGE: 400
-}

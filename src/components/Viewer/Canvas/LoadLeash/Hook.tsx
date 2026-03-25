@@ -9,7 +9,7 @@ const Hook = observer(({}) => {
   const selectedColor =
     designManager.productManager.buckleManager.currentSelectedColorDescription
       ?.hex;
-  return <>{hook && <MetalObj mesh={hook} metalColor={selectedColor} />}</>;
+  return <>{hook && <MetalObj mesh={hook} metalColor={selectedColor} side={true} />}</>;
 });
 
 export default Hook;

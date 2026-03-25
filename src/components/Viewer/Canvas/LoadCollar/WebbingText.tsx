@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { loadHdrEnvMapCached } from '../EffectObj/hdrEnvMapCache';
+import { TextSize } from '../../../../state/product/types';
 
 export interface WebbingTextProps {
   mesh: THREE.Mesh | undefined;
@@ -11,7 +12,14 @@ export interface WebbingTextProps {
   fontUrl?: string;
   fontFamilyFallback?: string;
   color?: string;
-  fontSize?: number;
+  fontSize?: TextSize;
+  side?: boolean
+}
+
+const fontSizeRecord: Record<TextSize, number> = {
+  SMALL: 200,
+  MEDIUM: 300,
+  LARGE: 400
 }
 
 export const WebbingText = observer(
@@ -21,7 +29,8 @@ export const WebbingText = observer(
     fontUrl,
     fontFamilyFallback = 'Arial',
     color = '#2d9ce6',
-    fontSize = 300,
+    fontSize = 'MEDIUM',
+    side = false,
   }: WebbingTextProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -90,7 +99,7 @@ export const WebbingText = observer(
         const textObj = new FabricText(text, {
           fill: color,
           fontFamily: fontFamily,
-          fontSize: fontSize,
+          fontSize: fontSizeRecord[fontSize],
           left: padding,
           originX: 'left',
           originY: 'center',
@@ -173,6 +182,7 @@ export const WebbingText = observer(
             metalness={1}
             envMap={envMap}
             envMapIntensity={envMap ? 6.5 : 1}
+            side={side? THREE.DoubleSide : THREE.FrontSide}
           />
         </mesh>
       </group>
