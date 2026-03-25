@@ -1,7 +1,9 @@
-import * as THREE from 'three';
-import { useEffect, useMemo, useState } from 'react';
 import { useThree } from '@react-three/fiber';
+import { useEffect, useMemo, useState } from 'react';
+import * as THREE from 'three';
 import { useMyTexture } from '../../../../hooks/useMyTexture';
+import { loadHdrEnvMapCached } from './hdrEnvMapCache';
+
 async function createBlobUrlFromUrl(url: string): Promise<string> {
     const response = await fetch(url, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Failed to fetch the file');
@@ -216,11 +218,19 @@ const TextureObj = ({
     onTextureReady,
     side = THREE.FrontSide,
     normalMapPath = '/assets/texture/texture/webbingNormal.jpg',
-    normalRepeat = [5, 5],
+    normalRepeat = [0.7, 0.7],
 }: TextureObjProps) => {
     const { gl } = useThree();
     const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
     const [originalSvgForTexture, setOriginalSvgForTexture] = useState<GridSVGData | null>(null);
+    const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
+
+    useEffect(() => {
+        loadHdrEnvMapCached('/assets/texture/texture/white1.hdr').then((texture) => {
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+            setLocalEnvMap(texture);
+        });
+    }, []);
 
     const normalMap = useMyTexture(normalMapPath);
     if (normalMap) {
@@ -243,10 +253,11 @@ const TextureObj = ({
         const mat = new THREE.MeshPhysicalMaterial();
         mat.normalMap = normalMap;
         mat.side = side;
-        mat.normalScale = new THREE.Vector2(30,-30);
+        mat.normalScale = new THREE.Vector2(30.5, -30.5);
         mat.color = new THREE.Color('#e8e8e8');
-        if (envMap) {
-            mat.envMap = envMap;
+        const finalEnvMap = localEnvMap || envMap;
+        if (finalEnvMap) {
+            mat.envMap = finalEnvMap;
             mat.envMapIntensity = 6.5;
         }
         mat.map = webTexture;
@@ -254,7 +265,7 @@ const TextureObj = ({
         mat.metalness = 1;
         mat.needsUpdate = true;
         return mat;
-    }, [webTexture, normalMap, envMap, side]);
+    }, [webTexture, normalMap, localEnvMap, envMap, side]);
 
     useEffect(() => {
         if (!texturePath) {
@@ -295,9 +306,18 @@ const TextureObj = ({
             scale: 1,
         };
 
+        let scaleValue = sizeEntry.scale ?? 1;
+        if (scaleValue === 1) {
+            scaleValue = 1.005;
+        } else if (scaleValue <= 0) {
+            scaleValue = 0.01;
+        } else if (scaleValue > 2) {
+            scaleValue = 2;
+        }
+
         const clampedEntry = {
             ...sizeEntry,
-            scale: Math.min(Math.max(sizeEntry.scale ?? 1, 0.01), 2),
+            scale: scaleValue,
         };
 
         applyTexture(originalSvgForTexture, clampedEntry, (tex) => {

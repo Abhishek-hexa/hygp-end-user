@@ -12,6 +12,7 @@ import LoadLeash from './LoadLeash/LoadLeash';
 import LoadHarness from './LoadHarness/LoadHarness';
 import LoadMartingale from './LoadMartingale/LoadMartingale';
 import { ThreeDLoaderSync } from './ThreeDLoaderSync';
+import LoadEnvironment from './EffectObj/LoadEnvironment';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -59,7 +60,7 @@ export const CanvasPanel = observer(() => {
         <ThreeDLoaderSync />
         <Suspense fallback={null}>
           {renderModelByComponent()}
-          <Environment files={'/assets/texture/texture/photo_studio_01_1k.hdr'} />
+          <LoadEnvironment />
         </Suspense>
         <CameraSync controlsRef={controlsRef} />
         <OrbitControls
