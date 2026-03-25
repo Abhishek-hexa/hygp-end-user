@@ -11,7 +11,6 @@ import { LoadCollar } from './LoadCollar/LoadCollar';
 import LoadLeash from './LoadLeash/LoadLeash';
 import LoadHarness from './LoadHarness/LoadHarness';
 import LoadMartingale from './LoadMartingale/LoadMartingale';
-import { ThreeDLoaderSync } from './ThreeDLoaderSync';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 
 export const CanvasPanel = observer(() => {
@@ -57,7 +56,6 @@ export const CanvasPanel = observer(() => {
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
         }}>
-        <ThreeDLoaderSync />
         <Suspense fallback={null}>
           {renderModelByComponent()}
           <LoadEnvironment />
