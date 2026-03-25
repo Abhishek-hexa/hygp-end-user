@@ -154,10 +154,15 @@ export class Engraving3Dmanager {
         };
       }
 
+      const paddingX = width * 0.01;
+      const paddingY = height * 0.05;
+      const usableWidth = width - paddingX * 2;
+      const usableHeightMax = height - paddingY * 2;
+
       const lineCount = renderLines.length;
       const lineGap = LINE_GAP_RATIO * height;
       const totalGapHeight = lineGap * (lineCount - 1);
-      const usableHeight = height - totalGapHeight;
+      const usableHeight = usableHeightMax - totalGapHeight;
 
       const heroRatio = HERO_HEIGHT_RATIOS[lineCount] ?? 0.4;
       const secondaryRatio =
@@ -171,7 +176,7 @@ export class Engraving3Dmanager {
         this.createTextObjectForBudget(
           line,
           heightBudgets[i],
-          width,
+          usableWidth,
           fontFamily,
           fontWeight,
         ),
@@ -181,8 +186,8 @@ export class Engraving3Dmanager {
         textObjects.reduce((sum, t) => sum + t.getScaledHeight(), 0) +
         totalGapHeight;
 
-      if (totalRenderedHeight > height) {
-        const scale = height / totalRenderedHeight;
+      if (totalRenderedHeight > usableHeightMax) {
+        const scale = usableHeightMax / totalRenderedHeight;
         textObjects.forEach((t) => {
           t.set({
             scaleX: (t.scaleX ?? 1) * scale,
@@ -233,11 +238,12 @@ export class Engraving3Dmanager {
 
     const heightScale =
       renderedHeight > heightBudget ? heightBudget / renderedHeight : 1;
+    const scaledWidth = renderedWidth * heightScale;
     const widthScale =
-      renderedWidth > canvasWidth ? canvasWidth / renderedWidth : 1;
+      scaledWidth > canvasWidth ? canvasWidth / scaledWidth : 1;
 
     textObj.set({
-      scaleX: heightScale * (widthScale < 1 ? widthScale / heightScale : 1),
+      scaleX: heightScale * widthScale,
       scaleY: heightScale,
     });
 
