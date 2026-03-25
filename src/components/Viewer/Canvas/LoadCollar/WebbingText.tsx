@@ -3,6 +3,7 @@ import { FabricText, StaticCanvas } from 'fabric';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { loadHdrEnvMapCached } from '../EffectObj/hdrEnvMapCache';
 
 export interface WebbingTextProps {
   mesh: THREE.Mesh | undefined;
@@ -24,6 +25,14 @@ export const WebbingText = observer(
   }: WebbingTextProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const [texture, setTexture] = useState<THREE.Texture | null>(null);
+    const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
+
+    useEffect(() => {
+        loadHdrEnvMapCached('/assets/texture/texture/white1.hdr').then((texture) => {
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+            setLocalEnvMap(texture);
+        });
+    }, []);
 
 
     useFrame(() => {
@@ -147,7 +156,7 @@ export const WebbingText = observer(
       mesh?.material instanceof THREE.MeshPhysicalMaterial
         ? mesh.material
         : null;
-    const envMap = sourceMaterial?.envMap ?? null;
+    const envMap = localEnvMap || (sourceMaterial?.envMap ?? null);
 
     if (!mesh || !texture) return null;
 

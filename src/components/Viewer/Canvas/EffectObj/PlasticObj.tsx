@@ -30,6 +30,7 @@ export interface PlasticObjProps {
   clearcoatRoughness?: number // default 1
   reflectivity?: number       // default 1
   envMapIntensity?: number    // default 1
+  specularIntensity?: number  // default 1
   /** X/Y scale of the normal map. Default: Vector2(0.8, -0.8) */
   normalScaleX?: number
   normalScaleY?: number
@@ -38,29 +39,7 @@ export interface PlasticObjProps {
   scale?: [number, number, number]
 }
 
-/**
- * PlasticObj
- *
- * Recreates `plasticBuckleMaterialPhysical` from your codebase:
- *
- * ```js
- * MeshPhysicalMaterial {
- *   roughness: 1,
- *   metalness: 0,
- *   clearcoat: 0.3,
- *   clearcoatRoughness: 1,
- *   reflectivity: 1,
- *   envMapIntensity: 1,
- *   toneMapped: false,
- *   normalScale: Vector2(0.8, -0.8),
- *   normalMap, roughnessMap, metalnessMap: inherited from nodes['Buckle'].material,
- *   envMap: RGBELoader HDR
- * }
- * ```
- *
- * Maps are automatically pulled from `mesh.material` if it carries them.
- * The source mesh/material is never mutated.
- */
+
 export function PlasticObj({
   mesh,
   color,
@@ -72,6 +51,7 @@ export function PlasticObj({
   clearcoatRoughness = 1,
   reflectivity = 1,
   envMapIntensity = 1,
+  specularIntensity = 1,
   normalScaleX = 0.8,
   normalScaleY = -0.8,
   position,
@@ -95,6 +75,7 @@ export function PlasticObj({
       clearcoatRoughness,
       reflectivity,
       envMapIntensity,
+      specularIntensity,
       toneMapped: false,
       normalScale: new THREE.Vector2(normalScaleX, normalScaleY),
       // Inherit texture maps from source material
@@ -114,9 +95,10 @@ export function PlasticObj({
     mat.clearcoatRoughness = clearcoatRoughness
     mat.reflectivity = reflectivity
     mat.envMapIntensity = envMapIntensity
+    mat.specularIntensity = specularIntensity
     mat.normalScale.set(normalScaleX, normalScaleY)
     mat.needsUpdate = true
-  }, [color, roughness, metalness, clearcoat, clearcoatRoughness, reflectivity, envMapIntensity, normalScaleX, normalScaleY])
+  }, [color, roughness, metalness, clearcoat, clearcoatRoughness, reflectivity, envMapIntensity, specularIntensity, normalScaleX, normalScaleY])
 
   // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
   useEffect(() => {
