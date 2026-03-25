@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { loadHdrEnvMapCached, loadTextureCached } from './hdrEnvMapCache'
+import { loadHdrEnvMapCached } from './hdrEnvMapCache'
+import { useMyTexture } from '../../../../hooks/useMyTexture'
 
 export interface GlassObjProps {
   /**
@@ -77,26 +78,16 @@ export function GlassObj({
     })
   )
 
-  // Load logo texture — sRGBEncoding + flipY: false (exact match)
+  const logoTexture = useMyTexture(logoTexturePath)
+
   useEffect(() => {
-    let isMounted = true
-
-    loadTextureCached(logoTexturePath)
-      .then((tex) => {
-        if (!isMounted) return
-        tex.colorSpace = THREE.SRGBColorSpace // r152+ equivalent of sRGBEncoding
-        tex.flipY = false
-        matRef.current.map = tex
-        matRef.current.needsUpdate = true
-      })
-      .catch((error) => {
-        console.error(`Failed to load logo texture: ${logoTexturePath}`, error)
-      })
-
-    return () => {
-      isMounted = false
+    if (logoTexture) {
+      logoTexture.colorSpace = THREE.SRGBColorSpace // r152+ equivalent of sRGBEncoding
+      logoTexture.flipY = false
+      matRef.current.map = logoTexture
+      matRef.current.needsUpdate = true
     }
-  }, [logoTexturePath])
+  }, [logoTexture])
 
   // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import { useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 import { useMainContext } from '../../../../hooks/useMainContext';
 
 const Belt = observer(() => {
@@ -14,14 +14,13 @@ const Belt = observer(() => {
       ? belts.material
       : null;
 
-  const beltNormalMap = useLoader(
-    THREE.TextureLoader,
-    '/assets/texture/texture/beltNormal.jpg',
-  );
-  beltNormalMap.flipY = false;
-  beltNormalMap.wrapS = THREE.RepeatWrapping;
-  beltNormalMap.wrapT = THREE.RepeatWrapping;
-  beltNormalMap.repeat.set(5, 5);
+  const beltNormalMap = useMyTexture('/assets/texture/texture/beltNormal.jpg');
+  if (beltNormalMap) {
+    beltNormalMap.flipY = false;
+    beltNormalMap.wrapS = THREE.RepeatWrapping;
+    beltNormalMap.wrapT = THREE.RepeatWrapping;
+    beltNormalMap.repeat.set(5, 5);
+  }
 
   const material = useMemo(() => {
     const mat = new THREE.MeshPhysicalMaterial({

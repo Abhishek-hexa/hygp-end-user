@@ -4,6 +4,7 @@ export class UiManager {
   private _isDataLoading = false;
   private _dataError: string | null = null;
   private _isBulkMode = false;
+  private _3dLoadingItems = new Set<string>();
 
   constructor() {
     makeAutoObservable(this);
@@ -19,6 +20,18 @@ export class UiManager {
 
   get isBulkMode() {
     return this._isBulkMode;
+  }
+
+  get is3DLoading() {
+    return this._3dLoadingItems.size > 0;
+  }
+
+  add3DLoadingItem(id: string) {
+    this._3dLoadingItems.add(id);
+  }
+
+  remove3DLoadingItem(id: string) {
+    this._3dLoadingItems.delete(id);
   }
 
   setDataLoading(inDataLoading: boolean) {

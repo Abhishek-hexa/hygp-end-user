@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { useEffect, useMemo, useState } from 'react';
-import { useLoader, useThree } from '@react-three/fiber';
-
+import { useThree } from '@react-three/fiber';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 async function createBlobUrlFromUrl(url: string): Promise<string> {
     const response = await fetch(url, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Failed to fetch the file');
@@ -222,11 +222,13 @@ const TextureObj = ({
     const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
     const [originalSvgForTexture, setOriginalSvgForTexture] = useState<GridSVGData | null>(null);
 
-    const normalMap = useLoader(THREE.TextureLoader, normalMapPath);
-    normalMap.flipY = false;
-    normalMap.wrapS = THREE.RepeatWrapping;
-    normalMap.wrapT = THREE.RepeatWrapping;
-    normalMap.repeat.set(normalRepeat[0], normalRepeat[1]);
+    const normalMap = useMyTexture(normalMapPath);
+    if (normalMap) {
+      normalMap.flipY = false;
+      normalMap.wrapS = THREE.RepeatWrapping;
+      normalMap.wrapT = THREE.RepeatWrapping;
+      normalMap.repeat.set(normalRepeat[0], normalRepeat[1]);
+    }
 
     if (webTexture) {
         webTexture.anisotropy = gl.capabilities.getMaxAnisotropy();

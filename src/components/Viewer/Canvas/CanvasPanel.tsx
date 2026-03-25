@@ -11,6 +11,7 @@ import { LoadCollar } from './LoadCollar/LoadCollar';
 import LoadLeash from './LoadLeash/LoadLeash';
 import LoadHarness from './LoadHarness/LoadHarness';
 import LoadMartingale from './LoadMartingale/LoadMartingale';
+import { ThreeDLoaderSync } from './ThreeDLoaderSync';
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -55,6 +56,7 @@ export const CanvasPanel = observer(() => {
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
         }}>
+        <ThreeDLoaderSync />
         <Suspense fallback={null}>
           {renderModelByComponent()}
           <Environment files={'/assets/texture/texture/photo_studio_01_1k.hdr'} />
