@@ -57,7 +57,7 @@ export const CanvasPanel = observer(() => {
         }}>
         <Suspense fallback={null}>
           {renderModelByComponent()}
-          <Environment files={'/assets/potsdamer_platz_1k.hdr'} />
+          <Environment files={'/assets/texture/texture/photo_studio_01_1k.hdr'} />
         </Suspense>
         <CameraSync controlsRef={controlsRef} />
         <OrbitControls
