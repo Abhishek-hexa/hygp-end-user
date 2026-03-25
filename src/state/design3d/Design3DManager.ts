@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
 import { CameraManager } from './managers/CameraManager';
-import { LightManager } from './managers/LightManager';
 import { MeshManager } from './managers/MeshManager';
 import { StateManager } from '../StateManager';
 import { Engraving3Dmanager } from './managers/Engraving3Dmanager';
@@ -10,7 +9,6 @@ import { FontLoadManager } from './managers/FontLoadManager';
 export class Design3DManager {
   private _libState: StateManager;
   private _cameraManager: CameraManager;
-  private _lightManager = new LightManager();
   private _meshManager: MeshManager;
   private _fontLoadManager: FontLoadManager;
   private _engraving3Dmanager: Engraving3Dmanager;
@@ -26,10 +24,6 @@ export class Design3DManager {
 
   get cameraManager() {
     return this._cameraManager;
-  }
-
-  get lightManager() {
-    return this._lightManager;
   }
 
   get meshManager() {
