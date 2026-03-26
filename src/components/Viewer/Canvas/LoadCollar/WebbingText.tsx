@@ -16,12 +16,6 @@ export interface WebbingTextProps {
   side?: boolean;
 }
 
-const fontSizeRecord: Record<TextSize, number> = {
-  SMALL: 200,
-  MEDIUM: 300,
-  LARGE: 400,
-};
-
 const fontScaleRecord: Record<TextSize, number> = {
   SMALL: 0.5,
   MEDIUM: 0.75,

@@ -1,9 +1,9 @@
-import { Environment, OrbitControls } from '@react-three/drei';
+import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
 import { Suspense, useRef } from 'react';
 import { LinearToneMapping } from 'three';
-import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
 import { CanvasModel } from './CanvasModel';
@@ -17,9 +17,9 @@ export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
   const { cameraManager } = design3DManager;
   const { productManager } = designManager;
-  const controlsRef = useRef<OrbitControlsImpl | null>(null);
+  const controlsRef = useRef<CameraControlsImpl | null>(null);
   const modelUrl = productManager.getModelPath();
-  const plasticModelUrl = productManager.getPlasticModelPath()
+  const plasticModelUrl = productManager.getPlasticModelPath();
 
   const renderModelByComponent = () => {
     if (!modelUrl) {
@@ -29,13 +29,17 @@ export const CanvasPanel = observer(() => {
     switch (productManager.productId) {
       case 'DOG_COLLAR':
       case 'CAT_COLLAR':
-        return plasticModelUrl && <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />;
+        return (
+          plasticModelUrl && (
+            <LoadCollar url={modelUrl} plasticUrl={plasticModelUrl} />
+          )
+        );
       case 'LEASH':
-        return <LoadLeash url={modelUrl}/>;
+        return <LoadLeash url={modelUrl} />;
       case 'HARNESS':
-        return <LoadHarness url={modelUrl}/>;
+        return <LoadHarness url={modelUrl} />;
       case 'MARTINGALE':
-        return <LoadMartingale url={modelUrl}/>;
+        return <LoadMartingale url={modelUrl} />;
       default:
         return <CanvasModel url={modelUrl} />;
     }
@@ -61,12 +65,14 @@ export const CanvasPanel = observer(() => {
           <LoadEnvironment />
         </Suspense>
         <CameraSync controlsRef={controlsRef} />
-        <OrbitControls
+
+        <CameraControls
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2.5}
+          truckSpeed={0}
+          maxDistance={800}
+          minDistance={200}
           ref={controlsRef}
-          makeDefault
-          target={cameraManager.target}
-          autoRotate={cameraManager.isAutoRotate}
-          autoRotateSpeed={cameraManager.autoRotateSpeed}
         />
       </Canvas>
     </section>
