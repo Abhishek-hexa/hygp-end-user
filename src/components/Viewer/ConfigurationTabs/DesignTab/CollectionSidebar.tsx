@@ -28,7 +28,10 @@ export const CollectionSidebar = ({
                   ? 'border-b-2 border-b-primary text-primary-dark md:rounded-l-md md:border-l-2 md:border-l-primary'
                   : 'text-gray-600 hover:bg-primary/10'
               }`}
-              onClick={() => onToggleCollection(collection.id)}>
+              onClick={() => {
+                if (isSelected) return;
+                onToggleCollection(collection.id);
+              }}>
               <div className="mb-1.5 flex items-center justify-center overflow-hidden md:mb-2">
                 <LazyImage
                   src={collection.image}
