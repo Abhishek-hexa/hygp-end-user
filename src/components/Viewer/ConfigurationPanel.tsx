@@ -53,7 +53,7 @@ export const ConfigurationPanel = observer(() => {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <FeatureContentRenderer activeFeature={activeFeature} />
       </div>
-      <div className="hidden border-t border-primary bg-white px-3 py-1 lg:block lg:px-4 lg:py-3">
+      <div className="hidden border-t border-green bg-white lg:block lg:px-12 lg:py-4">
         {uiManager.isBulkMode ? (
           <div className="flex items-center gap-2">
             <button
@@ -75,9 +75,9 @@ export const ConfigurationPanel = observer(() => {
         ) : (
           <button
             type="button"
-            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
+            className="flex p-4 w-full items-center justify-center gap-1.5 rounded-full bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
             <CartIcon stroke={'#fff'} />
-            <span>Add to Cart - ${addToCartPrice}</span>
+            <p className="text-[22px]">Add to Cart - ${addToCartPrice} </p>
           </button>
         )}
       </div>

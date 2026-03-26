@@ -9,7 +9,12 @@
   --color-pink: #F28582;
   --color-gray-custom: #808080;
   --color-gray-custom-light: #FCFCFC;
+  --color-selected: #F5FDF9;
   --color-background: #eaf5f3;
+  --color-border: #F3F3F3;
+  --color-font: #4B4B4B;
+  --color-green: #85A59D;
+  --color-divider: #EAEAEA;
   --font-ranchers: 'Ranchers', cursive;
   --font-roboto: 'Roboto', sans-serif;
 }
