@@ -1,13 +1,13 @@
 import { useEffect, type RefObject } from 'react';
 import { useThree } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
-import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useMainContext } from '../../../hooks/useMainContext';
 
-type CameraSyncProps = {
-  controlsRef: RefObject<OrbitControlsImpl | null>;
-};
+import type CameraControlsImpl from 'camera-controls';
 
+type CameraSyncProps = {
+  controlsRef: React.RefObject<CameraControlsImpl | null>;
+};
 export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
   const {
     design3DManager: { cameraManager },
@@ -28,8 +28,11 @@ export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
     camera.updateProjectionMatrix();
 
     if (controlsRef.current) {
-      controlsRef.current.target.set(tx, ty, tz);
-      controlsRef.current.update();
+      controlsRef.current.setLookAt(
+        px, py, pz,   // camera position
+        tx, ty, tz,   // target
+        true          // smooth transition
+      );
       return;
     }
 
