@@ -13,14 +13,20 @@ export interface WebbingTextProps {
   fontFamilyFallback?: string;
   color?: string;
   fontSize?: TextSize;
-  side?: boolean
+  side?: boolean;
 }
 
 const fontSizeRecord: Record<TextSize, number> = {
   SMALL: 200,
   MEDIUM: 300,
-  LARGE: 400
-}
+  LARGE: 400,
+};
+
+const fontScaleRecord: Record<TextSize, number> = {
+  SMALL: 0.5,
+  MEDIUM: 0.75,
+  LARGE: 1,
+};
 
 export const WebbingText = observer(
   ({
@@ -37,12 +43,13 @@ export const WebbingText = observer(
     const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
 
     useEffect(() => {
-        loadHdrEnvMapCached('/assets/texture/texture/white1.hdr').then((texture) => {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            setLocalEnvMap(texture);
-        });
+      loadHdrEnvMapCached('/assets/texture/texture/white1.hdr').then(
+        (texture) => {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          setLocalEnvMap(texture);
+        },
+      );
     }, []);
-
 
     useFrame(() => {
       if (!meshRef.current || !mesh) return;
@@ -84,8 +91,16 @@ export const WebbingText = observer(
 
         if (!active) return;
 
-        const canvasWidth = 2048;
-        const canvasHeight = 512;
+        const geometry = mesh.geometry;
+        geometry.computeBoundingBox();
+        const box = geometry.boundingBox;
+        if (!box) return;
+
+        const size = new THREE.Vector3();
+        box.getSize(size);
+
+        const canvasWidth = size.x * 100;
+        const canvasHeight = size.y * 100;
         const canvasEl = document.createElement('canvas');
         canvasEl.width = canvasWidth;
         canvasEl.height = canvasHeight;
@@ -95,24 +110,27 @@ export const WebbingText = observer(
           width: canvasWidth,
         });
 
-        const padding = 50;
+        const sizeMultiplier = fontScaleRecord[fontSize];
+        const baseFontSize = canvasHeight * 0.7 * sizeMultiplier;
+
         const textObj = new FabricText(text, {
           fill: color,
+          strokeWidth: 10,
+          stroke: '#000000',
+          paintFirst: 'stroke',
+          strokeUniform: true,
           fontFamily: fontFamily,
-          fontSize: fontSizeRecord[fontSize],
-          left: padding,
+          fontSize: baseFontSize,
           originX: 'left',
           originY: 'center',
           textAlign: 'left',
           top: canvasHeight / 2,
         });
 
-        const textWidth = textObj.getScaledWidth();
-        const availableWidth = canvasWidth - padding * 2;
-        if (textWidth > availableWidth) {
-          const scale = availableWidth / textWidth;
-          textObj.set({ scaleX: scale, scaleY: scale });
-        }
+        textObj.set({
+          scaleX: 0.681, // tuned value from canvas
+          scaleY: 1, // keep aspect ratio
+        });
 
         staticCanvas.add(textObj);
         staticCanvas.renderAll();
@@ -182,7 +200,7 @@ export const WebbingText = observer(
             metalness={1}
             envMap={envMap}
             envMapIntensity={envMap ? 6.5 : 1}
-            side={side? THREE.DoubleSide : THREE.FrontSide}
+            side={side ? THREE.DoubleSide : THREE.FrontSide}
           />
         </mesh>
       </group>

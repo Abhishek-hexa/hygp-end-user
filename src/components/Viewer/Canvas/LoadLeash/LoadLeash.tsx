@@ -5,7 +5,6 @@ import { useMainContext } from '../../../../hooks/useMainContext';
 import WebTextured from '../EffectObj/WebTextured';
 import Hook from './Hook';
 import WebbingText from '../LoadCollar/WebbingText';
-import { MetalObj } from '../EffectObj/MetalObj';
 
 interface LoadLeashProps {
   url: string;
