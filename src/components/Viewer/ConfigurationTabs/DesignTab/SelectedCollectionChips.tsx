@@ -14,7 +14,7 @@ export const SelectedCollectionChips = ({
 }: SelectedCollectionChipsProps) => {
   const isOnlyOne = selectedCollections.length === 1;
   return (
-    <div className="mt-2 hidden flex-wrap gap-2 md:flex">
+    <div className="mt-2 hidden gap-2 md:flex md:overflow-auto no-scroll">
       {selectedCollections.map((collection) => (
         <button
           key={`chip-${collection.id}`}

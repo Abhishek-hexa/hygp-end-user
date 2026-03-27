@@ -4,8 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { buildPatternPath } from '../../../state/product/productRouting';
-import { SearchIcon } from '../../icons/Icons';
+import { CategoryIcon, SearchIcon } from '../../icons/Icons';
 import { CollectionSidebar } from './DesignTab/CollectionSidebar';
+import { MobileCategoryModal } from './DesignTab/MobileCategoryModal';
 import { PatternGrid } from './DesignTab/PatternGrid';
 import { SelectedCollectionChips } from './DesignTab/SelectedCollectionChips';
 import { usePatternLoader } from './DesignTab/usePatternLoader';
@@ -21,6 +22,7 @@ export const DesignTab = observer(() => {
   const patterns = textureManager.availablePatterns;
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const { clearError, error, loading } = usePatternLoader(
     selectedCollectionIds,
     textureManager,
@@ -39,7 +41,37 @@ export const DesignTab = observer(() => {
   }, [patterns, searchQuery]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2 md:flex-row md:gap-2">
+    <div className="relative flex h-full min-h-0 flex-col md:flex-row md:gap-2">
+      <div
+        className={`relative z-20 bg-white px-4 ${
+          isMobileSearchOpen ? 'p-4' : 'pt-0'
+        } md:hidden`}>
+        <label htmlFor="pattern-search-mobile" className="sr-only">
+          Search pattern
+        </label>
+        <div
+          className={`z-20 ${isMobileSearchOpen ? 'flex items-center gap-2' : 'hidden'}`}>
+          <div className="relative flex-1">
+            <input
+              id="pattern-search-mobile"
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search"
+              className="h-11 w-full rounded-full border border-primary-dark bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400"
+            />
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-500" />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileCategoryOpen(true)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary-dark text-gray-500"
+            aria-label="Show selected categories">
+            <CategoryIcon />
+          </button>
+        </div>
+      </div>
+
       <CollectionSidebar
         collections={collections}
         selectedCollectionIds={selectedCollectionIds}
@@ -49,13 +81,12 @@ export const DesignTab = observer(() => {
         }}
       />
 
-      <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto py-1 pr-1 md:py-2">
-        <div className="mb-2 md:mb-3">
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="md:p-4 md:border-border md:border-b">
           <label htmlFor="pattern-search" className="sr-only">
             Search pattern
           </label>
-          <div
-            className={`relative ${isMobileSearchOpen ? ' block' : 'hidden'} md:block`}>
+          <div className="relative hidden md:block ">
             <input
               id="pattern-search"
               type="text"
@@ -64,7 +95,7 @@ export const DesignTab = observer(() => {
               placeholder="Search"
               className="w-full rounded-full border border-primary-dark bg-white px-10 py-2 text-sm text-gray-700 outline-none ring-0 placeholder:text-gray-400 focus:border-[#5f9f95]"
             />
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-500" />
           </div>
           <SelectedCollectionChips
             selectedCollections={selectedCollections}
@@ -96,14 +127,24 @@ export const DesignTab = observer(() => {
             }}
           />
         ) : null}
-        <button
-          type="button"
-          onClick={() => setIsMobileSearchOpen((prev) => !prev)}
-          className="absolute bottom-3 right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-[#f2f5f4] text-primary shadow-sm md:hidden"
-          aria-label="Toggle search">
-          <SearchIcon className="h-5 w-5" />
-        </button>
       </div>
+      <button
+        type="button"
+        onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+        className="absolute bottom-3 right-2 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-[#f2f5f4] text-primary shadow-sm md:hidden"
+        aria-label="Toggle search">
+        <SearchIcon className="h-5 w-5" />
+      </button>
+
+      <MobileCategoryModal
+        open={isMobileCategoryOpen}
+        selectedCollections={selectedCollections}
+        patternsCount={patterns?.length ?? 0}
+        onClose={() => setIsMobileCategoryOpen(false)}
+        onRemoveCollection={(collectionId) =>
+          textureManager.removeSelectedCollection(collectionId)
+        }
+      />
     </div>
   );
 });

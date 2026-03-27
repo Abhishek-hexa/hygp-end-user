@@ -240,3 +240,28 @@ export const CartIcon = ({
     />
   </svg>
 );
+
+export const CategoryIcon = ({
+  className,
+  stroke = '#558A7E',
+}: {
+  className?: string;
+  stroke?: string;
+}) => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 18 18"
+    fill="none"
+    className={className}
+    xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M10.75 13.75H16.75M13.75 10.75V16.75M0.75 0.75H6.75V6.75H0.75V0.75ZM10.75 0.75H16.75V6.75H10.75V0.75ZM0.75 10.75H6.75V16.75H0.75V10.75Z"
+      stroke={stroke}
+      strokeOpacity="0.5"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

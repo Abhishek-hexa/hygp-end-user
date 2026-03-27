@@ -23,10 +23,10 @@ export const CollectionSidebar = ({
             <button
               key={collection.id}
               type="button"
-              className={`mb-0 border border-gray-200 group relative w-19.5 shrink-0 border-b bg-white p-1.5 text-left text-[11px] transition-all md:w-full md:border-b-0 md:p-2 md:text-xs ${
+              className={`mb-0 border border-gray-200 group relative w-19.5 shrink-0 border-b bg-white py-2.5 text-left text-[11px] transition-all md:w-full md:border-b-0 md:py-3.5 md:text-xs ${
                 isSelected
-                  ? 'border-b-2 border-b-primary text-primary-dark md:rounded-l-md md:border-l-2 md:border-l-primary'
-                  : 'text-gray-600 hover:bg-primary/10'
+                  ? 'border-b-2 border-b-primary bg-selected text-primary-dark md:rounded-l-md md:border-l-2 md:border-l-primary-dark'
+                  : 'hover:bg-primary/10'
               }`}
               onClick={() => {
                 if (isSelected) return;
@@ -36,14 +36,14 @@ export const CollectionSidebar = ({
                 <LazyImage
                   src={collection.image}
                   alt={collection.title}
-                  className="h-7 w-7 rounded-md object-cover md:h-8 md:w-8"
+                  className="h-6 w-6 rounded-md object-cover md:h-7 md:w-7"
                 />
               </div>
-              <span className="block truncate text-center text-xs font-semibold md:text-xs text-gray-custom">
+              <span className={`block truncate text-center text-xs font-semibold md:text-[14px] text-gray-custom ${isSelected ? 'text-primary-dark' : ''}`}>
                 {collection.title}
               </span>
               {isSelected ? (
-                <SelectedItemIcon className="absolute right-1 top-1 h-4 w-4" />
+                <SelectedItemIcon className="absolute right-1 top-1 h-3.75 w-3.75 z-10" />
               ) : null}
             </button>
           );

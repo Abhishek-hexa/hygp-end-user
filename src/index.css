@@ -9,6 +9,7 @@
   --color-pink: #F28582;
   --color-gray-custom: #808080;
   --color-gray-custom-light: #FCFCFC;
+  --color-gray-pattern: #CEDBD8;
   --color-selected: #F5FDF9;
   --color-background: #eaf5f3;
   --color-border: #F3F3F3;
@@ -53,7 +54,7 @@
   background-color: var(--color-white);
 }
 
-.feature-tabs-scroll::-webkit-scrollbar {
+.no-scroll::-webkit-scrollbar {
   display: none;
 }
 

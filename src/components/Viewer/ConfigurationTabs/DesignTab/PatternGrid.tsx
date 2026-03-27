@@ -15,11 +15,11 @@ export const PatternGrid = ({
 }: PatternGridProps) => {
   return (
     <div>
-      <p className="mb-2 hidden text-right text-xs font-medium text-gray-500 md:block">
+      <p className="hidden text-right text-xs py-2 px-4 font-normal text-gray-500 md:block">
         Showing {patterns.length} result
         {patterns.length === 1 ? '' : 's'}
       </p>
-      <div className="grid grid-cols-5 gap-2 sm:grid-cols-4 lg:grid-cols-5 px-2 md:px-">
+      <div className="grid grid-cols-5 gap-4 sm:grid-cols-4 lg:grid-cols-5 p-4 md:px-4 md:p-2">
         {patterns.map((pattern) => (
           <button
             key={pattern.id}
@@ -27,8 +27,8 @@ export const PatternGrid = ({
             onClick={() => onSelectPattern(pattern.id)}
             className={`group relative overflow-hidden rounded-md  transition-all ${
               selectedPatternId === pattern.id
-                ? 'scale-102 ring-2 ring-pink'
-                : 'border-gray-200'
+                ? 'scale-102 ring-4 ring-pink p-0.75'
+                : 'border-gray-pattern border'
             }`}>
             <LazyImage
               src={pattern.preview}

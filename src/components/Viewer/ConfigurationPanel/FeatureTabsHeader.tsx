@@ -99,7 +99,7 @@ export const FeatureTabsHeader = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="feature-tabs-scroll flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        className="no-scroll flex flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {features.map((feature) => (
           <FeatureTabButton
             key={feature}
