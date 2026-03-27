@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { SelectedItemIcon } from '../../icons/Icons';
 import { LazyImage } from '../../shared/LazyImage';
+import SectionHeader from '../Global/SectionHeader';
 import { sizeLabelMap } from './shared/fetchSummary';
 
 export const SizeTab = observer(() => {
@@ -16,14 +17,10 @@ export const SizeTab = observer(() => {
   return (
     <div className="">
       <div className="p-4 lg:p-6">
-        <div className="space-y-1 mb-5 lg:mb-6">
-          <h3 className="text-base font-bold text-gray-900 lg:text-[20px]">
-            Select Collar Size
-          </h3>
-          <p className="text-sm text-gray-500 lg:text-base">
-            Choose the perfect fit for your furry friend
-          </p>
-        </div>
+        <SectionHeader
+          title="Select Collar Size"
+          subtitle="Choose the perfect fit for your furry friend"
+        />
         <div
           className="feature-tabs-scroll -mx-1 flex gap-2 md:gap-4 overflow-x-auto px-1 whitespace-nowrap lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0"
           style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>

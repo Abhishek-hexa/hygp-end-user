@@ -14,20 +14,20 @@ export const BuckleMaterialSelector = ({
   selectedMaterial,
 }: BuckleMaterialSelectorProps) => {
   return (
-    <section className="space-y-2 lg:space-y-3">
-      <h4 className="text-sm font-semibold text-gray-400 lg:text-md">
+    <section className="space-y-3 mb-6">
+      <h4 className="text-sm font-semibold text-innerTitle lg:text-base">
         Buckle Material
       </h4>
-      <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {availableBuckleMaterials.map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => onSelectMaterial(type)}
-            className={`relative w-full min-w-0 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-w-24 md:w-auto md:px-6 ${
+            className={`text-sm relative flex font-roboto text-semibold shrink-0 flex-col items-start justify-center rounded-lg border border-border p-3 transition-colors lg:min-w-0 px-11 lg:py-3 text-black ${
               selectedMaterial === type
-                ? 'border-primary-dark bg-primary/10 text-gray-900'
-                : 'border-gray-200 bg-white text-gray-700'
+                ? 'border-primary-dark bg-selected text-black'
+                : ''
             }`}>
             {buckleLabelMap[type]}
             {selectedMaterial === type ? (

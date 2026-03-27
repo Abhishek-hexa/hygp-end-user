@@ -2,20 +2,23 @@
 
 @theme {
   --color-primary: #86a69e;
-  --color-primary-dark: #558A7E;
+  --color-primary-dark: #558a7e;
   --color-primary-orange: #f28783;
   --color-yellow: #f6bc60;
   --color-white: #ffffff;
-  --color-pink: #F28582;
+  --color-pink: #f28582;
   --color-gray-custom: #808080;
-  --color-gray-custom-light: #FCFCFC;
-  --color-gray-pattern: #CEDBD8;
-  --color-selected: #F5FDF9;
+  --color-gray-custom-light: #fcfcfc;
+  --color-gray-pattern: #cedbd8;
+  --color-selected: #f5fdf9;
   --color-background: #eaf5f3;
-  --color-border: #F3F3F3;
-  --color-font: #4B4B4B;
-  --color-green: #85A59D;
-  --color-divider: #EAEAEA;
+  --color-border: #f3f3f3;
+  --color-font: #4b4b4b;
+  --color-green: #85a59d;
+  --color-divider: #eaeaea;
+  --color-innerTitle: #9797a0;
+  --color-black: #000000;
+  --color-border-gray: #eaeaea;
   --font-ranchers: 'Ranchers', cursive;
   --font-roboto: 'Roboto', sans-serif;
 }
@@ -59,8 +62,12 @@
 }
 
 @keyframes shimmer {
-  0%   { background-position: -600px 0; }
-  100% { background-position:  600px 0; }
+  0% {
+    background-position: -600px 0;
+  }
+  100% {
+    background-position: 600px 0;
+  }
 }
 
 @keyframes dash {
@@ -106,17 +113,12 @@
 }
 
 .skeleton-image {
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 25%,
-    #f3f4f6 50%,
-    #e5e7eb 75%
-  );
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 600px 100%;
   animation: shimmer 1.6s infinite linear;
   border-radius: 6px;
 }
 
-button{
+button {
   cursor: pointer;
 }

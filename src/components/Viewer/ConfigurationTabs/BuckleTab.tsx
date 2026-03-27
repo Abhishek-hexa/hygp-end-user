@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
+import SectionHeader from '../Global/SectionHeader';
 import { BuckleFinishSelector } from './BuckleTab/BuckleFinishSelector';
 import { BuckleMaterialSelector } from './BuckleTab/BuckleMaterialSelector';
 
@@ -12,33 +13,31 @@ export const BuckleTab = observer(() => {
   const colors = buckleManager.currentColors;
 
   return (
-    <div className="space-y-3 p-3 text-gray-700 lg:space-y-6 lg:p-4">
-      <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
-          Buckle Customization
-        </h3>
-
-        <p className="text-xs text-gray-500 lg:text-sm">
-          Select {availableBuckleMaterials.length > 0 && 'material and'} finish
-          for hardware.
-        </p>
-      </section>
-
-      {availableBuckleMaterials.length > 0 && (
-        <BuckleMaterialSelector
-          availableBuckleMaterials={availableBuckleMaterials}
-          selectedMaterial={selectedMaterial}
-          onSelectMaterial={(type) => buckleManager.setMaterial(type)}
+    <div className="">
+      <div className="p-4 lg:p-6">
+        <SectionHeader
+          title="Buckle Customization"
+          subtitle={`Select ${
+            availableBuckleMaterials.length > 0 ? 'material and ' : ''
+          }finish for hardware.`}
         />
-      )}
 
-      <div className="border-t border-gray-200" />
+        {availableBuckleMaterials.length > 0 && (
+          <BuckleMaterialSelector
+            availableBuckleMaterials={availableBuckleMaterials}
+            selectedMaterial={selectedMaterial}
+            onSelectMaterial={(type) => buckleManager.setMaterial(type)}
+          />
+        )}
 
-      <BuckleFinishSelector
-        colors={colors}
-        selectedColor={buckleManager.selectedColor}
-        onSelectColor={(colorId) => buckleManager.setSelectedColor(colorId)}
-      />
+        <div className="border-t border-border-gray" />
+
+        <BuckleFinishSelector
+          colors={colors}
+          selectedColor={buckleManager.selectedColor}
+          onSelectColor={(colorId) => buckleManager.setSelectedColor(colorId)}
+        />
+      </div>
     </div>
   );
 });

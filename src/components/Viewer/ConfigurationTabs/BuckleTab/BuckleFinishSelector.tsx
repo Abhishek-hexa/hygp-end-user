@@ -13,11 +13,11 @@ export const BuckleFinishSelector = ({
   selectedColor,
 }: BuckleFinishSelectorProps) => {
   return (
-    <section className="space-y-2 lg:space-y-3">
-      <h4 className="text-sm font-semibold text-gray-400 lg:text-md">
+    <section className="space-y-3 mb-6">
+      <h4 className="text-sm font-semibold text-innerTitle lg:text-base pt-6">
         Buckle Finish
       </h4>
-      <div className="feature-tabs-scroll flex flex-nowrap gap-2 overflow-x-auto lg:flex-wrap lg:gap-3 lg:overflow-visible">
+      <div className="feature-tabs-scroll flex flex-nowrap overflow-x-auto lg:flex-wrap gap-4">
         {colors.map((color) => {
           const isSelected = selectedColor === color.id;
           return (
@@ -25,8 +25,10 @@ export const BuckleFinishSelector = ({
               key={color.id}
               type="button"
               onClick={() => onSelectColor(color.id)}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border lg:h-12 lg:w-12 transition-all duration-150 ease-in-out ${
-                isSelected ? 'ring-2 ring-pink border-0' : 'border-primary-dark'
+              className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-md  transition-all duration-150 ease-in-out ${
+                isSelected
+                  ? 'border-pink border-2'
+                  : 'border border-primary-dark'
               }`}
               style={{ backgroundColor: color.hex || '#d9d9d9' }}
               title={color.name}>
