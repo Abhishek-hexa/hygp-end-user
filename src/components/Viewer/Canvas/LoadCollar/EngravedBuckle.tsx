@@ -1,7 +1,6 @@
 import { Decal } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
 import { useMainContext } from '../../../../hooks/useMainContext';
@@ -11,19 +10,11 @@ export const EngravedBuckle = observer(function EngravedMesh() {
   const { design3DManager } = useMainContext();
   const manager = design3DManager.engraving3Dmanager;
   const planeMesh = design3DManager.meshManager.buckleMeshes.get('Plane');
-  const decalHostRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [decalTransform, setDecalTransform] = useState<{
     position: [number, number, number];
     scale: [number, number, number];
   } | null>(null);
-
-  useFrame(() => {
-    if (!decalHostRef.current || !planeMesh) return;
-    decalHostRef.current.position.copy(planeMesh.position);
-    decalHostRef.current.rotation.copy(planeMesh.rotation);
-    decalHostRef.current.scale.copy(planeMesh.scale);
-  });
 
   // Compute decal transform from mesh bounding box
   useEffect(() => {
@@ -70,7 +61,11 @@ export const EngravedBuckle = observer(function EngravedMesh() {
   return (
     <group>
       {planeMesh && (
-        <mesh ref={decalHostRef} geometry={planeMesh.geometry}>
+        <mesh
+          geometry={planeMesh.geometry}
+          position={planeMesh.position}
+          rotation={planeMesh.rotation}
+          scale={planeMesh.scale}>
           <meshStandardMaterial transparent opacity={0} depthWrite={false} />
 
           {texture && decalTransform && (
