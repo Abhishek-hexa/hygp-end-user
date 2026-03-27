@@ -3,6 +3,7 @@ import {
   makeAutoObservable,
   reaction,
   runInAction,
+  toJS,
 } from 'mobx';
 
 import { StateManager } from '../../StateManager';
@@ -136,9 +137,7 @@ export class Engraving3Dmanager {
       fontWeight = DEFAULT_FONT_WEIGHT,
     } = config;
 
-    const renderLines = lines
-      .filter((line) => line.text.trim().length > 0)
-      .slice(0, MAX_LINES);
+    const renderLines = this.calculateRenderLines(lines);
 
     const fontManager = this._libstate.design3DManager.fontLoadManager;
     const fontUrls = renderLines
@@ -242,9 +241,9 @@ export class Engraving3Dmanager {
         fontUrl:
           line.font !== null ? fonts.get(line.font)?.font_path : undefined,
         text: line.text.trim(),
-      }))
-      .filter((line) => line.text.length > 0);
+      })); 
   }
+
   private trimCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')!;
     const { width, height } = canvas;
@@ -286,5 +285,20 @@ export class Engraving3Dmanager {
     );
 
     return trimmedCanvas;
+  }
+
+  private calculateRenderLines(lines: EngravingConfigLine[]) {
+    let renderLines: EngravingConfigLine[] = [];
+
+    lines.forEach((line) => {
+      renderLines.push({
+        text: line.text.length === 0 ? ' ' : line.text,
+        fontFamily: line.fontFamily,
+        fontWeight: line.fontWeight,
+        fontUrl: line.fontUrl,
+      });
+    });
+
+    return renderLines;
   }
 }
