@@ -36,11 +36,10 @@ const HERO_HEIGHT_RATIOS: Record<number, number> = {
 };
 
 export const DEFAULT_ENGRAVING_CONFIG: EngravingConfig = {
-  height: 1048,
+  height: 11 * 40,
   lines: [],
-  width: 1048,
+  width: 14 * 40,
 };
-
 
 const cloneLines = (lines: EngravingConfigLine[]): EngravingConfigLine[] =>
   lines.map((line) => ({ ...line }));
@@ -146,7 +145,7 @@ export class Engraving3Dmanager {
       .map((line) => line.fontUrl)
       .filter((url): url is string => !!url)
       .filter((url, index, arr) => arr.indexOf(url) === index);
-      
+
     if (fontUrls.length > 0) {
       await fontManager.loadFonts(fontUrls);
     }
@@ -201,7 +200,12 @@ export class Engraving3Dmanager {
             scaleY: (t.scaleY ?? 1) * scale,
           });
         });
-        Service3D.positionTextObjects(textObjects, lineGap * scale, width, height);
+        Service3D.positionTextObjects(
+          textObjects,
+          lineGap * scale,
+          width,
+          height,
+        );
       } else {
         Service3D.positionTextObjects(textObjects, lineGap, width, height);
       }
@@ -209,9 +213,19 @@ export class Engraving3Dmanager {
       canvas.add(...textObjects);
       canvas.renderAll();
 
+      const htmlCanvas = canvas.getElement();
+
+      const trimmedCanvas = this.trimCanvas(htmlCanvas);
+
+      const blob = await new Promise<Blob>((resolve) => {
+        trimmedCanvas.toBlob((b) => resolve(b!), 'image/png');
+      });
+
+      const imageUrl = URL.createObjectURL(blob);
+
       return {
-        aspect: width / height,
-        imageUrl: await Service3D.canvasToBlobUrl(canvas),
+        aspect: trimmedCanvas.width / trimmedCanvas.height,
+        imageUrl,
       };
     } finally {
       await canvas.dispose();
@@ -230,5 +244,47 @@ export class Engraving3Dmanager {
         text: line.text.trim(),
       }))
       .filter((line) => line.text.length > 0);
+  }
+  private trimCanvas(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d')!;
+    const { width, height } = canvas;
+
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    let top = null,
+      bottom = null,
+      left = null,
+      right = null;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const alpha = data[(y * width + x) * 4 + 3];
+        if (alpha > 0) {
+          if (top === null) top = y;
+          bottom = y;
+          if (left === null || x < left) left = x;
+          if (right === null || x > right) right = x;
+        }
+      }
+    }
+
+    if (top === null) return canvas;
+
+    const trimmedWidth = right! - left! + 1;
+    const trimmedHeight = bottom! - top! + 1;
+
+    const trimmedCanvas = document.createElement('canvas');
+    trimmedCanvas.width = trimmedWidth;
+    trimmedCanvas.height = trimmedHeight;
+
+    const trimmedCtx = trimmedCanvas.getContext('2d')!;
+    trimmedCtx.putImageData(
+      ctx.getImageData(left!, top!, trimmedWidth, trimmedHeight),
+      0,
+      0,
+    );
+
+    return trimmedCanvas;
   }
 }

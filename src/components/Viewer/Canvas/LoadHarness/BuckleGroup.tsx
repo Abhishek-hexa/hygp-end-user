@@ -11,6 +11,8 @@ const BuckleGroup = observer(() => {
     designManager.productManager.buckleManager.currentSelectedColorDescription
       ?.hex;
 
+  const selectedPlasticColor = designManager.productManager.buckleManager.plasticColorDescription?.hex;
+
   const aLink = meshManager.buckleMeshes.get('aLink');
   const dLink = meshManager.buckleMeshes.get('dLink');
   const buckle1 = meshManager.buckleMeshes.get('buckle1');
@@ -28,31 +30,26 @@ const BuckleGroup = observer(() => {
         <MetalObj key={dLink.uuid} mesh={dLink} metalColor={'#fff'} />
       )}
       {buckle1 && selectedColor && (
-        <PlasticObj key={buckle1.uuid} mesh={buckle1} color={selectedColor} />
+        <PlasticObj key={buckle1.uuid} mesh={buckle1} color={selectedPlasticColor} />
       )}
       {buckle2 && selectedColor && (
-        <PlasticObj key={buckle2.uuid} mesh={buckle2} color={selectedColor} />
+        <PlasticObj key={buckle2.uuid} mesh={buckle2} color={selectedPlasticColor} />
       )}
       {triGlide1 && selectedColor && (
         <PlasticObj
           key={triGlide1.uuid}
           mesh={triGlide1}
-          color={selectedColor}
+          color={selectedPlasticColor}
         />
       )}
       {triGlide2 && selectedColor && (
         <PlasticObj
           key={triGlide2.uuid}
           mesh={triGlide2}
-          color={selectedColor}
+          color={selectedPlasticColor}
         />
       )}
-      {glass && selectedColor && (
-        <GlassObj
-          key={glass.uuid}
-          mesh={glass}
-        />
-      )}
+      {glass && selectedColor && <GlassObj key={glass.uuid} mesh={glass} />}
     </>
   );
 });

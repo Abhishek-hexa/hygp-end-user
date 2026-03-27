@@ -4,10 +4,9 @@ import { useMainContext } from '../../../../hooks/useMainContext';
 import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
-import EngravedBuckle from './EngravedBuckle';
 import { observer } from 'mobx-react-lite';
 import WebbingText from './WebbingText';
-import { TextSize } from '../../../../state/product/types';
+import { EngravedBuckle } from './EngravedBuckle';
 
 type LoadCollarProps = {
   url: string;

@@ -59,7 +59,7 @@ export function PlasticObj({
   scale,
 }: PlasticObjProps) {
   const ref = useRef<THREE.Mesh>(null)
-  const geometry = mesh.geometry.clone()
+  const geometry = mesh.geometry;
 
   // ── Inherit maps from source mesh material (mirrors nodes['Buckle'].material) ──
   const srcMat = mesh.material instanceof THREE.MeshStandardMaterial
@@ -98,6 +98,8 @@ export function PlasticObj({
     mat.specularIntensity = specularIntensity
     mat.normalScale.set(normalScaleX, normalScaleY)
     mat.needsUpdate = true
+    mat.toneMapped = false
+    mat.envMapIntensity = 1
   }, [color, roughness, metalness, clearcoat, clearcoatRoughness, reflectivity, envMapIntensity, specularIntensity, normalScaleX, normalScaleY])
 
   // Load HDR env map — mirrors RGBELoader + EquirectangularReflectionMapping
@@ -113,6 +115,7 @@ export function PlasticObj({
     loadHdrEnvMapCached(hdrPath)
       .then((hdr) => {
         if (!isMounted) return
+        hdr.mapping = THREE.EquirectangularReflectionMapping
         matRef.current.envMap = hdr
         matRef.current.needsUpdate = true
       })

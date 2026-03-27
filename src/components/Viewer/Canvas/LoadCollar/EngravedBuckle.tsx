@@ -6,13 +6,8 @@ import * as THREE from 'three';
 
 import { useMainContext } from '../../../../hooks/useMainContext';
 
-const EngravedBuckle = observer(() => {
-  return <EngravedMesh />;
-});
 
-export default EngravedBuckle;
-
-const EngravedMesh = observer(function EngravedMesh() {
+export const EngravedBuckle = observer(function EngravedMesh() {
   const { design3DManager } = useMainContext();
   const manager = design3DManager.engraving3Dmanager;
   const planeMesh = design3DManager.meshManager.buckleMeshes.get('Plane');
@@ -46,7 +41,7 @@ const EngravedMesh = observer(function EngravedMesh() {
 
     setDecalTransform({
       position: [center.x, center.y, center.z + 0.001],
-      scale: [size.x * 0.95, size.y * 0.95, size.z || 0.01],
+      scale: [size.x, size.y, size.z || 0.01],
     });
   }, [planeMesh, planeMesh?.geometry]);
 
