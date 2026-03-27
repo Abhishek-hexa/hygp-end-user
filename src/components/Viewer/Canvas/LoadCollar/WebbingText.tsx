@@ -1,7 +1,6 @@
-import { useFrame, useLoader } from '@react-three/fiber';
 import { FabricText, StaticCanvas } from 'fabric';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { loadHdrEnvMapCached } from '../EffectObj/hdrEnvMapCache';
 import { TextSize } from '../../../../state/product/types';
@@ -32,7 +31,6 @@ export const WebbingText = observer(
     fontSize = 'MEDIUM',
     side = false,
   }: WebbingTextProps) => {
-    const meshRef = useRef<THREE.Mesh>(null);
     const [texture, setTexture] = useState<THREE.Texture | null>(null);
     const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
 
@@ -44,13 +42,6 @@ export const WebbingText = observer(
         },
       );
     }, []);
-
-    useFrame(() => {
-      if (!meshRef.current || !mesh) return;
-      meshRef.current.position.copy(mesh.position);
-      meshRef.current.rotation.copy(mesh.rotation);
-      meshRef.current.scale.copy(mesh.scale);
-    });
 
     useEffect(() => {
       if (!text || !mesh || text.trim().length === 0) {
@@ -183,7 +174,11 @@ export const WebbingText = observer(
 
     return (
       <group>
-        <mesh ref={meshRef} geometry={mesh.geometry}>
+        <mesh
+          geometry={mesh.geometry}
+          position={mesh.position}
+          rotation={mesh.rotation}
+          scale={mesh.scale}>
           <meshPhysicalMaterial
             map={texture}
             transparent

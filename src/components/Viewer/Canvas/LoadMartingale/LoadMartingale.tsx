@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
-import { useGLTF } from '@react-three/drei';
+import { useMyGLTF } from '../../../../hooks/useMyGLTF';
 import MetalBuckles from './MetalBuckles';
 import WebTextured from '../EffectObj/WebTextured';
 import WebbingText from '../LoadCollar/WebbingText';
@@ -13,7 +13,7 @@ interface LoadMartingaleProps {
 const LoadMartingale = observer(({ url }: LoadMartingaleProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
-  const { scene } = useGLTF(url);
+  const { scene } = useMyGLTF(url);
 
   const webText = meshManager.webMeshes.get('Web_Text');
   const webbingTextManager = designManager.productManager.webbingText;
