@@ -1,6 +1,7 @@
 import { Collection } from '../../../../state/product/types';
 import { SelectedItemIcon } from '../../../icons/Icons';
 import { LazyImage } from '../../../shared/LazyImage';
+import { message } from 'antd';
 
 type CollectionSidebarProps = {
   collections: Collection[];
@@ -29,7 +30,13 @@ export const CollectionSidebar = ({
                   : 'hover:bg-primary/10'
               }`}
               onClick={() => {
-                if (isSelected) return;
+                const isOnlyOne = selectedCollectionIds.length - 1 === 0;
+                if (isOnlyOne && isSelected) {
+                  message.warning(
+                    'At least one collection must remain selected',
+                  );
+                  return;
+                }
                 onToggleCollection(collection.id);
               }}>
               <div className="mb-1.5 flex items-center justify-center overflow-hidden md:mb-2">
@@ -39,7 +46,8 @@ export const CollectionSidebar = ({
                   className="h-6 w-6 rounded-md object-cover md:h-7 md:w-7"
                 />
               </div>
-              <span className={`block truncate text-center text-xs font-semibold md:text-[14px] text-gray-custom ${isSelected ? 'text-primary-dark' : ''}`}>
+              <span
+                className={`block truncate text-center text-xs font-semibold md:text-[14px] text-gray-custom ${isSelected ? 'text-primary-dark' : ''}`}>
                 {collection.title}
               </span>
               {isSelected ? (

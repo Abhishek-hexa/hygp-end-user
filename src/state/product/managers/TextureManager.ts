@@ -70,6 +70,24 @@ export class TextureManager {
     return mergedPatterns;
   }
 
+  private ensureSelectedPattern(preferredPatternId: number | null = null) {
+    const patterns = this.availablePatterns ?? [];
+
+    if (patterns.length === 0) {
+      this._selectedPatternId = null;
+      return;
+    }
+
+    const targetPatternId = preferredPatternId ?? this._selectedPatternId;
+    const hasTargetPattern =
+      targetPatternId !== null &&
+      patterns.some((pattern) => pattern.id === targetPatternId);
+
+    this._selectedPatternId = hasTargetPattern
+      ? targetPatternId
+      : patterns[0].id;
+  }
+
   setSelectedCollection(id: number) {
     this._activeCollectionId = id;
     if (!this._selectedCollectionIds.includes(id)) {
@@ -85,6 +103,7 @@ export class TextureManager {
     if (!uniqueIds.includes(this._activeCollectionId ?? -1)) {
       this._activeCollectionId = uniqueIds[0] ?? null;
     }
+    this.ensureSelectedPattern();
   }
 
   toggleSelectedCollection(id: number) {
@@ -95,10 +114,12 @@ export class TextureManager {
       if (this._activeCollectionId === id) {
         this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
       }
+      this.ensureSelectedPattern();
       return;
     }
     this._selectedCollectionIds = [...this._selectedCollectionIds, id];
     this._activeCollectionId = id;
+    this.ensureSelectedPattern();
   }
 
   removeSelectedCollection(id: number) {
@@ -108,6 +129,7 @@ export class TextureManager {
     if (this._activeCollectionId === id) {
       this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
     }
+    this.ensureSelectedPattern();
   }
 
   setAvailableCollections(inCollections: Collection[]) {
@@ -128,14 +150,16 @@ export class TextureManager {
     ) {
       this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
     }
+    this.ensureSelectedPattern();
   }
 
   setSelectedPattern(inPatternId: number | null) {
-    this._selectedPatternId = inPatternId;
+    this.ensureSelectedPattern(inPatternId);
   }
 
   setAvailablePatterns(inCollectionId: number, inPatterns: PatternType[]) {
     this._availablePatterns.set(inCollectionId, inPatterns);
+    this.ensureSelectedPattern();
   }
 
   hasPatternsForCollection(collectionId: number) {
@@ -144,7 +168,7 @@ export class TextureManager {
 
   resetSelection() {
     this._activeCollectionId = this._selectedCollectionIds[0] ?? null;
-    this._selectedPatternId = this.availablePatterns?.[0]?.id ?? null;
+    this.ensureSelectedPattern();
   }
 
   reset() {
