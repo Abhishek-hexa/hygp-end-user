@@ -1,7 +1,8 @@
+import { message } from 'antd';
+
 import { Collection } from '../../../../state/product/types';
 import { SelectedItemIcon } from '../../../icons/Icons';
 import { LazyImage } from '../../../shared/LazyImage';
-import { message } from 'antd';
 
 type CollectionSidebarProps = {
   collections: Collection[];

@@ -91,7 +91,7 @@ export const NavBar = observer(() => {
             <LazyImage
               src="/logo/desktopNavbar.png"
               alt="Here You Go Pup Logo"
-              className="hidden h-16 w-auto lg:block"
+              className="hidden h-14 w-auto lg:block"
             />
           </div>
           <MobileNavMenu
@@ -111,11 +111,11 @@ export const NavBar = observer(() => {
                   setIsShopsOpen((prev) => !prev);
                   setIsMoreOpen(false);
                 }}>
-                Shops <ChevronDownIcon />
+                Shops <ChevronDownIcon className="w-6 h-6" />
               </button>
               {isShopsOpen ? (
                 <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
-                  <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                  <div className="flex flex-col gap-1 text-xl text-nowrap uppercase text-[#fbf2e8]">
                     {shopItems.map((shopItem) => (
                       <button
                         key={shopItem.productType}
@@ -140,11 +140,11 @@ export const NavBar = observer(() => {
                   setIsMoreOpen((prev) => !prev);
                   setIsShopsOpen(false);
                 }}>
-                More <ChevronDownIcon />
+                More <ChevronDownIcon className="w-6 h-6" />
               </button>
               {isMoreOpen ? (
                 <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
-                  <div className="flex flex-col gap-4 text-2xl text-nowrap leading-1 uppercase text-[#fbf2e8]">
+                  <div className="flex flex-col gap-1 text-xl text-nowrap uppercase text-[#fbf2e8]">
                     {moreItems.map((item) => (
                       <button
                         key={item}
