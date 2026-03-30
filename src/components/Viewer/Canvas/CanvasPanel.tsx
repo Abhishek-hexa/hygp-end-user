@@ -6,6 +6,7 @@ import { LinearToneMapping } from 'three';
 import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
+import { CameraFitToModel } from './CameraFitToModel';
 import { CanvasModel } from './CanvasModel';
 import { LoadCollar } from './LoadCollar/LoadCollar';
 import LoadLeash from './LoadLeash/LoadLeash';
@@ -20,6 +21,12 @@ export const CanvasPanel = observer(() => {
   const controlsRef = useRef<CameraControlsImpl | null>(null);
   const modelUrl = productManager.getModelPath();
   const plasticModelUrl = productManager.getPlasticModelPath();
+  const activeModelKey =
+    productManager.productId === 'DOG_COLLAR' &&
+    productManager.buckleManager.material === 'PLASTIC' &&
+    plasticModelUrl
+      ? plasticModelUrl
+      : modelUrl;
 
   const renderModelByComponent = () => {
     if (!modelUrl) {
@@ -49,7 +56,7 @@ export const CanvasPanel = observer(() => {
     <section className="h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
       <Canvas
         camera={{
-          position: cameraManager.position,
+          position: [0, 0, 300],
           far: cameraManager.far,
           near: cameraManager.near,
           fov: cameraManager.fov,
@@ -65,6 +72,7 @@ export const CanvasPanel = observer(() => {
           <LoadEnvironment />
         </Suspense>
         <CameraSync controlsRef={controlsRef} />
+        <CameraFitToModel controlsRef={controlsRef} modelKey={activeModelKey} />
 
         <CameraControls
           maxPolarAngle={Math.PI / 2}
