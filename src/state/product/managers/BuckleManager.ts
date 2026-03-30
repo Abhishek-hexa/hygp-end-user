@@ -73,6 +73,13 @@ export class BuckleManager {
     );
   }
 
+  get currentMetalColor() {
+    if (this._selectedColor === null) {
+      return null;
+    }
+    return this._metalColors.find((color) => color.id === this.selectedColor) ?? null;
+  }
+
   get plasticColorDescription()  {
     return this.plasticColors.find((color) => color.id === this.selectedColor) ?? null;
   }

@@ -6,8 +6,7 @@ import { toJS } from 'mobx';
 const MetalBuckles = observer(() => {
   const { designManager, design3DManager } = useMainContext();
   const selectedColor =
-    designManager.productManager.buckleManager.currentSelectedColorDescription
-      ?.hex;
+    designManager.productManager.buckleManager.currentMetalColor?.hex;
 
   const dRing = design3DManager.meshManager.buckleMeshes.get('D_Ring');
   const triGlide1 = design3DManager.meshManager.buckleMeshes.get('Tri_Glide');

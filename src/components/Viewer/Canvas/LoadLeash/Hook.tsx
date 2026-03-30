@@ -7,7 +7,7 @@ const Hook = observer(({}) => {
   const meshManager = design3DManager.meshManager;
   const hook = meshManager.buckleMeshes.get('Hook');
   const selectedColor =
-    designManager.productManager.buckleManager.currentSelectedColorDescription
+    designManager.productManager.buckleManager.currentMetalColor
       ?.hex;
   return <>{hook && <MetalObj mesh={hook} metalColor={selectedColor} side={true} />}</>;
 });
