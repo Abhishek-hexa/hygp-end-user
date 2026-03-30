@@ -29,6 +29,10 @@ export const CanvasPanel = observer(() => {
     plasticModelUrl
       ? plasticModelUrl
       : modelUrl;
+  const modelLoadingId = useMemo(
+    () => `model-${activeModelKey ?? productManager.productId}`,
+    [activeModelKey, productManager.productId]
+  );
 
   const renderModelByComponent = () => {
     if (!modelUrl) {
@@ -57,6 +61,7 @@ export const CanvasPanel = observer(() => {
   return (
     <section className="h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
       <Canvas
+      
         camera={{
           position: [0, 0, 300],
           far: cameraManager.far,
