@@ -1,6 +1,7 @@
+import type CameraControlsImpl from 'camera-controls';
 import { observer } from 'mobx-react-lite';
 import { type RefObject, useEffect } from 'react';
-import type CameraControlsImpl from 'camera-controls';
+
 import { useMainContext } from '../../../hooks/useMainContext';
 
 type CameraFitToModelProps = {

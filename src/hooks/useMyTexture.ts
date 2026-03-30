@@ -1,11 +1,14 @@
-import * as THREE from 'three';
 import { useEffect, useState } from 'react';
+import * as THREE from 'three';
+
 import { useMainContext } from './useMainContext';
 
 const textureCache = new Map<string, THREE.Texture>();
 const loadingPromises = new Map<string, Promise<THREE.Texture>>();
 
-export function useMyTexture(url: string | null | undefined): THREE.Texture | null {
+export function useMyTexture(
+  url: string | null | undefined,
+): THREE.Texture | null {
   const [texture, setTexture] = useState<THREE.Texture | null>(() => {
     if (url && textureCache.has(url)) return textureCache.get(url)!;
     return null;
@@ -29,16 +32,20 @@ export function useMyTexture(url: string | null | undefined): THREE.Texture | nu
       if (!loadingPromises.has(url)) {
         uiManager.add3DLoadingItem(`texture-${url}`);
         const loader = new THREE.TextureLoader();
-        const promise = loader.loadAsync(url).then((loaded) => {
-          textureCache.set(url, loaded);
-          return loaded;
-        }).catch(err => {
-          console.error('Error loading texture:', url, err);
-          throw err;
-        }).finally(() => {
-          uiManager.remove3DLoadingItem(`texture-${url}`);
-          loadingPromises.delete(url);
-        });
+        const promise = loader
+          .loadAsync(url)
+          .then((loaded) => {
+            textureCache.set(url, loaded);
+            return loaded;
+          })
+          .catch((err) => {
+            console.error('Error loading texture:', url, err);
+            throw err;
+          })
+          .finally(() => {
+            uiManager.remove3DLoadingItem(`texture-${url}`);
+            loadingPromises.delete(url);
+          });
         loadingPromises.set(url, promise);
       }
 

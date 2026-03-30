@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import * as THREE from 'three';
-import { useMyTexture } from '../../../../hooks/useMyTexture';
+
 import { useMainContext } from '../../../../hooks/useMainContext';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 const Base = observer(() => {
   const { design3DManager } = useMainContext();
@@ -13,25 +14,22 @@ const Base = observer(() => {
       ? base.material
       : null;
 
-  const normalMap = useMyTexture('/assets/texture/texture/base2Normal.jpg');
+  const normalMap = useMyTexture('/assets/texture/texture/base2Normal.webp');
   if (normalMap) {
     normalMap.flipY = false;
-    normalMap.wrapS = THREE.RepeatWrapping;
-    normalMap.wrapT = THREE.RepeatWrapping;
-    normalMap.repeat.set(5, 5);
   }
 
   const material = useMemo(() => {
     const mat = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color('#000000'),
-      normalMap,
-      normalScale: new THREE.Vector2(30.5, -30.5),
-      side: THREE.DoubleSide,
       envMap: sourceMaterial?.envMap ?? null,
       envMapIntensity: sourceMaterial?.envMap ? 6.5 : 0,
-      toneMapped: false,
-      roughness: 1,
       metalness: 0.5,
+      normalMap,
+      normalScale: new THREE.Vector2(30.5, -30.5),
+      roughness: 1,
+      side: THREE.DoubleSide,
+      toneMapped: false,
     });
     mat.needsUpdate = true;
     return mat;
