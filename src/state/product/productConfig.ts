@@ -4,7 +4,7 @@ export const defaultProductId: ProductType = 'DOG_COLLAR';
 
 export const productConfigs: Record<ProductType, ProductConfig> = {
   BANDANA: {
-    features: ['FETCH'],
+    features: ['SIZE', 'DESIGN', 'COLLAR_TEXT', 'FETCH'],
   },
   CAT_COLLAR: {
     buckleMaterials: ['BREAKAWAY', 'PLASTIC'],

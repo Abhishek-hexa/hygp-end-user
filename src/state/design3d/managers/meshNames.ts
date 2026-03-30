@@ -33,6 +33,8 @@ export const allMeshNames = [
   'triGlide1',
   'triGlide2',
   'Glass',
+  'Base',
+  'Stitches'
 ] as const;
 
 export type MeshName = (typeof allMeshNames)[number];
@@ -75,7 +77,10 @@ export const visibleMeshNamesByProductType = {
     'Leash', 
     'Web_Text'
   ],
-  BANDANA: [],
+  BANDANA: [
+    'Base',
+    // 'Stitches'
+  ],
   HARNESS: [
     'aLink',
     'base1',
