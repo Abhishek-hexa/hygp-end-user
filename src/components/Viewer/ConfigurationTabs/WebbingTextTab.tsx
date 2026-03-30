@@ -13,6 +13,7 @@ import {
   textSizes,
   WebbingTextTarget,
 } from './WebbingTextTab/webbingTextConfig';
+import SectionHeader from '../Global/SectionHeader';
 
 const MAX_TEXT_LENGTH = 20;
 
@@ -25,17 +26,15 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
   const copy = copyByTarget[target];
 
   return (
-    <div className="space-y-4 p-3 text-gray-700 lg:space-y-5 lg:p-4">
-      <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
-          {copy.title}
-        </h3>
-        <p className="text-xs text-gray-500">{copy.description}</p>
-      </section>
+    <div className="p-4 lg:p-6">
+      <SectionHeader title={copy.title} subtitle={copy.description} />
 
-      <section className="space-y-2">
-        <h4 className="text-sm font-semibold text-gray-400">Custom Text</h4>
-        <div className="rounded-xl border border-gray-200 bg-gray-100/40 p-3 lg:border-0 lg:bg-transparent lg:p-2">
+      <section className=" border-b-divider py-4 lg:pb-6">
+        <h4 className="text-base mb-3 h-5 font-semibold text-gray-400  flex gap-1 items-center">
+          <TextIcon className="h-5 w-5 shrink-0 text-primary/70 lg:hidden" />
+          Custom Text
+        </h4>
+        <div className="rounded-xl lg:border-0 lg:bg-transparent">
           <div className="flex justify-between gap-2">
             <TextIcon className="mt-2 hidden h-5 w-5 shrink-0 text-primary/70 lg:block" />
             <div className="w-full flex-col space-y-2.5 lg:space-y-3">
@@ -59,8 +58,8 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
       <div className="border-t border-gray-200" />
 
-      <section className="space-y-3">
-        <h4 className="text-sm font-semibold text-gray-400">Color of text</h4>
+      <section className="py-4 space-y-3">
+        <h4 className="text-base font-semibold text-gray-400">Color of text</h4>
         {target === 'collar' ? (
           <CustomColorPicker
             selectedColor={webbingText.selectedColor}
@@ -77,8 +76,8 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
       <div className="border-t border-gray-200" />
 
-      <section className="space-y-3">
-        <h4 className="text-sm font-semibold text-gray-400">Size of text</h4>
+      <section className="space-y-3 py-4">
+        <h4 className="text-base font-semibold text-gray-400">Size of text</h4>
         <TextSizeSelector
           selectedSize={webbingText.size}
           sizes={textSizes}

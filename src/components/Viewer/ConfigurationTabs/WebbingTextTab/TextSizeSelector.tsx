@@ -21,10 +21,10 @@ export const TextSizeSelector = ({
             key={size.value}
             type="button"
             onClick={() => onSelectSize(size.value)}
-            className={`relative w-full min-w-0 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-w-24 md:w-auto md:px-6 ${
+            className={`relative md:w-30 min-w-0 rounded-lg border py-3 text-sm font-medium transition-colors  ${
               isSelected
-                ? 'border-primary bg-primary/10 text-gray-900'
-                : 'border-gray-200 bg-white text-gray-700'
+                ? 'border-primary bg-selected text-black'
+                : 'border-border bg-white text-font'
             }`}>
             {size.label}
             {isSelected ? (
