@@ -41,9 +41,10 @@ const WEB_MESH_NAMES = new Set<MeshName>([
   'bottom',
   'base2',
   'Martingle',
+  'Base'
 ])
 
-const STITCH_MESH_NAMES = new Set<MeshName>(['Stiches'])
+const STITCH_MESH_NAMES = new Set<MeshName>(['Stiches','Stitches'])
 
 function getBucketName(meshName: MeshName): keyof MeshBuckets | null {
   if (BUCKLE_MESH_NAMES.has(meshName)) {

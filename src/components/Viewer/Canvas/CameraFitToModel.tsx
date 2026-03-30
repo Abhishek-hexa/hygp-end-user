@@ -21,7 +21,23 @@ export const CameraFitToModel = observer(
         return;
       }
 
-      void controlsRef.current.fitToBox(modelGroup, true);
+      let cancelled = false;
+
+      const rotateAndFit = async () => {
+        const controls = controlsRef.current;
+        if (!controls) return;
+
+        await controls.rotateTo(0, Math.PI / 2);
+        if (cancelled) return;
+
+        await controls.fitToBox(modelGroup, true);
+      };
+
+      void rotateAndFit();
+
+      return () => {
+        cancelled = true;
+      };
     }, [controlsRef, modelGroup]);
 
     return null;

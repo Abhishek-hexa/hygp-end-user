@@ -14,6 +14,7 @@ import LoadHarness from './LoadHarness/LoadHarness';
 import LoadMartingale from './LoadMartingale/LoadMartingale';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 import { ModelLoadingFallback } from './ModelLoadingFallback';
+import LoadBandana from './LoadBandana/LoadBandana';
 
 
 export const CanvasPanel = observer(() => {
@@ -49,6 +50,8 @@ export const CanvasPanel = observer(() => {
         );
       case 'LEASH':
         return <LoadLeash url={modelUrl} />;
+      case 'BANDANA':
+        return <LoadBandana url={modelUrl} />;
       case 'HARNESS':
         return <LoadHarness url={modelUrl} />;
       case 'MARTINGALE':
