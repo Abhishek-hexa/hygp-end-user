@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 import { useMyTexture } from '../../../../hooks/useMyTexture';
 import { loadHdrEnvMapCached } from './hdrEnvMapCache';
+import { useMainContext } from '../../../../hooks/useMainContext';
 
 function blobToDataURL(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -223,6 +224,7 @@ const TextureObj = ({
   normalMapPath = '/assets/texture/texture/webbingNormal.jpg',
   normalRepeat = [5, 5],
 }: TextureObjProps) => {
+  const { uiManager } = useMainContext();
   const { gl } = useThree();
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
   const [originalSvgForTexture, setOriginalSvgForTexture] =
@@ -256,10 +258,12 @@ const TextureObj = ({
   }, []);
 
   useEffect(() => {
+    uiManager.add3DLoadingItem('/assets/texture/texture/white1.hdr')
     loadHdrEnvMapCached('/assets/texture/texture/white1.hdr')
       .then((texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         setLocalEnvMap(texture);
+        uiManager.remove3DLoadingItem('/assets/texture/texture/white1.hdr')
       })
       .catch(() => {
         setLocalEnvMap(null);
