@@ -1,7 +1,7 @@
-import { useGLTF } from '@react-three/drei';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
+import { useMyGLTF } from '../../../../hooks/useMyGLTF';
 import WebTextured from '../EffectObj/WebTextured';
 import Hook from './Hook';
 import WebbingText from '../LoadCollar/WebbingText';
@@ -13,7 +13,7 @@ interface LoadLeashProps {
 const LoadLeash = observer(({ url }: LoadLeashProps) => {
   const { designManager, design3DManager } = useMainContext();
   const meshManager = design3DManager.meshManager;
-  const { scene } = useGLTF(url);
+  const { scene } = useMyGLTF(url);
 
   const webText = meshManager.webMeshes.get('Web_Text');
   const webbingTextManager = designManager.productManager.webbingText;

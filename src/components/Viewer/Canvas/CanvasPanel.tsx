@@ -1,7 +1,7 @@
 import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
-import { Suspense, useRef } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { LinearToneMapping } from 'three';
 import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
@@ -13,6 +13,8 @@ import LoadLeash from './LoadLeash/LoadLeash';
 import LoadHarness from './LoadHarness/LoadHarness';
 import LoadMartingale from './LoadMartingale/LoadMartingale';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
+import { ModelLoadingFallback } from './ModelLoadingFallback';
+
 
 export const CanvasPanel = observer(() => {
   const { designManager, design3DManager } = useMainContext();
@@ -67,7 +69,7 @@ export const CanvasPanel = observer(() => {
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
         }}>
-        <Suspense fallback={null}>
+        <Suspense fallback={<ModelLoadingFallback id={modelLoadingId} />}>
           {renderModelByComponent()}
           <LoadEnvironment />
         </Suspense>

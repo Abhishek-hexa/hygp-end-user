@@ -1,7 +1,7 @@
-import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../hooks/useMainContext';
+import { useMyGLTF } from '../../../hooks/useMyGLTF';
 
 type CanvasModelProps = {
   url: string;
@@ -10,7 +10,7 @@ type CanvasModelProps = {
 export const CanvasModel = observer(({ url }: CanvasModelProps) => {
   const { design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
-  const { scene } = useGLTF(url);
+  const { scene } = useMyGLTF(url);
 
   useEffect(() => {
     meshManager.setMeshGroup(url, scene);

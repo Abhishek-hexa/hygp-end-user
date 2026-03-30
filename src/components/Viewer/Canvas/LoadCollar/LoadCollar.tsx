@@ -1,6 +1,6 @@
-import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
+import { useMyGLTF } from '../../../../hooks/useMyGLTF';
 import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
@@ -16,8 +16,8 @@ type LoadCollarProps = {
 export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
-  const { scene } = useGLTF(url);
-  const plasticRes = useGLTF(plasticUrl);
+  const { scene } = useMyGLTF(url);
+  const plasticRes = useMyGLTF(plasticUrl);
   const plasticScene = plasticRes.scene;
 
   const webbingTextManager = designManager.productManager.webbingText;
