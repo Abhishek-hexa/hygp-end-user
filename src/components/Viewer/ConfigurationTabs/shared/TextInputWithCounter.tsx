@@ -19,7 +19,7 @@ export const TextInputWithCounter = ({
 }: TextInputWithCounterProps) => {
   return (
     <div
-      className={`flex items-center rounded-lg border border-primary bg-white px-3 py-2 ${
+      className={`flex items-center rounded-lg border border-green bg-white px-4 py-3 ${
         wrapperClassName ?? ''
       }`}>
       <input
@@ -29,7 +29,7 @@ export const TextInputWithCounter = ({
         placeholder={placeholder}
         onFocus={onFocus}
         onChange={(event) => onChange(event.target.value)}
-        className={`w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400 ${
+        className={`w-full bg-transparent text-base text-gray-700 outline-none placeholder:text-gray-400 ${
           inputClassName ?? ''
         }`}
       />

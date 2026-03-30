@@ -4,9 +4,10 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import { TextIcon } from '../../icons/Icons';
 import { FontSelectField } from './shared/FontSelectField';
 import { TextInputWithCounter } from './shared/TextInputWithCounter';
+import SectionHeader from '../Global/SectionHeader';
 
 const linePlaceholders = [
-  'Pet Name',
+  'PET NAME',
   'Phone Number 1',
   'Phone Number 2',
   'Type Text 4 Here',
@@ -20,17 +21,15 @@ export const EngravingTab = observer(() => {
   const activeLine = engravingManager.lines[activeLineIndex];
 
   return (
-    <div className="space-y-4 p-3 text-gray-700 lg:space-y-5 lg:p-4">
-      <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
-          Buckle Engraving
-        </h3>
-        <p className="text-sm text-gray-500 lg:text-sm">
-          Add your pet's details for safety.
-        </p>
+    <div className="">
+      <section className="p-4 lg:p-6">
+        <SectionHeader
+          title="Buckle Engraving"
+          subtitle="Add your pet's details for safety."
+        />
       </section>
 
-      <div className="flex items-center gap-2 lg:hidden">
+      <div className="flex items-center gap-2 mb-4 px-4 lg:hidden">
         {engravingManager.lines.map((_, index) => {
           const isActive = activeLineIndex === index;
           const isCompleted =
@@ -45,7 +44,7 @@ export const EngravingTab = observer(() => {
                 onClick={() => engravingManager.setActiveLine(index)}
                 className={`flex h-10 w-10 shrink-0 items-center justify-center border-2 rounded-full text-2xl font-semibold ${
                   isActive
-                    ? 'border-primary bg-primary/10 text-primary'
+                    ? 'border-primary-dark bg-primary/10 text-primary'
                     : isCompleted
                       ? 'border-primary/60 bg-white text-primary/80'
                       : 'border-gray-300 bg-gray-100 text-gray-400'
@@ -60,8 +59,8 @@ export const EngravingTab = observer(() => {
         })}
       </div>
 
-      <div className="rounded-xl border bg-gray-100/50 p-3 lg:hidden">
-        <div className="space-y-2">
+      <div className="rounded-xl border mx-4 mb-4 bg-gray-custom-light border-border p-3 lg:hidden">
+        <div className="space-y-3">
           <TextInputWithCounter
             value={activeLine?.text ?? ''}
             maxLength={20}
@@ -86,17 +85,17 @@ export const EngravingTab = observer(() => {
         </div>
       </div>
 
-      <div className="hidden space-y-3 lg:block">
+      <div className="hidden space-y-4 lg:block lg:px-6 lg:pb-6">
         {engravingManager.lines.map((line, index) => (
           <div
             key={index}
-            className="rounded-xl border bg-gray-custom-light p-3 border-gray-200">
+            className="rounded-xl border bg-gray-custom-light p-4 border-border">
             <div className="flex items-start gap-3">
               <div className="pt-3 text-primary">
-                <TextIcon className="h-5 w-5 text-primary/80" />
+                <TextIcon className="h-6 w-6 text-green" />
               </div>
 
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-3">
                 <TextInputWithCounter
                   value={line.text}
                   maxLength={20}

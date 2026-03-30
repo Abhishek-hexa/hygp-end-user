@@ -58,14 +58,13 @@ export const FontSelectField = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center rounded-lg border border-primary bg-white px-3 py-2 text-primary">
-        <AIcon className="h-5 w-5 text-primary" />
+        className="flex w-full items-center rounded-lg border border-primary bg-white p-3 text-primary">
+        <AIcon className="h-6 w-6 text-primary" />
         <span
           className="flex-1 truncate text-center text-base"
           style={
             selectedFontName ? { fontFamily: selectedFontName } : undefined
           }>
-          {selectedFontName ?? 'Select font'}
         </span>
         <ChevronDownIcon className="ml-auto h-4 w-4 text-primary" />
       </button>
