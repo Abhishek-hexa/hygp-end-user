@@ -12,8 +12,9 @@ type CameraFitToModelProps = {
 export const CameraFitToModel = observer(
   ({ controlsRef, modelKey }: CameraFitToModelProps) => {
     const { design3DManager } = useMainContext();
+    const { cameraManager, meshManager } = design3DManager;
     const modelGroup = modelKey
-      ? design3DManager.meshManager.getMeshGroup(modelKey)
+      ? meshManager.getMeshGroup(modelKey)
       : undefined;
 
     useEffect(() => {
@@ -30,7 +31,15 @@ export const CameraFitToModel = observer(
         await controls.rotateTo(0, Math.PI / 2);
         if (cancelled) return;
 
-        await controls.fitToBox(modelGroup, true);
+        void controls.fitToBox(modelGroup, true);
+        if (cancelled) return;
+
+        if (!modelKey) return;
+        const center = meshManager.getVisibleMeshCenter(modelKey);
+        if (!center) return;
+
+        cameraManager.setTarget(center);
+        controls.setTarget(center[0], center[1], center[2], true);
       };
 
       void rotateAndFit();
@@ -38,7 +47,7 @@ export const CameraFitToModel = observer(
       return () => {
         cancelled = true;
       };
-    }, [controlsRef, modelGroup]);
+    }, [cameraManager, controlsRef, meshManager, modelGroup, modelKey]);
 
     return null;
   },

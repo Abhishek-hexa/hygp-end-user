@@ -70,6 +70,7 @@ function createEmptyBuckets(): MeshBuckets {
 export class MeshManager {
   private _libState: StateManager
   private _meshGroups: Record<string, THREE.Group> = {}
+  private _visibleMeshCenters: Record<string, [number, number, number] | null> = {}
   private _meshBuckets: Record<ModelVariant, MeshBuckets> = {
     DEFAULT: createEmptyBuckets(),
     PLASTIC: createEmptyBuckets(),
@@ -111,17 +112,25 @@ export class MeshManager {
     return this._meshGroups[key]
   }
 
-  setMeshGroup(key: string, group: THREE.Group, variant: ModelVariant = 'DEFAULT') {
-    this._meshGroups[key] = group
-    this.parseMeshGroup(group, variant)
+  getVisibleMeshCenter(key: string): [number, number, number] | null {
+    return this._visibleMeshCenters[key] ?? null
   }
 
-  private parseMeshGroup(group: THREE.Group, variant: ModelVariant) {
+  setMeshGroup(key: string, group: THREE.Group, variant: ModelVariant = 'DEFAULT') {
+    this._meshGroups[key] = group
+    this.parseMeshGroup(key, group, variant)
+  }
+
+  private parseMeshGroup(key: string, group: THREE.Group, variant: ModelVariant) {
     const visibleNames = new Set<MeshName>(
       visibleMeshNamesByProductType[this.productType] as readonly MeshName[],
     )
     const shouldFilterByNames = visibleNames.size > 0
     const bucket = createEmptyBuckets()
+    const visibleBounds = new THREE.Box3().makeEmpty()
+    const meshBounds = new THREE.Box3()
+
+    group.updateMatrixWorld(true)
 
     group.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return
@@ -133,8 +142,27 @@ export class MeshManager {
       }
 
       child.visible = !shouldFilterByNames || visibleNames.has(meshName)
+
+      if (!child.visible) return
+
+      const geometry = child.geometry
+      if (!geometry.boundingBox) {
+        geometry.computeBoundingBox()
+      }
+      if (!geometry.boundingBox) return
+
+      meshBounds.copy(geometry.boundingBox).applyMatrix4(child.matrixWorld)
+      visibleBounds.union(meshBounds)
     })
 
     this._meshBuckets[variant] = bucket
+    if (visibleBounds.isEmpty()) {
+      this._visibleMeshCenters[key] = null
+      return
+    }
+
+    const center = new THREE.Vector3()
+    visibleBounds.getCenter(center)
+    this._visibleMeshCenters[key] = [center.x, center.y, center.z]
   }
 }
