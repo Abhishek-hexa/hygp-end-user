@@ -31,7 +31,6 @@ export class UiManager {
   }
 
   remove3DLoadingItem(id: string) {
-    console.log('3d Loading')
     this._3dLoadingItems.delete(id);
   }
 

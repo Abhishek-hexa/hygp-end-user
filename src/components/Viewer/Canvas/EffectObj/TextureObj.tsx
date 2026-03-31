@@ -2,9 +2,9 @@ import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+import { useMainContext } from '../../../../hooks/useMainContext';
 import { useMyTexture } from '../../../../hooks/useMyTexture';
 import { loadHdrEnvMapCached } from './hdrEnvMapCache';
-import { useMainContext } from '../../../../hooks/useMainContext';
 
 function blobToDataURL(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -124,11 +124,10 @@ function svgToTexture(
     const aspectRatio = originalWidth / originalHeight;
     let targetWidth = targetHeight * aspectRatio;
     const MAX_TEXTURE_SIZE = 2048;
-
     if (targetWidth > MAX_TEXTURE_SIZE || targetHeight > MAX_TEXTURE_SIZE) {
       const scale = MAX_TEXTURE_SIZE / Math.max(targetWidth, targetHeight);
-      targetWidth *= scale;
-      targetHeight *= scale;
+      targetWidth = Math.floor(targetWidth * scale);
+      targetHeight = Math.floor(targetHeight * scale);
     }
 
     svgElem.setAttribute('width', `${targetWidth}px`);
@@ -258,12 +257,12 @@ const TextureObj = ({
   }, []);
 
   useEffect(() => {
-    uiManager.add3DLoadingItem('/assets/texture/texture/white1.hdr')
+    uiManager.add3DLoadingItem('/assets/texture/texture/white1.hdr');
     loadHdrEnvMapCached('/assets/texture/texture/white1.hdr')
       .then((texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         setLocalEnvMap(texture);
-        uiManager.remove3DLoadingItem('/assets/texture/texture/white1.hdr')
+        uiManager.remove3DLoadingItem('/assets/texture/texture/white1.hdr');
       })
       .catch(() => {
         setLocalEnvMap(null);
@@ -351,27 +350,16 @@ const TextureObj = ({
   useEffect(() => {
     if (!originalSvgForTexture || !currentSize) return;
 
-    const sizeEntry = parsedSizes.find((item) => item.size === currentSize) ?? {
+    const clampedEntry = parsedSizes.find(
+      (item) => item.size === currentSize,
+    ) || {
       scale: 1,
       size: currentSize,
       translateX: 0,
       translateY: 0,
     };
-
-    let scaleValue = sizeEntry.scale ?? 1;
-    if (scaleValue === 1) {
-      scaleValue = 1.005;
-    } else if (scaleValue <= 0) {
-      scaleValue = 0.01;
-    } else if (scaleValue > 2) {
-      scaleValue = 2;
-    }
-
-    const clampedEntry = {
-      ...sizeEntry,
-      scale: scaleValue,
-    };
-
+    if (clampedEntry.scale === undefined) clampedEntry.scale = 1;
+    clampedEntry.scale = Math.min(Math.max(clampedEntry.scale, 0.01), 2);
     const newSvg = createNewSVG(
       originalSvgForTexture,
       clampedEntry.translateX ?? 0,

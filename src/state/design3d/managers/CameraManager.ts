@@ -8,6 +8,8 @@ export class CameraManager {
   private _fov = 26;
   private _near = 100;
   private _far = 2000;
+  private _minDistance = 200;
+  private _maxDistance = 800;
   private _isAutoRotate = false;
   private _autoRotateSpeed = 0.5;
 
@@ -31,6 +33,14 @@ export class CameraManager {
     return this._far;
   }
 
+  get minDistance() {
+    return this._minDistance;
+  }
+
+  get maxDistance() {
+    return this._maxDistance;
+  }
+
   get isAutoRotate() {
     return this._isAutoRotate;
   }
@@ -39,8 +49,23 @@ export class CameraManager {
     return this._autoRotateSpeed;
   }
 
-  setTarget(target: Vec3) {
-    this._target = target;
+  setTarget(inTarget: Vec3) {
+    this._target = inTarget;
   }
 
+  setNear(inNear: number) {
+    this._near = inNear
+  }
+
+  setFar(inFar: number) {
+    this._far = inFar
+  }
+
+  setMinDistance(inMinDistance: number) {
+    this._minDistance = inMinDistance
+  }
+
+  setMaxDistance(inMaxDistance: number) {
+    this._maxDistance = inMaxDistance
+  }
 }
