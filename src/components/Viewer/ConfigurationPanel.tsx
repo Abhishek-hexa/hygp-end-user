@@ -49,6 +49,7 @@ export const ConfigurationPanel = observer(() => {
         features={features}
         activeFeature={activeFeature}
         onSelectFeature={(feature) => productManager.setActiveFeature(feature)}
+        scrollToStartSignal={mainContext.designManager.scrollToStartSignal}
       />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <FeatureContentRenderer activeFeature={activeFeature} />
