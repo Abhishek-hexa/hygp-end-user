@@ -22,7 +22,7 @@ export const SizeTab = observer(() => {
           subtitle="Choose the perfect fit for your furry friend"
         />
         <div
-          className="feature-tabs-scroll -mx-1 flex gap-2 md:gap-4 overflow-x-auto px-1 whitespace-nowrap lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0"
+          className="feature-tabs-scroll -mx-1 flex gap-2 md:gap-4 overflow-x-auto px-1 whitespace-nowrap lg:mx-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-visible lg:px-0"
           style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
           {sizeEntries.map(([id, data]) => (
             <SizeOptionButton

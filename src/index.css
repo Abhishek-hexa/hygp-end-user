@@ -27,6 +27,8 @@
 }
 
 @theme {
+  --breakpoint-custom: 1725px;
+  --breakpoint-custom-2: 1650px;
   --breakpoint-xs: 385px;
 }
 
