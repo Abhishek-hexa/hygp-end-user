@@ -22,14 +22,14 @@ export const PriceSummaryDetails = ({
             key={index}
             className="flex items-center justify-between uppercase">
             <span>{item.label}</span>
-            <span>{item.value}</span>
+            <span>${item.value}</span>
           </div>
         ))}
       </div>
 
       <div className="flex items-center justify-between text-lg font-semibold text-text-dark-green uppercase py-4">
         <span>TOTAL AMOUNT</span>
-        <span>{totalAmount}</span>
+        <span>${totalAmount}</span>
       </div>
 
       <p className="text-center text-base text-text-light-green">
