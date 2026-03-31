@@ -30,13 +30,6 @@ export const copyByTarget: Record<WebbingTextTarget, WebbingTextCopy> = {
   },
 };
 
-export const textColors = [
-  '#2d9ce6',
-  '#374b67',
-  '#4dc4b4',
-  '#dfb029',
-  '#44ddd7',
-];
 
 export const textSizes: Array<{ label: string; value: TextSize }> = [
   { label: 'Small', value: 'SMALL' },
