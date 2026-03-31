@@ -11,13 +11,26 @@ export const leashLabelMap: Record<LeashLengthType, string> = {
 
 export const sizeLabelMap: Record<string, string> = {
   EXTRA_SMALL: 'Extra Small',
+  EXTRASMALL: 'Extra Small',
+  XS: 'Extra Small',
   LARGE: 'Large',
+  LG: 'Large',
   MEDIUM: 'Medium',
+  MD: 'Medium',
   MEDIUM_NARROW: 'Medium Narrow',
+  MEDIUMNARROW: 'Medium Narrow',
+  MN: 'Medium Narrow',
   MEDIUM_WIDE: 'Medium Wide',
+  MEDIUMWIDE: 'Medium Wide',
+  MW: 'Medium Wide',
   SMALL: 'Small',
+  SM: 'Small',
+  EXTRA_LARGE: 'XLarge',
+  EXTRALARGE: 'XLarge',
   XLARGE: 'XLarge',
+  XL: 'XLarge',
   XXLARGE: 'XXLarge',
+  XXL: 'XXLarge',
 };
 
 export const productSummaryLabelMap: Record<string, string> = {

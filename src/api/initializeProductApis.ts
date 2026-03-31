@@ -226,7 +226,8 @@ const parseSizes = (
       model: size.model,
       plasticModel: size.plasticModel,
       price: size.price ? size.price : size.withoutBellPrice,
-      size: size.size as ProductSizeType,
+      // Keep one canonical enum value across app state/UI/render logic.
+      size: parsedSize,
       sizeImage: size.sizeImage ? size.sizeImage : '',
     };
 
@@ -241,18 +242,32 @@ const recordValue = (size: ProductVariantApiItem): ProductSizeType | null => {
     .toUpperCase()
     .replace(/\s+/g, '')
     .replace(/-/g, '');
+  const normalizedPrefix = String(size?.prefix ?? '')
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/-/g, '');
 
   const sizeLookup: Record<string, ProductSizeType> = {
     EXTRASMALL: 'EXTRA_SMALL',
+    XS: 'EXTRA_SMALL',
     LARGE: 'LARGE',
+    LG: 'LARGE',
+    MEDIUM: 'MEDIUM',
+    MD: 'MEDIUM',
     MEDIUMNARROW: 'MEDIUM_NARROW',
+    MN: 'MEDIUM_NARROW',
     MEDIUMWIDE: 'MEDIUM_WIDE',
+    MW: 'MEDIUM_WIDE',
     SMALL: 'SMALL',
+    SM: 'SMALL',
+    EXTRALARGE: 'XLARGE',
     XLARGE: 'XLARGE',
+    XL: 'XLARGE',
+    XXL: 'XXLARGE',
     XXLARGE: 'XXLARGE',
   };
 
-  return sizeLookup[normalized] ?? null;
+  return sizeLookup[normalized] ?? sizeLookup[normalizedPrefix] ?? null;
 };
 
 const parseCollections = (
