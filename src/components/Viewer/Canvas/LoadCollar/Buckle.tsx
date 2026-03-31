@@ -13,7 +13,7 @@ export const Buckle = observer(() => {
   const { productManager } = designManager;
   const buckleManager = productManager.buckleManager;
   const isCatCollar = productManager.productId === 'CAT_COLLAR';
-  const selectedHex = buckleManager.currentSelectedColorDescription?.hex;
+  const selectedMetalHex = buckleManager.currentMetalColor?.hex;
   const selectedPlasticColor = buckleManager.plasticColorDescription?.hex;
   const selectedMaterial = buckleManager.material;
 
@@ -32,7 +32,7 @@ export const Buckle = observer(() => {
           <MetalObj
             key={buckleMesh.uuid}
             mesh={buckleMesh}
-            metalColor={selectedHex ?? '#aaaaaa'}
+            metalColor={selectedMetalHex ?? '#aaaaaa'}
           />
         ) : (
           <PlasticObj
@@ -53,14 +53,14 @@ export const Buckle = observer(() => {
         <MetalObj
           key={dRingMesh.uuid}
           mesh={dRingMesh}
-          metalColor={selectedHex ?? '#aaaaaa'}
+          metalColor={selectedMetalHex ?? '#aaaaaa'}
         />
       )}
       {triGlideMesh && (selectedMaterial === 'METAL' || isCatCollar) && (
         <MetalObj
           key={triGlideMesh.uuid}
           mesh={triGlideMesh}
-          metalColor={selectedHex ?? '#aaaaaa'}
+          metalColor={selectedMetalHex ?? '#aaaaaa'}
         />
       )}
       {triGlideMesh && selectedMaterial !== 'METAL' && !isCatCollar && (
