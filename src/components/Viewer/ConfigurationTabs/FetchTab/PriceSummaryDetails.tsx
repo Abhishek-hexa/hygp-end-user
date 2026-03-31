@@ -15,7 +15,7 @@ export const PriceSummaryDetails = ({
   shippingCopy,
 }: PriceSummaryDetailsProps) => {
   return (
-    <section className="rounded-2xl border border-border-gray-dark bg-selected px-7 py-6">
+    <section className="rounded-2xl border border-border-gray-dark bg-selected px-4 md:px-7 py-6">
       <div className="space-y-4 text-sm font-semibold text-primary-dark border-b border-primary-dark pb-6">
         {lineItems.map((item, index) => (
           <div
@@ -27,12 +27,12 @@ export const PriceSummaryDetails = ({
         ))}
       </div>
 
-      <div className="flex items-center justify-between text-lg font-semibold text-text-dark-green uppercase py-4">
+      <div className="flex items-center justify-between text-base md:text-lg font-semibold text-text-dark-green uppercase py-4">
         <span>TOTAL AMOUNT</span>
         <span>${totalAmount}</span>
       </div>
 
-      <p className="text-center text-base text-text-light-green">
+      <p className="text-center text-sm md:text-base text-text-light-green">
         {shippingCopy}
       </p>
     </section>

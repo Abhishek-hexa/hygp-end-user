@@ -19,11 +19,15 @@
   --color-innerTitle: #9797a0;
   --color-black: #000000;
   --color-border-gray: #eaeaea;
-  --color-border-gray-dark: #D0F8E2;
-  --color-text-dark-green: #33524B;
-  --color-text-light-green: #58AB88;
+  --color-border-gray-dark: #d0f8e2;
+  --color-text-dark-green: #33524b;
+  --color-text-light-green: #58ab88;
   --font-ranchers: 'Ranchers', cursive;
   --font-roboto: 'Roboto', sans-serif;
+}
+
+@theme {
+  --breakpoint-xs: 385px;
 }
 
 @layer base {

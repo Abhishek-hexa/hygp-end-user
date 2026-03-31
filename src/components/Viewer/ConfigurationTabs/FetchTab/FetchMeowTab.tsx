@@ -16,6 +16,7 @@ import {
   sizeLabelMap,
 } from '../shared/fetchSummary';
 import { PriceSummaryDetails } from './PriceSummaryDetails';
+import { MobileCartSection } from './MobileCartSection';
 
 type FetchMeowTabProps = {
   feature: FetchFeature;
@@ -108,8 +109,15 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
         )}
       </div>
 
-      <div className="p-4 lg:p-6 border-t border-divider">
+      <div className="p-4 lg:p-6 border-t border-divider hidden md:block">
         <PriceSummaryDetails
+          lineItems={lineItems}
+          totalAmount={formatPrice(totalPriceNumber)}
+          shippingCopy={shippingCopy}
+        />
+      </div>
+      <div className="pb-2 block md:hidden">
+        <MobileCartSection
           lineItems={lineItems}
           totalAmount={formatPrice(totalPriceNumber)}
           shippingCopy={shippingCopy}

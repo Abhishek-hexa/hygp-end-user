@@ -6,6 +6,7 @@ import { Features } from '../../state/product/types';
 import { CartIcon } from '../icons/Icons';
 import { FeatureContentRenderer } from './ConfigurationPanel/FeatureContentRenderer';
 import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
+import { CartButton } from './Global/CartButton';
 
 export const ConfigurationPanel = observer(() => {
   const mainContext = useMainContext();
@@ -74,12 +75,11 @@ export const ConfigurationPanel = observer(() => {
             </button>
           </div>
         ) : (
-          <button
+          <CartButton
+            addToCartPrice={addToCartPrice}
+            onClick={handleAddToBundle}
             type="button"
-            className="flex p-4 w-full items-center justify-center gap-1.5 rounded-full bg-primary-orange px-4 font-ranchers text-sm font-normal uppercase tracking-[0.8px] text-white transition-opacity hover:opacity-95">
-            <CartIcon stroke={'#fff'} />
-            <p className="text-[22px]">Add to Cart - ${addToCartPrice} </p>
-          </button>
+          />
         )}
       </div>
     </aside>
