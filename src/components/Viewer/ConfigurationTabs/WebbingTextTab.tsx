@@ -4,12 +4,10 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import { TextIcon } from '../../icons/Icons';
 import { FontSelectField } from './shared/FontSelectField';
 import { TextInputWithCounter } from './shared/TextInputWithCounter';
-import { ColorSwatches } from './WebbingTextTab/ColorSwatches';
 import { CustomColorPicker } from './WebbingTextTab/CustomColorPicker';
 import { TextSizeSelector } from './WebbingTextTab/TextSizeSelector';
 import {
   copyByTarget,
-  textColors,
   textSizes,
   WebbingTextTarget,
 } from './WebbingTextTab/webbingTextConfig';
@@ -60,18 +58,10 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
       <section className="py-4 space-y-3">
         <h4 className="text-base font-semibold text-gray-400">Color of text</h4>
-        {target === 'collar' ? (
           <CustomColorPicker
             selectedColor={webbingText.selectedColor}
             onChange={webbingText.setColor.bind(webbingText)}
           />
-        ) : (
-          <ColorSwatches
-            colors={textColors}
-            selectedColor={webbingText.selectedColor}
-            onSelectColor={webbingText.setColor.bind(webbingText)}
-          />
-        )}
       </section>
 
       <div className="border-t border-gray-200" />
