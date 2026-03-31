@@ -6,7 +6,7 @@ import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
 import { BulkFetchTab } from '../ConfigurationTabs/BulkFetchTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
 import { EngravingTab } from '../ConfigurationTabs/EngravingTab';
-import { FetchMeowTab } from '../ConfigurationTabs/FetchMeowTab';
+import { FetchMeowTab } from '../ConfigurationTabs/FetchTab/FetchMeowTab';
 import { SizeTab } from '../ConfigurationTabs/SizeTab';
 import { WebbingTextTab } from '../ConfigurationTabs/WebbingTextTab';
 import { featureLabelMap } from './featureLabelMap';

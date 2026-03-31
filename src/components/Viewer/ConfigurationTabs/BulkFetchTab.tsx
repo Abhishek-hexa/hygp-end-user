@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
+import SectionHeader from '../Global/SectionHeader';
 import {
   FetchFeature,
   fetchReviewCopy,
@@ -25,11 +26,10 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
   const totalAmountNumber = parsePrice(productStore.totalPrice);
 
   return (
-    <div className="flex min-h-[520px] flex-col p-4 text-gray-700">
-      <section className="space-y-1">
-        <h3 className="text-base font-semibold text-gray-900">{heading}</h3>
-        <p className="text-xs text-gray-500">{fetchReviewCopy}</p>
-      </section>
+    <div className="">
+      <div className="p-4 lg:p-6">
+        <SectionHeader title={heading} subtitle={fetchReviewCopy} />
+      </div>
 
       <section className="mt-6 rounded-xl border border-primary/20 bg-primary-dark/5 p-5">
         <section className="space-y-3">

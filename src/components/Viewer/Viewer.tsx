@@ -104,10 +104,10 @@ export const Viewer = observer(() => {
       }`}>
       <NavBar />
       <div className="grid h-full w-full grid-cols-10 max-lg:grid-cols-1 max-lg:grid-rows-[minmax(0,1.18fr)_minmax(0,1fr)]">
-        <div className="col-span-7 min-h-0 max-lg:col-span-1">
+        <div className="col-span-6 2xl:col-span-7 min-h-0 max-lg:col-span-1">
           <CanvasPanel />
         </div>
-        <div className="col-span-3 min-h-0 max-lg:col-span-1">
+        <div className="col-span-4 2xl:col-span-3 min-h-0 max-lg:col-span-1">
           <ConfigurationPanel />
         </div>
       </div>
