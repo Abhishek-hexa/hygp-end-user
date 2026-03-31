@@ -34,7 +34,7 @@ export const parsePrice = (value: string | null | undefined): number => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
-export const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
+export const formatPrice = (value: number): string => `${value.toFixed(2)}`;
 
 export const getFetchHeading = (feature: FetchFeature): string =>
   feature === 'MEOW' ? 'Ready to Meow!' : 'Ready to Fetch!';

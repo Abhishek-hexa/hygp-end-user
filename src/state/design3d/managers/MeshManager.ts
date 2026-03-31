@@ -171,11 +171,24 @@ export class MeshManager {
     visibleBounds.getSize(boundsSize)
     const modelRadius = boundsSize.length() * 0.5
     const dynamicNear = THREE.MathUtils.clamp(modelRadius * 0.1, 0.1, 100)
+    const dynamicFar = THREE.MathUtils.clamp(modelRadius * 30, 500, 10000)
+    const dynamicMinDistance = THREE.MathUtils.clamp(modelRadius * 1.5, 50, 2000)
+    const dynamicMaxDistance = THREE.MathUtils.clamp(modelRadius * 8, 300, 6000)
 
-    // In dual-variant products(plasti/ metal), only the active variant should set near,
-    // otherwise the second parsed variant can overwrite it.
+    // In dual-variant products (plastic/metal), only the active variant should
+    // set camera values; otherwise the second parsed variant can overwrite them.
     if (variant === this.activeVariant) {
+      this._libState.design3DManager.cameraManager.setTarget([center.x, center.y, center.z])
       this._libState.design3DManager.cameraManager.setNear(dynamicNear)
+      this._libState.design3DManager.cameraManager.setFar(
+        Math.max(dynamicFar, dynamicNear + 1),
+      )
+      this._libState.design3DManager.cameraManager.setMinDistance(
+        Math.min(dynamicMinDistance, dynamicMaxDistance - 1),
+      )
+      this._libState.design3DManager.cameraManager.setMaxDistance(
+        Math.max(dynamicMaxDistance, dynamicMinDistance + 1),
+      )
     }
   }
 }

@@ -88,8 +88,8 @@ export const CanvasPanel = observer(() => {
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2.5}
           truckSpeed={0}
-          maxDistance={800}
-          minDistance={200}
+          maxDistance={cameraManager.maxDistance}
+          minDistance={cameraManager.minDistance}
           ref={controlsRef}
         />
       </Canvas>
