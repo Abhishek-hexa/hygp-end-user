@@ -161,8 +161,21 @@ export class MeshManager {
       return
     }
 
+    // Bounding box center for rotation axes.
     const center = new THREE.Vector3()
     visibleBounds.getCenter(center)
     this._visibleMeshCenters[key] = [center.x, center.y, center.z]
+
+    // Use model size to keep clipping stable across product scales.
+    const boundsSize = new THREE.Vector3()
+    visibleBounds.getSize(boundsSize)
+    const modelRadius = boundsSize.length() * 0.5
+    const dynamicNear = THREE.MathUtils.clamp(modelRadius * 0.1, 0.1, 100)
+
+    // In dual-variant products(plasti/ metal), only the active variant should set near,
+    // otherwise the second parsed variant can overwrite it.
+    if (variant === this.activeVariant) {
+      this._libState.design3DManager.cameraManager.setNear(dynamicNear)
+    }
   }
 }

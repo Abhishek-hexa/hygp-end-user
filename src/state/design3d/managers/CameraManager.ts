@@ -39,8 +39,12 @@ export class CameraManager {
     return this._autoRotateSpeed;
   }
 
-  setTarget(target: Vec3) {
-    this._target = target;
+  setTarget(inTarget: Vec3) {
+    this._target = inTarget;
   }
 
+  setNear(inNear: number) {
+    this._near = inNear
+  }
+ 
 }
