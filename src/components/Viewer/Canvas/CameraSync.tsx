@@ -14,7 +14,7 @@ export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
   } = useMainContext();
   const { camera } = useThree();
   const [tx, ty, tz] = cameraManager.target;
-  const { near, far, fov } = cameraManager;
+  const { near, far, fov, minDistance, maxDistance } = cameraManager;
 
   useEffect(() => {
     camera.near = near;
@@ -26,12 +26,22 @@ export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
     camera.updateProjectionMatrix();
 
     if (controlsRef.current) {
+      controlsRef.current.minDistance = minDistance;
+      controlsRef.current.maxDistance = Math.max(maxDistance, minDistance + 1);
       controlsRef.current.setTarget(tx, ty, tz, true);
+
+      const clampedDistance = Math.min(
+        Math.max(controlsRef.current.distance, controlsRef.current.minDistance),
+        controlsRef.current.maxDistance,
+      );
+      if (Math.abs(clampedDistance - controlsRef.current.distance) > 0.001) {
+        void controlsRef.current.dollyTo(clampedDistance, true);
+      }
       return;
     }
 
     camera.lookAt(tx, ty, tz);
-  }, [camera, controlsRef, tx, ty, tz, near, far, fov]);
+  }, [camera, controlsRef, tx, ty, tz, near, far, fov, minDistance, maxDistance]);
 
   return null;
 });
