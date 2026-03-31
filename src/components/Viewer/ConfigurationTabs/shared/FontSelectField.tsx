@@ -22,9 +22,9 @@ export const FontSelectField = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const fontNameById = new Map(fonts.map((font) => [font.id, font.name]));
-  const selectedFontName =
-    selectedFont !== null ? fontNameById.get(selectedFont) : null;
+  const fontById = new Map(fonts.map((font) => [font.id, font]));
+  const selectedFontData =
+    selectedFont !== null ? fontById.get(selectedFont) : null;
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -58,14 +58,19 @@ export const FontSelectField = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center rounded-lg border border-primary bg-white p-3 text-primary">
+        className="flex w-full h-12 items-center rounded-lg border border-primary bg-white p-3 text-primary">
         <AIcon className="h-6 w-6 text-primary" />
-        <span
-          className="flex-1 truncate text-center text-base"
-          style={
-            selectedFontName ? { fontFamily: selectedFontName } : undefined
-          }
-        />
+        <div className="mx-3 flex h-8 flex-1 items-center justify-center overflow-hidden">
+          {selectedFontData ? (
+            <LazyImage
+              className="max-h-full max-w-full object-contain"
+              src={selectedFontData.preview}
+              alt={selectedFontData.name}
+            />
+          ) : (
+            <span className="truncate text-base text-gray-400">Select font</span>
+          )}
+        </div>
         <ChevronDownIcon className="ml-auto h-4 w-4 text-primary" />
       </button>
 

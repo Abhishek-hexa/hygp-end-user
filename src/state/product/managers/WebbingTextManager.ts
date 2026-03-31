@@ -58,6 +58,7 @@ export class WebbingTextManager {
 
   setAvailableFonts(inAvailableFonts: Map<number, FontDescription>) {
     this._availableFonts = inAvailableFonts;
+    this._selectedFont = inAvailableFonts.keys().next().value ?? null;
   }
 
   resetSelection() {
