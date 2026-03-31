@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useMainContext } from '../../../hooks/useMainContext';
@@ -39,6 +39,15 @@ export const DesignTab = observer(() => {
       pattern.name.toLowerCase().includes(query),
     );
   }, [patterns, searchQuery]);
+  const lastVisiblePatternsRef = useRef(filteredPatterns);
+
+  if (!loading && filteredPatterns.length > 0) {
+    lastVisiblePatternsRef.current = filteredPatterns;
+  }
+
+  const visiblePatterns =
+    filteredPatterns.length > 0 ? filteredPatterns : lastVisiblePatternsRef.current;
+  const loadingSkeletonItems = Array.from({ length: 10 }, (_, index) => index);
 
   return (
     <div className="relative flex h-full min-h-0 flex-col md:flex-row md:gap-2">
@@ -105,16 +114,10 @@ export const DesignTab = observer(() => {
           />
         </div>
 
-        {loading ? (
-          <p className="text-sm text-gray-500">Loading designs...</p>
-        ) : null}
         {error ? <p className="text-sm text-red-500">{error}</p> : null}
-        {!loading && !error && filteredPatterns.length === 0 ? (
-          <p className="text-sm text-gray-500">No designs found.</p>
-        ) : null}
-        {!loading && !error ? (
+        {!error && visiblePatterns.length > 0 ? (
           <PatternGrid
-            patterns={filteredPatterns}
+            patterns={visiblePatterns}
             selectedPatternId={textureManager.selectedPatternId}
             onSelectPattern={(patternId) => {
               textureManager.setSelectedPattern(patternId);
@@ -126,6 +129,22 @@ export const DesignTab = observer(() => {
               );
             }}
           />
+        ) : null}
+        {loading ? (
+          <div className="p-4 md:p-2 md:px-4">
+            <div className="grid grid-cols-5 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+              {loadingSkeletonItems.map((item) => (
+                <div
+                  key={`pattern-skeleton-${item}`}
+                  className="skeleton-image aspect-square w-full rounded-md border border-gray-pattern"
+                  aria-hidden="true"
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+        {!loading && !error && filteredPatterns.length === 0 ? (
+          <p className="text-sm text-gray-500">No designs found.</p>
         ) : null}
       </div>
       <button
