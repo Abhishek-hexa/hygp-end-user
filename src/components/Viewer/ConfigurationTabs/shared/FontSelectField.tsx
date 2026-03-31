@@ -64,8 +64,8 @@ export const FontSelectField = ({
           className="flex-1 truncate text-center text-base"
           style={
             selectedFontName ? { fontFamily: selectedFontName } : undefined
-          }>
-        </span>
+          }
+        />
         <ChevronDownIcon className="ml-auto h-4 w-4 text-primary" />
       </button>
 

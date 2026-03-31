@@ -8,6 +8,7 @@ export class DesignManager {
   private _libState: StateManager;
   private _productManager: ProductManager;
   private _productStore: ProductStore;
+  scrollToStartSignal: number = 0;
 
   constructor(libState: StateManager) {
     this._libState = libState;
@@ -26,5 +27,9 @@ export class DesignManager {
 
   get availableFeatures() {
     return this._productManager.getAllFeatures();
+  }
+
+  triggerScrollToStart() {
+    this.scrollToStartSignal++;
   }
 }

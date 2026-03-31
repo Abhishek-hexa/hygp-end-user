@@ -38,6 +38,7 @@ export const NavBar = observer(() => {
     }
 
     setIsShopsOpen(false);
+    mainContext.designManager.triggerScrollToStart();
     navigate(`/${productTypeToSlug(productType)}`);
   };
 
