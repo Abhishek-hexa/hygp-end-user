@@ -53,11 +53,14 @@ export const SizeTab = observer(() => {
       </div>
 
       <div className="flex justify-center border-t border-divider p-4 lg:p-6">
-        <LazyImage
-          src={productManager.sizeManager.selectedSizeData?.sizeImage}
-          alt="Collar Measurement Guide"
-          className="w-full max-w-md object-contain"
-        />
+        <div className="w-full max-w-md min-h-50">
+          <LazyImage
+            key={productManager.sizeManager.selectedSizeData?.id} // ← forces skeleton on size change
+            src={productManager.sizeManager.selectedSizeData?.sizeImage}
+            alt="Collar Measurement Guide"
+            className="w-full max-w-md object-contain min-h-40"
+          />
+        </div>
       </div>
     </div>
   );
