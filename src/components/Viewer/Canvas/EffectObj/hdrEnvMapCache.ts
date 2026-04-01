@@ -1,11 +1,11 @@
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader'
 import * as THREE from 'three'
 
 const cachedHdrEnvMaps = new Map<string, THREE.Texture>()
 const pendingHdrEnvMaps = new Map<string, Promise<THREE.Texture>>()
 const cachedTextures = new Map<string, THREE.Texture>()
 const pendingTextures = new Map<string, Promise<THREE.Texture>>()
-const rgbeLoader = new RGBELoader()
+const hdrLoader  = new HDRLoader()
 const textureLoader = new THREE.TextureLoader()
 
 export function loadHdrEnvMapCached(hdrPath: string): Promise<THREE.Texture> {
@@ -16,7 +16,7 @@ export function loadHdrEnvMapCached(hdrPath: string): Promise<THREE.Texture> {
   if (pending) return pending
 
   const loadPromise = new Promise<THREE.Texture>((resolve, reject) => {
-    rgbeLoader.load(
+    hdrLoader .load(
       hdrPath,
       (hdr) => {
         hdr.mapping = THREE.EquirectangularReflectionMapping
