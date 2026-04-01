@@ -1,32 +1,17 @@
 import axios from 'axios';
 
-import { BuckleManager } from '../state/product/managers/BuckleManager';
-import { EngravingManager } from '../state/product/managers/EngravingManager';
-import { TextureManager } from '../state/product/managers/TextureManager';
-import { WebbingTextManager } from '../state/product/managers/WebbingTextManager';
 import { ProductManager } from '../state/product/ProductManager';
-import {
-  Collection,
-  ColorDescription,
-  FontDescription,
-  LeashLengthType,
-  PatternType,
-  ProductSizeType,
-  ProductType,
-  SizeDescription,
-} from '../state/product/types';
+import { ProductType } from '../state/product/types';
 import { UiManager } from '../state/ui/UiManager';
 import { apiEndPointMap } from './ApiEndPointMap';
+import { Parser } from './Parser';
 import {
-  BuckleApiItem,
   BucklesApiResponse,
   CollectionProductsApiResponse,
   EngravingFontsApiResponse,
   LeashVariantsApiResponse,
   ProductByIdApiResponse,
-  ProductVariantApiItem,
   ProductVariantsApiResponse,
-  ShopifyCollectionApiItem,
   ShopifyCollectionsApiResponse,
 } from './types/api.types';
 
@@ -94,15 +79,25 @@ export const initializeProductApis = async (
           : Promise.resolve<LeashVariantsApiResponse | null>(null),
       ]);
 
-    parseFonts(
-      engravingFonts,
-      productManager.webbingText,
-      productManager.engravingManager,
-    );
+    const { webbingFonts, engravingFonts: parsedEngravingFonts } =
+      Parser.parseFonts(engravingFonts);
+    productManager.webbingText.setAvailableFonts(webbingFonts);
+    productManager.engravingManager.setAvailableFonts(parsedEngravingFonts);
 
-    parseSizes(variants, productManager);
-    parseCollections(collections, productManager.textureManager);
-    parseBuckles(buckles, productManager.buckleManager);
+    const { sizeMap } = Parser.parseSizes(variants);
+    productManager.sizeManager.setAvailableSizes(sizeMap);
+
+    const { collections: parsedCollections } = Parser.parseCollections(
+      collections,
+      productManager.textureManager,
+    );
+    productManager.textureManager.setAvailableCollections(parsedCollections);
+
+    const { metalColors, plasticColors, breakawayColors } =
+      Parser.parseBuckles(buckles);
+    productManager.buckleManager.setMetalColors(metalColors);
+    productManager.buckleManager.setPlasticColors(plasticColors);
+    productManager.buckleManager.setBreakawayColors(breakawayColors);
 
     const selectedPatternId =
       typeof initialPatternId === 'number' && Number.isFinite(initialPatternId)
@@ -156,15 +151,24 @@ export const initializeProductApis = async (
     }
 
     if (collectionProducts) {
-      parsePatterns(
-        collectionProducts,
-        productManager.textureManager,
-        targetPatternId,
+      const { parsedCollectionId, patterns, matchedPatternId } =
+        Parser.parsePatterns(
+          collectionProducts,
+          targetPatternId,
+        );
+      productManager.textureManager.setSelectedCollections([parsedCollectionId]);
+      productManager.textureManager.setAvailablePatterns(
+        parsedCollectionId,
+        patterns,
       );
+      productManager.textureManager.setSelectedPattern(matchedPatternId);
     }
 
     if (productType === 'DOG_COLLAR' && leashes) {
-      parseLeashVariants(leashes, productManager.sizeManager);
+      const { orderedLengths, orderedLengthPrices } =
+        Parser.parseLeashVariants(leashes);
+      productManager.sizeManager.setAvailableLengths(orderedLengths);
+      productManager.sizeManager.setLengthPrices(orderedLengthPrices);
     }
   } catch (error) {
     uiManager.setDataError('Could not load product data. Please try again.');
@@ -173,256 +177,4 @@ export const initializeProductApis = async (
   } finally {
     uiManager.setDataLoading(false);
   }
-};
-
-const parseFonts = (
-  engravingFontsResponse: EngravingFontsApiResponse,
-  webbingTextManager: WebbingTextManager,
-  engravingManager: EngravingManager,
-) => {
-  const fontOptions = engravingFontsResponse.data;
-
-  const webbingFonts: Map<number, FontDescription> = new Map();
-  const engravingFonts: Map<number, FontDescription> = new Map();
-
-  fontOptions.forEach((font) => {
-    if (font.use_case.includes('webbing')) {
-      webbingFonts.set(font.id, {
-        font_path: font.font_path,
-        id: font.id,
-        name: font.name,
-        preview: font.preview,
-      });
-    }
-    if (font.use_case.includes('buckle')) {
-      engravingFonts.set(font.id, {
-        font_path: font.font_path,
-        id: font.id,
-        name: font.name,
-        preview: font.preview,
-      });
-    }
-  });
-
-  webbingTextManager.setAvailableFonts(webbingFonts);
-  engravingManager.setAvailableFonts(engravingFonts);
-};
-
-const parseSizes = (
-  sizeOptions: ProductVariantsApiResponse,
-  productManager: ProductManager,
-) => {
-  const sizes = sizeOptions.variants ? sizeOptions.variants : sizeOptions.data;
-  const sizeMap: Map<ProductSizeType, SizeDescription> = new Map();
-
-  sizes.forEach((size: ProductVariantApiItem) => {
-    const parsedSize = recordValue(size);
-    if (!parsedSize) {
-      return;
-    }
-
-    const sizeDescription: SizeDescription = {
-      id: typeof size.id === 'string' ? parseInt(size.id) : size.id,
-      model: size.model,
-      plasticModel: size.plasticModel,
-      price: size.price ? size.price : size.withoutBellPrice,
-      // Keep one canonical enum value across app state/UI/render logic.
-      size: parsedSize,
-      sizeImage: size.sizeImage ? size.sizeImage : '',
-    };
-
-    sizeMap.set(parsedSize, sizeDescription);
-  });
-
-  productManager.sizeManager.setAvailableSizes(sizeMap);
-};
-
-const recordValue = (size: ProductVariantApiItem): ProductSizeType | null => {
-  const normalized = String(size?.size)
-    .toUpperCase()
-    .replace(/\s+/g, '')
-    .replace(/-/g, '');
-  const normalizedPrefix = String(size?.prefix ?? '')
-    .toUpperCase()
-    .replace(/\s+/g, '')
-    .replace(/-/g, '');
-
-  const sizeLookup: Record<string, ProductSizeType> = {
-    EXTRASMALL: 'EXTRA_SMALL',
-    XS: 'EXTRA_SMALL',
-    LARGE: 'LARGE',
-    LG: 'LARGE',
-    MEDIUM: 'MEDIUM',
-    MD: 'MEDIUM',
-    MEDIUMNARROW: 'MEDIUM_NARROW',
-    MN: 'MEDIUM_NARROW',
-    MEDIUMWIDE: 'MEDIUM_WIDE',
-    MW: 'MEDIUM_WIDE',
-    SMALL: 'SMALL',
-    SM: 'SMALL',
-    EXTRALARGE: 'XLARGE',
-    XLARGE: 'XLARGE',
-    XL: 'XLARGE',
-    XXL: 'XXLARGE',
-    XXLARGE: 'XXLARGE',
-  };
-
-  return sizeLookup[normalized] ?? sizeLookup[normalizedPrefix] ?? null;
-};
-
-const parseCollections = (
-  collectionsResponse: ShopifyCollectionsApiResponse,
-  textureManager: TextureManager,
-) => {
-  const allCollections = collectionsResponse.custom_collections;
-
-  const collections: Collection[] = [];
-  allCollections.forEach((collection: ShopifyCollectionApiItem) => {
-    const parsedCollection: Collection = {
-      id: parseInt(collection.id),
-      image: collection.image,
-      title: collection.title,
-    };
-    collections.push(parsedCollection);
-  });
-  textureManager.setAvailableCollections(collections);
-};
-
-const parseBuckles = (
-  bucklesResponse: BucklesApiResponse,
-  buckleManager: BuckleManager,
-) => {
-  const buckles = bucklesResponse.data;
-  const metalColors: ColorDescription[] = [];
-  const plasticColors: ColorDescription[] = [];
-  const breakawayColors: ColorDescription[] = [];
-
-  buckles.forEach((buckle: BuckleApiItem) => {
-    if (buckle.metal_color) {
-      const parsedMetalColor = {
-        hex: buckle.metal_color,
-        id: buckle.id,
-        materialId: buckle.material_id,
-        materialType: buckle.material_type
-          ? {
-              id: buckle.material_type.id,
-              name: buckle.material_type.name,
-            }
-          : { id: 0, name: 'METAL' },
-        name: buckle.name,
-        preview: buckle.preview,
-      };
-      metalColors.push(parsedMetalColor);
-    }
-
-    if (buckle.plastic_color) {
-      const parsedPlasticColor = {
-        hex: buckle.plastic_color,
-        id: buckle.id,
-        materialId: buckle.material_id,
-        materialType: buckle.material_type
-          ? {
-              id: buckle.material_type.id,
-              name: buckle.material_type.name,
-            }
-          : { id: 0, name: 'PLASTIC' },
-        name: buckle.name,
-        preview: buckle.preview,
-      };
-      plasticColors.push(parsedPlasticColor);
-    }
-
-    if (buckle.breakaway_color) {
-      const parsedBreakawayColor = {
-        hex: buckle.breakaway_color,
-        id: buckle.id,
-        materialId: buckle.material_id,
-        materialType: buckle.material_type
-          ? {
-              id: buckle.material_type.id,
-              name: buckle.material_type.name,
-            }
-          : { id: 0, name: 'BREAKAWAY' },
-        name: buckle.name,
-        preview: buckle.preview,
-      };
-      breakawayColors.push(parsedBreakawayColor);
-    }
-  });
-  buckleManager.setMetalColors(metalColors);
-  buckleManager.setPlasticColors(plasticColors);
-  buckleManager.setBreakawayColors(breakawayColors);
-};
-
-const parsePatterns = (
-  collectionProductsResponse: CollectionProductsApiResponse,
-  textureManager: TextureManager,
-  preferredPatternId: number | null = null,
-) => {
-  const { collectionId, products } = collectionProductsResponse;
-  const patterns: PatternType[] = [];
-
-  products.forEach((product) => {
-    const parsedProduct: PatternType = {
-      collectionId: parseInt(product.collection_Id),
-      dataX: product.dataX,
-      id: parseInt(product.id),
-      name: product.name,
-      pngImage: product.png_image,
-      preview: product.preview,
-    };
-    patterns.push(parsedProduct);
-  });
-  const parsedCollectionId = parseInt(collectionId);
-  textureManager.setSelectedCollections([parsedCollectionId]);
-  textureManager.setAvailablePatterns(parsedCollectionId, patterns);
-  const matchedPatternId =
-    preferredPatternId !== null &&
-    patterns.some((pattern) => pattern.id === preferredPatternId)
-      ? preferredPatternId
-      : (patterns[0]?.id ?? null);
-  textureManager.setSelectedPattern(matchedPatternId);
-};
-
-const parseLeashVariants = (
-  leashVariantsResponse: LeashVariantsApiResponse,
-  sizeManager: ProductManager['sizeManager'],
-) => {
-  const availableLengths: LeashLengthType[] = [];
-  const seen = new Set<LeashLengthType>();
-  const lengthPrices: Map<LeashLengthType, string> = new Map();
-
-  leashVariantsResponse.data.forEach((variant) => {
-    variant.length?.forEach((lengthLabel) => {
-      const parsedLength = parseLeashLengthLabel(lengthLabel);
-      if (!parsedLength || seen.has(parsedLength)) {
-        return;
-      }
-
-      seen.add(parsedLength);
-      availableLengths.push(parsedLength);
-      lengthPrices.set(parsedLength, variant.price);
-    });
-  });
-
-  const orderedLengths = (['3', '4', '5', '6'] as LeashLengthType[]).filter(
-    (length) => seen.has(length),
-  );
-  sizeManager.setAvailableLengths(orderedLengths);
-  const orderedLengthPrices = new Map<LeashLengthType, string>();
-  orderedLengths.forEach((length) => {
-    const price = lengthPrices.get(length);
-    if (price) {
-      orderedLengthPrices.set(length, price);
-    }
-  });
-  sizeManager.setLengthPrices(orderedLengthPrices);
-};
-
-const parseLeashLengthLabel = (lengthLabel: string): LeashLengthType | null => {
-  const parsed = String(lengthLabel).match(/[3-6]/)?.[0];
-  if (parsed === '3' || parsed === '4' || parsed === '5' || parsed === '6') {
-    return parsed;
-  }
-  return null;
 };
