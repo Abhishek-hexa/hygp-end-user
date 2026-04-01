@@ -54,8 +54,6 @@ export function useTextureObject({
   const material = useRef(createDefaultMaterial());
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
-  const textureSeq = useRef(0);
-  const svgSeq = useRef(0);
 
   const [normalRepeatX, normalRepeatY] = normalRepeat;
 
@@ -135,9 +133,6 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
-    const loadId = `texture-image-${++textureSeq.current}`;
-    uiManager.add3DLoadingItem(loadId);
-
     (async () => {
       try {
         const dataUrl = await TextureUtils.fetchImageAsDataURL(
@@ -156,9 +151,7 @@ export function useTextureObject({
       } catch {
         if (!active) return;
         setGridSVGData(null);
-      } finally {
-        uiManager.remove3DLoadingItem(loadId);
-      }
+      } 
     })();
 
     return () => {
@@ -170,7 +163,10 @@ export function useTextureObject({
   useEffect(() => {
     if (!gridSVGData || !currentSize) return;
 
-    const entry = TextureUtils.resolveClampedSizeEntry(parsedSizes, currentSize);
+    const entry = TextureUtils.resolveClampedSizeEntry(
+      parsedSizes,
+      currentSize,
+    );
     const cropped = TextureUtils.buildCroppedSVG(
       gridSVGData,
       entry.translateX ?? 0,
@@ -179,8 +175,6 @@ export function useTextureObject({
     );
 
     let active = true;
-    const loadId = `svg-texture-${++svgSeq.current}`;
-    uiManager.add3DLoadingItem(loadId);
 
     TextureUtils.svgToTexture(cropped.svg, SVG_RASTER_HEIGHT)
       .then((texture) => {
@@ -209,8 +203,7 @@ export function useTextureObject({
           return null;
         });
         onTextureReadyRef.current?.(null);
-      })
-      .finally(() => uiManager.remove3DLoadingItem(loadId));
+      });
 
     return () => {
       active = false;
