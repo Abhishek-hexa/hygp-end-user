@@ -1,20 +1,18 @@
-import { useEffect, type RefObject } from 'react';
+import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../hooks/useMainContext';
 
-import type CameraControlsImpl from 'camera-controls';
 
-type CameraSyncProps = {
-  controlsRef: RefObject<CameraControlsImpl | null>;
-};
-export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
+export const CameraSync = observer(() => {
   const {
     design3DManager: { cameraManager },
   } = useMainContext();
   const { camera } = useThree();
+  const controlsRef = cameraManager.controllRef;
   const [tx, ty, tz] = cameraManager.target;
   const { near, far, fov, minDistance, maxDistance } = cameraManager;
+
 
   useEffect(() => {
     camera.near = near;
@@ -25,22 +23,22 @@ export const CameraSync = observer(({ controlsRef }: CameraSyncProps) => {
     }
     camera.updateProjectionMatrix();
 
-    if (controlsRef.current) {
-      controlsRef.current.minDistance = minDistance;
-      controlsRef.current.maxDistance = Math.max(maxDistance, minDistance + 1);
-      controlsRef.current.setTarget(tx, ty, tz, true);
-
-      const clampedDistance = Math.min(
-        Math.max(controlsRef.current.distance, controlsRef.current.minDistance),
-        controlsRef.current.maxDistance,
-      );
-      if (Math.abs(clampedDistance - controlsRef.current.distance) > 0.001) {
-        void controlsRef.current.dollyTo(clampedDistance, true);
-      }
+    if (!controlsRef) {
+      camera.lookAt(tx, ty, tz);
       return;
     }
 
-    camera.lookAt(tx, ty, tz);
+    controlsRef.minDistance = minDistance;
+    controlsRef.maxDistance = Math.max(maxDistance, minDistance + 1);
+    controlsRef.setTarget(tx, ty, tz, true);
+
+    const clampedDistance = Math.min(
+      Math.max(controlsRef.distance, controlsRef.minDistance),
+      controlsRef.maxDistance,
+    );
+    if (Math.abs(clampedDistance - controlsRef.distance) > 0.001) {
+      void controlsRef.dollyTo(clampedDistance, true);
+    }
   }, [camera, controlsRef, tx, ty, tz, near, far, fov, minDistance, maxDistance]);
 
   return null;

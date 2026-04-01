@@ -2,9 +2,12 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useMainContext } from "../../../hooks/useMainContext";
 
-export const ModelLoadingFallback = observer(({ id }: { id: string }) => {
-  const { uiManager } = useMainContext();
+export const ModelLoadingFallback = observer(() => {
+  const { uiManager, designManager } = useMainContext();
+  const id = designManager.productManager.activeModelKey;
 
+  if(!id) return;
+  
   useEffect(() => {
     uiManager.add3DLoadingItem(id);
     return () => {

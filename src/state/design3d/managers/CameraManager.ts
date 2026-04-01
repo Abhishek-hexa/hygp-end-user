@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { StateManager } from '../../StateManager';
+import type CameraControlsImpl from 'camera-controls';
 
 export type Vec3 = [number, number, number];
 
@@ -12,6 +13,7 @@ export class CameraManager {
   private _maxDistance = 800;
   private _isAutoRotate = false;
   private _autoRotateSpeed = 0.5;
+  private _controllRef: CameraControlsImpl | null = null;
 
   constructor(_: StateManager) {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -49,6 +51,11 @@ export class CameraManager {
     return this._autoRotateSpeed;
   }
 
+  get controllRef() {
+    return this._controllRef;
+  }
+
+
   setTarget(inTarget: Vec3) {
     this._target = inTarget;
   }
@@ -67,5 +74,9 @@ export class CameraManager {
 
   setMaxDistance(inMaxDistance: number) {
     this._maxDistance = inMaxDistance
+  }
+
+  setControllRef(inControllRef: CameraControlsImpl | null) {
+    this._controllRef = inControllRef;
   }
 }
