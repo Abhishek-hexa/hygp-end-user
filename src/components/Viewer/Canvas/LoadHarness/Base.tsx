@@ -7,7 +7,7 @@ import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 const Base = observer(() => {
   const { design3DManager } = useMainContext();
-  const base = design3DManager.meshManager.webMeshes.get('base2');
+  const base = design3DManager.meshManager.base2Mesh;
   const sourceMaterial =
     base?.material instanceof THREE.MeshStandardMaterial ||
     base?.material instanceof THREE.MeshPhysicalMaterial

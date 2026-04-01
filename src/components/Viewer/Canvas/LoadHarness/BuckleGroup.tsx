@@ -11,45 +11,59 @@ const BuckleGroup = observer(() => {
     designManager.productManager.buckleManager.currentSelectedColorDescription
       ?.hex;
 
-  const selectedPlasticColor = designManager.productManager.buckleManager.plasticColorDescription?.hex;
-
-  const aLink = meshManager.buckleMeshes.get('aLink');
-  const dLink = meshManager.buckleMeshes.get('dLink');
-  const buckle1 = meshManager.buckleMeshes.get('buckle1');
-  const buckle2 = meshManager.buckleMeshes.get('buckle2');
-  const triGlide1 = meshManager.buckleMeshes.get('triGlide1');
-  const triGlide2 = meshManager.buckleMeshes.get('triGlide2');
-  const glass = meshManager.buckleMeshes.get('glass');
+  const selectedPlasticColor =
+    designManager.productManager.buckleManager.plasticColorDescription?.hex;
 
   return (
     <>
-      {aLink && selectedColor && (
-        <MetalObj key={aLink.uuid} mesh={aLink} metalColor={'#fff'} />
+      {meshManager.aLinkMesh && selectedColor && (
+        <MetalObj
+          key={meshManager.aLinkMesh.uuid}
+          mesh={meshManager.aLinkMesh}
+          metalColor={'#fff'}
+        />
       )}
-      {dLink && selectedColor && (
-        <MetalObj key={dLink.uuid} mesh={dLink} metalColor={'#fff'} />
+      {meshManager.dLinkMesh && selectedColor && (
+        <MetalObj
+          key={meshManager.dLinkMesh.uuid}
+          mesh={meshManager.dLinkMesh}
+          metalColor={'#fff'}
+        />
       )}
-      {buckle1 && selectedColor && (
-        <PlasticObj key={buckle1.uuid} mesh={buckle1} color={selectedPlasticColor} />
-      )}
-      {buckle2 && selectedColor && (
-        <PlasticObj key={buckle2.uuid} mesh={buckle2} color={selectedPlasticColor} />
-      )}
-      {triGlide1 && selectedColor && (
+      {meshManager.buckle1Mesh && selectedColor && (
         <PlasticObj
-          key={triGlide1.uuid}
-          mesh={triGlide1}
+          key={meshManager.buckle1Mesh.uuid}
+          mesh={meshManager.buckle1Mesh}
           color={selectedPlasticColor}
         />
       )}
-      {triGlide2 && selectedColor && (
+      {meshManager.buckle2Mesh && selectedColor && (
         <PlasticObj
-          key={triGlide2.uuid}
-          mesh={triGlide2}
+          key={meshManager.buckle2Mesh.uuid}
+          mesh={meshManager.buckle2Mesh}
           color={selectedPlasticColor}
         />
       )}
-      {glass && selectedColor && <GlassObj key={glass.uuid} mesh={glass} />}
+      {meshManager.triGlide1Mesh && selectedColor && (
+        <PlasticObj
+          key={meshManager.triGlide1Mesh.uuid}
+          mesh={meshManager.triGlide1Mesh}
+          color={selectedPlasticColor}
+        />
+      )}
+      {meshManager.triGlide2Mesh && selectedColor && (
+        <PlasticObj
+          key={meshManager.triGlide2Mesh.uuid}
+          mesh={meshManager.triGlide2Mesh}
+          color={selectedPlasticColor}
+        />
+      )}
+      {meshManager.glassSmallMesh && selectedColor && (
+        <GlassObj
+          key={meshManager.glassSmallMesh.uuid}
+          mesh={meshManager.glassSmallMesh}
+        />
+      )}
     </>
   );
 });

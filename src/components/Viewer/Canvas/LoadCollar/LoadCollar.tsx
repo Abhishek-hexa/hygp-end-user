@@ -21,13 +21,12 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const plasticScene = plasticRes.scene;
 
   const webbingTextManager = designManager.productManager.webbingText;
-  const webText = meshManager.webMeshes.get('Web_Text');
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
 
   const selectedSize = webbingTextManager.size;
 
   useEffect(() => {
-    meshManager.setMeshGroup(url, scene, 'DEFAULT');
+    meshManager.setMeshGroup(url, scene);
     meshManager.setMeshGroup(plasticUrl, plasticScene, 'PLASTIC');
   }, [meshManager, plasticScene, plasticUrl, scene, url]);
 
@@ -38,7 +37,7 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
       <WebTextured texturedName="Web" />
       <EngravedBuckle />
       <WebbingText
-        mesh={webText}
+        mesh={meshManager.webTextMesh}
         text={webbingTextManager.value}
         color={webbingTextManager.selectedColor}
         fontUrl={selectedFont}

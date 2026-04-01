@@ -8,16 +8,12 @@ const MetalBuckles = observer(() => {
   const selectedColor =
     designManager.productManager.buckleManager.currentMetalColor?.hex;
 
-  const dRing = design3DManager.meshManager.buckleMeshes.get('D_Ring');
-  const triGlide1 = design3DManager.meshManager.buckleMeshes.get('Tri_Glide');
-  const triGlide2 = design3DManager.meshManager.buckleMeshes.get('Tri_Glide1');
-  const triGlide3 = design3DManager.meshManager.buckleMeshes.get('Tri_Glide2');
   return (
     <>
-      {dRing && <MetalObj mesh={dRing} metalColor={selectedColor} />}
-      {triGlide1 && <MetalObj mesh={triGlide1} metalColor={selectedColor} />}
-      {triGlide2 && <MetalObj mesh={triGlide2} metalColor={selectedColor} />}
-      {triGlide3 && <MetalObj mesh={triGlide3} metalColor={selectedColor} />}
+      {design3DManager.meshManager.dRingMesh && <MetalObj mesh={design3DManager.meshManager.dRingMesh} metalColor={selectedColor} />}
+      {design3DManager.meshManager.triGlideMesh && <MetalObj mesh={design3DManager.meshManager.triGlideMesh} metalColor={selectedColor} />}
+      {design3DManager.meshManager.triGlide1UpperMesh && <MetalObj mesh={design3DManager.meshManager.triGlide1UpperMesh} metalColor={selectedColor} />}
+      {design3DManager.meshManager.triGlide2UpperMesh && <MetalObj mesh={design3DManager.meshManager.triGlide2UpperMesh} metalColor={selectedColor} />}
     </>
   );
 });

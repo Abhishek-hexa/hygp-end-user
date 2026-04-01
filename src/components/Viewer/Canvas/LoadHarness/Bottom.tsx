@@ -7,7 +7,7 @@ import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 const Bottom = observer(() => {
   const { design3DManager } = useMainContext();
-  const bottom = design3DManager.meshManager.webMeshes.get('bottom');
+  const bottom = design3DManager.meshManager.bottomMesh;
   const sourceMaterial =
     bottom?.material instanceof THREE.MeshStandardMaterial ||
     bottom?.material instanceof THREE.MeshPhysicalMaterial

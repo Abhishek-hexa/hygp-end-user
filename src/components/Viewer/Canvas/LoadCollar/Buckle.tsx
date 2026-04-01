@@ -17,66 +17,58 @@ export const Buckle = observer(() => {
   const selectedPlasticColor = buckleManager.plasticColorDescription?.hex;
   const selectedMaterial = buckleManager.material;
 
-  const buckleMeshes = meshManager.buckleMeshes;
-  const buckleMesh = buckleMeshes.get('Buckle');
-  const catBuckleMesh = buckleMeshes.get('Cat_Buckle');
-  const dRingMesh = buckleMeshes.get('D_Ring');
-  const triGlideMesh = buckleMeshes.get('Tri_Glide');
-  const planeMesh = buckleMeshes.get('Plane');
-  const glassMesh = buckleMeshes.get('Glass');
-
   return (
     <>
-      {buckleMesh && selectedMaterial !== 'BREAKAWAY' && (
+      {meshManager.buckleMesh && selectedMaterial !== 'BREAKAWAY' && (
         selectedMaterial === 'METAL' ? (
           <MetalObj
-            key={buckleMesh.uuid}
-            mesh={buckleMesh}
+            key={meshManager.buckleMesh.uuid}
+            mesh={meshManager.buckleMesh}
             metalColor={selectedMetalHex ?? '#aaaaaa'}
           />
         ) : (
           <PlasticObj
-            key={buckleMesh.uuid}
-            mesh={buckleMesh}
+            key={meshManager.buckleMesh.uuid}
+            mesh={meshManager.buckleMesh}
             color={selectedPlasticColor}
           />
         )
       )}
-      {catBuckleMesh && selectedMaterial === 'BREAKAWAY' && (
+      {meshManager.catBuckleMesh && selectedMaterial === 'BREAKAWAY' && (
         <BreakAwayObj
-          key={catBuckleMesh.uuid}
-          mesh={catBuckleMesh}
+          key={meshManager.catBuckleMesh.uuid}
+          mesh={meshManager.catBuckleMesh}
           breakawayColor={'#000'}
         />
       )}
-      {dRingMesh && (
+      {meshManager.dRingMesh && (
         <MetalObj
-          key={dRingMesh.uuid}
-          mesh={dRingMesh}
+          key={meshManager.dRingMesh.uuid}
+          mesh={meshManager.dRingMesh}
           metalColor={selectedMetalHex ?? '#aaaaaa'}
         />
       )}
-      {triGlideMesh && (selectedMaterial === 'METAL' || isCatCollar) && (
+      {meshManager.triGlideMesh && (selectedMaterial === 'METAL' || isCatCollar) && (
         <MetalObj
-          key={triGlideMesh.uuid}
-          mesh={triGlideMesh}
+          key={meshManager.triGlideMesh.uuid}
+          mesh={meshManager.triGlideMesh}
           metalColor={selectedMetalHex ?? '#aaaaaa'}
         />
       )}
-      {triGlideMesh && selectedMaterial !== 'METAL' && !isCatCollar && (
+      {meshManager.triGlideMesh && selectedMaterial !== 'METAL' && !isCatCollar && (
         <PlasticObj
-          key={triGlideMesh.uuid}
-          mesh={triGlideMesh}
+          key={meshManager.triGlideMesh.uuid}
+          mesh={meshManager.triGlideMesh}
           color={selectedPlasticColor}
         />
       )}
-      {glassMesh && (
+      {meshManager.glassMesh && (
         <GlassObj
-          key={glassMesh.uuid}
-          mesh={glassMesh}
+          key={meshManager.glassMesh.uuid}
+          mesh={meshManager.glassMesh}
         />
       )}
-      {planeMesh && <primitive key={planeMesh.uuid} object={planeMesh} />}
+      {meshManager.planeMesh && <primitive key={meshManager.planeMesh.uuid} object={meshManager.planeMesh} />}
     </>
   );
 });

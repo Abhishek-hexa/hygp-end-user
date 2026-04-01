@@ -9,12 +9,12 @@ import { useMainContext } from '../../../../hooks/useMainContext';
 export const EngravedBuckle = observer(function EngravedMesh() {
   const { design3DManager } = useMainContext();
   const manager = design3DManager.engraving3Dmanager;
-  const planeMesh = design3DManager.meshManager.buckleMeshes.get('Plane');
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [decalTransform, setDecalTransform] = useState<{
     position: [number, number, number];
     scale: [number, number, number];
   } | null>(null);
+  const planeMesh = design3DManager.meshManager.planeMesh;
 
   // Compute decal transform from mesh bounding box
   useEffect(() => {
@@ -65,7 +65,7 @@ export const EngravedBuckle = observer(function EngravedMesh() {
           geometry={planeMesh.geometry}
           position={planeMesh.position}
           rotation={planeMesh.rotation}
-          scale={planeMesh.scale}>
+          scale={design3DManager.meshManager.planeMesh.scale}>
           <meshStandardMaterial transparent opacity={0} depthWrite={false} />
 
           {texture && decalTransform && (

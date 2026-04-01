@@ -5,11 +5,10 @@ import { MetalObj } from '../EffectObj/MetalObj';
 const Hook = observer(({}) => {
   const { designManager, design3DManager } = useMainContext();
   const meshManager = design3DManager.meshManager;
-  const hook = meshManager.buckleMeshes.get('Hook');
   const selectedColor =
     designManager.productManager.buckleManager.currentMetalColor
       ?.hex;
-  return <>{hook && <MetalObj mesh={hook} metalColor={selectedColor} side={true} />}</>;
+  return <>{meshManager.hookMesh && <MetalObj mesh={meshManager.hookMesh} metalColor={selectedColor} side={true} />}</>;
 });
 
 export default Hook;

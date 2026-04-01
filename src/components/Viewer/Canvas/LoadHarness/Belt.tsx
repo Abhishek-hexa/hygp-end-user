@@ -7,7 +7,7 @@ import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 const Belt = observer(() => {
   const { designManager, design3DManager } = useMainContext();
-  const belts = design3DManager.meshManager.webMeshes.get('belts');
+  const belts = design3DManager.meshManager.beltsMesh;
   const selectedColor =
     designManager.productManager.buckleManager.currentSelectedColorDescription
       ?.hex;

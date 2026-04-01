@@ -15,7 +15,6 @@ const LoadLeash = observer(({ url }: LoadLeashProps) => {
   const meshManager = design3DManager.meshManager;
   const { scene } = useMyGLTF(url);
 
-  const webText = meshManager.webMeshes.get('Web_Text');
   const webbingTextManager = designManager.productManager.webbingText;
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
   const fontSize = webbingTextManager.size;
@@ -29,7 +28,7 @@ const LoadLeash = observer(({ url }: LoadLeashProps) => {
       <Hook />
       <WebTextured texturedName="Leash" side={true} />
       <WebbingText
-        mesh={webText}
+        mesh={meshManager.webTextMesh}
         text={webbingTextManager.value}
         color={webbingTextManager.selectedColor}
         fontUrl={selectedFont}
