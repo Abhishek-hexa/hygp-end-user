@@ -4,48 +4,48 @@ import * as THREE from 'three';
 import { CachedAssets } from '../loaders/CachedAssets';
 import { useMainContext } from './useMainContext';
 
-interface UseMyTextureOptions {
+interface UseMyHdrOptions {
   trackLoading?: boolean;
 }
 
-export function useMyTexture(
+export function useMyHdr(
   url: string | null | undefined,
-  options: UseMyTextureOptions = {},
+  options: UseMyHdrOptions = {},
 ): THREE.Texture | null {
   const { trackLoading = true } = options;
-  const [texture, setTexture] = useState<THREE.Texture | null>(() => {
-    if (url) return CachedAssets.getTexture(url);
+  const [hdrTexture, setHdrTexture] = useState<THREE.Texture | null>(() => {
+    if (url) return CachedAssets.getHdr(url);
     return null;
   });
   const { uiManager } = useMainContext();
 
   useEffect(() => {
     if (!url) {
-      setTexture(null);
+      setHdrTexture(null);
       return;
     }
 
-    const cached = CachedAssets.getTexture(url);
+    const cached = CachedAssets.getHdr(url);
     if (cached) {
-      setTexture(cached);
+      setHdrTexture(cached);
       return;
     }
 
     let isMounted = true;
-    const loadingId = `texture:${url}`;
-    const status = CachedAssets.getTextureStatus(url);
+    const loadingId = `hdr:${url}`;
+    const status = CachedAssets.getHdrStatus(url);
     const shouldTrackWithUi =
       trackLoading && !status.isLoaded && !status.isLoading;
-
+    
     (async () => {
       try {
         if (shouldTrackWithUi) {
           uiManager.add3DLoadingItem(loadingId);
         }
-        const result = await CachedAssets.loadTexture(url);
-        if (isMounted && result.asset) setTexture(result.asset);
+        const result = await CachedAssets.loadHdr(url);
+        if (isMounted && result.asset) setHdrTexture(result.asset);
       } catch (err) {
-        console.error('Error loading texture:', url, err);
+        console.error('Error loading HDR:', url, err);
       } finally {
         if (shouldTrackWithUi) {
           uiManager.remove3DLoadingItem(loadingId);
@@ -58,5 +58,5 @@ export function useMyTexture(
     };
   }, [trackLoading, url, uiManager]);
 
-  return texture;
+  return hdrTexture;
 }

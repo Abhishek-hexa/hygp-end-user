@@ -2,9 +2,8 @@ import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-import { loadHdrEnvMapCached } from '../components/Viewer/Canvas/EffectObj/hdrEnvMapCache';
 import { GridSVGData, TextureUtils } from '../utils/TextureUtils';
-import { useMainContext } from './useMainContext';
+import { useMyHdr } from './useMyHdr';
 import { useMyTexture } from './useMyTexture';
 
 const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.jpg';
@@ -43,14 +42,12 @@ export function useTextureObject({
   normalMapPath = DEFAULT_NORMAL_MAP_PATH,
   normalRepeat = [5, 5],
 }: UseTextureObjectOptions) {
-  const { uiManager } = useMainContext();
   const { gl } = useThree();
 
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
-  const [gridSVGData, setGridSVGData] = useState<GridSVGData | null>(null);
-  const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
+  const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
 
-  const normalMap = useMyTexture(normalMapPath);
+  const normalMap = useMyTexture(normalMapPath, { trackLoading: false });
   const material = useRef(createDefaultMaterial());
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
@@ -83,17 +80,6 @@ export function useTextureObject({
   }, []);
 
   useEffect(() => {
-    uiManager.add3DLoadingItem(HDR_PATH);
-    loadHdrEnvMapCached(HDR_PATH)
-      .then((texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        setLocalEnvMap(texture);
-      })
-      .catch(() => setLocalEnvMap(null))
-      .finally(() => uiManager.remove3DLoadingItem(HDR_PATH));
-  }, [uiManager]);
-
-  useEffect(() => {
     if (!normalMap) return;
     normalMap.flipY = false;
     normalMap.wrapS = THREE.RepeatWrapping;
@@ -121,8 +107,7 @@ export function useTextureObject({
   }, [normalMap, side, webTexture, localEnvMap, envMap]);
 
   useEffect(() => {
-    if (!texturePath) {
-      setGridSVGData(null);
+    if (!texturePath || !currentSize) {
       setWebTexture((prev) => {
         prev?.dispose();
         return null;
@@ -133,6 +118,7 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
+
     (async () => {
       try {
         const dataUrl = await TextureUtils.fetchImageAsDataURL(
@@ -145,39 +131,27 @@ export function useTextureObject({
         );
         if (!active) return;
 
-        setGridSVGData(
-          TextureUtils.create3x3GridSVG(dataUrl, img.width, img.height),
+        const gridSVGData: GridSVGData = TextureUtils.create3x3GridSVG(
+          dataUrl,
+          img.width,
+          img.height,
         );
-      } catch {
-        if (!active) return;
-        setGridSVGData(null);
-      } 
-    })();
 
-    return () => {
-      active = false;
-      controller.abort();
-    };
-  }, [texturePath, uiManager]);
+        const entry = TextureUtils.resolveClampedSizeEntry(
+          parsedSizes,
+          currentSize,
+        );
+        const cropped = TextureUtils.buildCroppedSVG(
+          gridSVGData,
+          entry.translateX ?? 0,
+          entry.translateY ?? 0,
+          entry.scale ?? 1,
+        );
 
-  useEffect(() => {
-    if (!gridSVGData || !currentSize) return;
-
-    const entry = TextureUtils.resolveClampedSizeEntry(
-      parsedSizes,
-      currentSize,
-    );
-    const cropped = TextureUtils.buildCroppedSVG(
-      gridSVGData,
-      entry.translateX ?? 0,
-      entry.translateY ?? 0,
-      entry.scale ?? 1,
-    );
-
-    let active = true;
-
-    TextureUtils.svgToTexture(cropped.svg, SVG_RASTER_HEIGHT)
-      .then((texture) => {
+        const texture = await TextureUtils.svgToTexture(
+          cropped.svg,
+          SVG_RASTER_HEIGHT,
+        );
         if (!active) {
           texture.dispose();
           return;
@@ -195,20 +169,21 @@ export function useTextureObject({
           return texture;
         });
         onTextureReadyRef.current?.(texture);
-      })
-      .catch(() => {
+      } catch {
         if (!active) return;
         setWebTexture((prev) => {
           prev?.dispose();
           return null;
         });
         onTextureReadyRef.current?.(null);
-      });
+      }
+    })();
 
     return () => {
       active = false;
+      controller.abort();
     };
-  }, [gridSVGData, currentSize, parsedSizes, uiManager]);
+  }, [currentSize, parsedSizes, texturePath]);
 
   return material.current;
 }

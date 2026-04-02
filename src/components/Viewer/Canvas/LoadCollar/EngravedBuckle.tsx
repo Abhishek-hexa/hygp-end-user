@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
 import { useMainContext } from '../../../../hooks/useMainContext';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 
 export const EngravedBuckle = observer(function EngravedMesh() {
   const { design3DManager } = useMainContext();
   const manager = design3DManager.engraving3Dmanager;
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const texture = useMyTexture(manager.imageUrl);
   const [decalTransform, setDecalTransform] = useState<{
     position: [number, number, number];
     scale: [number, number, number];
@@ -37,25 +38,9 @@ export const EngravedBuckle = observer(function EngravedMesh() {
   }, [planeMesh, planeMesh?.geometry]);
 
   useEffect(() => {
-    if (!manager.imageUrl) { setTexture(null); return; }
-    let active = true;
-    const loader = new THREE.TextureLoader();
-    loader.load(
-      manager.imageUrl,
-      (loadedTexture) => {
-        if (!active) { loadedTexture.dispose(); return; }
-        loadedTexture.colorSpace = THREE.SRGBColorSpace;
-        loadedTexture.needsUpdate = true;
-        setTexture(loadedTexture);
-      },
-      undefined,
-      () => { if (active) setTexture(null); },
-    );
-    return () => { active = false; };
-  }, [manager, manager.imageUrl]);
-
-  useEffect(() => {
-    return () => { texture?.dispose(); };
+    if (!texture) return;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
   }, [texture]);
 
   return (

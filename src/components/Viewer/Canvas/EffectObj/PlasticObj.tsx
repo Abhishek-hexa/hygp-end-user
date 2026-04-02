@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { loadHdrEnvMapCached } from './hdrEnvMapCache'
+import { useMyHdr } from '../../../../hooks/useMyHdr'
 
 export interface PlasticObjProps {
   mesh: THREE.Mesh
@@ -33,6 +33,7 @@ export function PlasticObj({
   normalScaleX = 0.8,
   normalScaleY = -0.8,
 }: PlasticObjProps) {
+  const hdrTexture = useMyHdr(envMapProp === null ? hdrPath : null)
   const srcMat = useMemo(() => {
     if (mesh.material instanceof THREE.MeshStandardMaterial) {
       return mesh.material
@@ -104,28 +105,13 @@ export function PlasticObj({
   }, [srcMat])
 
   useEffect(() => {
-    if (envMapProp !== null) {
-      matRef.current.envMap = envMapProp
-      matRef.current.needsUpdate = true
-      return
+    const nextEnvMap = envMapProp ?? hdrTexture ?? null
+    if (nextEnvMap) {
+      nextEnvMap.mapping = THREE.EquirectangularReflectionMapping
     }
-
-    let isMounted = true
-    loadHdrEnvMapCached(hdrPath)
-      .then((hdr) => {
-        if (!isMounted) return
-        hdr.mapping = THREE.EquirectangularReflectionMapping
-        matRef.current.envMap = hdr
-        matRef.current.needsUpdate = true
-      })
-      .catch((error) => {
-        console.error(`Failed to load HDR env map: ${hdrPath}`, error)
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [hdrPath, envMapProp])
+    matRef.current.envMap = nextEnvMap
+    matRef.current.needsUpdate = true
+  }, [envMapProp, hdrTexture])
 
   return (
     <mesh

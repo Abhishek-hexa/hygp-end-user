@@ -8,6 +8,7 @@ import {
 
 import { StateManager } from '../../StateManager';
 import { Service3D } from '../services/Service3D';
+import { CachedAssets } from '../../../loaders/CachedAssets';
 
 export type EngravingConfigLine = {
   text: string;
@@ -139,14 +140,16 @@ export class Engraving3Dmanager {
 
     const renderLines = this.calculateRenderLines(lines);
 
-    const fontManager = this._libstate.design3DManager.fontLoadManager;
     const fontUrls = renderLines
       .map((line) => line.fontUrl)
       .filter((url): url is string => !!url)
       .filter((url, index, arr) => arr.indexOf(url) === index);
 
     if (fontUrls.length > 0) {
-      await fontManager.loadFonts(fontUrls);
+      const fontLoadResult = await CachedAssets.loadFonts(fontUrls);
+      if (fontLoadResult.isError) {
+        throw fontLoadResult.error ?? new Error('Failed to load one or more fonts');
+      }
     }
 
     const canvas = Service3D.createCanvas(width, height);
@@ -182,7 +185,9 @@ export class Engraving3Dmanager {
           line.text,
           heightBudgets[i],
           usableWidth,
-          fontManager.getFontFamily(line.fontUrl, fontFamily),
+          line.fontUrl
+            ? CachedAssets.getFontFamily(line.fontUrl)
+            : fontFamily,
           line.fontWeight ?? fontWeight,
         ),
       );

@@ -39,7 +39,7 @@ export const CanvasPanel = observer(() => {
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
         }}>
-        <Suspense fallback={<ModelLoadingFallback />}>
+        <Suspense fallback={null}>
           <RenderModelByComponent />
           <LoadEnvironment />
         </Suspense>

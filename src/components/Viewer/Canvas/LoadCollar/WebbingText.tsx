@@ -2,8 +2,10 @@ import { FabricText, StaticCanvas } from 'fabric';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
-import { loadHdrEnvMapCached } from '../EffectObj/hdrEnvMapCache';
 import { TextSize } from '../../../../state/product/types';
+import { CachedAssets } from '../../../../loaders/CachedAssets';
+import { useMyHdr } from '../../../../hooks/useMyHdr';
+import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 export interface WebbingTextProps {
   mesh: THREE.Mesh | undefined;
@@ -31,21 +33,18 @@ export const WebbingText = observer(
     fontSize = 'MEDIUM',
     side = false,
   }: WebbingTextProps) => {
-    const [texture, setTexture] = useState<THREE.Texture | null>(null);
-    const [localEnvMap, setLocalEnvMap] = useState<THREE.Texture | null>(null);
-
-    useEffect(() => {
-      loadHdrEnvMapCached('/assets/texture/texture/white1.hdr').then(
-        (texture) => {
-          texture.mapping = THREE.EquirectangularReflectionMapping;
-          setLocalEnvMap(texture);
-        },
-      );
-    }, []);
+    const [generatedTextureUrl, setGeneratedTextureUrl] = useState<
+      string | null
+    >(null);
+    const texture = useMyTexture(generatedTextureUrl, { trackLoading: false });
+    const localEnvMap = useMyHdr('/assets/texture/texture/white1.hdr');
 
     useEffect(() => {
       if (!text || !mesh || text.trim().length === 0) {
-        setTexture(null);
+        setGeneratedTextureUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
         return;
       }
 
@@ -55,22 +54,13 @@ export const WebbingText = observer(
         let fontFamily = fontFamilyFallback;
 
         if (fontUrl) {
-          const familySlug = fontUrl.replace(/[^a-zA-Z0-9]/g, '_');
-          fontFamily = `webbing-font-${familySlug}`;
-
-          let fontLoaded = false;
-          document.fonts.forEach((f) => {
-            if (f.family === fontFamily) fontLoaded = true;
-          });
-
-          if (!fontLoaded) {
-            try {
-              const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
-              await fontFace.load();
-              document.fonts.add(fontFace);
-            } catch {
-              fontFamily = fontFamilyFallback;
+          try {
+            const fontResult = await CachedAssets.loadFont(fontUrl);
+            if (!fontResult.isError) {
+              fontFamily = CachedAssets.getFontFamily(fontUrl);
             }
+          } catch {
+            fontFamily = fontFamilyFallback;
           }
         }
 
@@ -131,22 +121,13 @@ export const WebbingText = observer(
         if (!active || !blob) return;
 
         const url = URL.createObjectURL(blob);
-        const loader = new THREE.TextureLoader();
-
-        loader.load(url, (loadedTexture) => {
-          if (!active) {
-            loadedTexture.dispose();
-            URL.revokeObjectURL(url);
-            return;
-          }
-          loadedTexture.colorSpace = THREE.SRGBColorSpace;
-          loadedTexture.needsUpdate = true;
-
-          // For webbing text, standard mappings often require flipping Y
-          loadedTexture.flipY = false;
-
-          setTexture(loadedTexture);
+        if (!active) {
           URL.revokeObjectURL(url);
+          return;
+        }
+        setGeneratedTextureUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return url;
         });
       };
 
@@ -159,7 +140,17 @@ export const WebbingText = observer(
 
     useEffect(() => {
       return () => {
-        texture?.dispose();
+        if (generatedTextureUrl) URL.revokeObjectURL(generatedTextureUrl);
+      };
+    }, [generatedTextureUrl]);
+
+    useEffect(() => {
+      if (!texture) return;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.needsUpdate = true;
+      texture.flipY = false;
+      return () => {
+        texture.dispose();
       };
     }, [texture]);
 
