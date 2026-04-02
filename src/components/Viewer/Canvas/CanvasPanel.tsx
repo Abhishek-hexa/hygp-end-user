@@ -7,6 +7,7 @@ import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
 import { CameraFitToModel } from './CameraFitToModel';
+import { CameraFeatureAnimation } from './CameraFeatureAnimation';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 import { ModelLoadingFallback } from './ModelLoadingFallback';
 import RenderModelByComponent from './RenderModelByComponent';
@@ -45,6 +46,7 @@ export const CanvasPanel = observer(() => {
         </Suspense>
         <CameraSync />
         <CameraFitToModel />
+        <CameraFeatureAnimation />
 
         <CameraControls
           maxPolarAngle={Math.PI / 2}

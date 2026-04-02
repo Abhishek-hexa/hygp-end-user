@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { GridSVGData, TextureUtils } from '../utils/TextureUtils';
+import { useMainContext } from './useMainContext';
 import { useMyHdr } from './useMyHdr';
 import { useMyTexture } from './useMyTexture';
 
@@ -43,6 +44,7 @@ export function useTextureObject({
   normalRepeat = [5, 5],
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
+  const { uiManager } = useMainContext();
 
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
   const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
@@ -51,6 +53,7 @@ export function useTextureObject({
   const material = useRef(createDefaultMaterial());
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
+  const hasLoadedOnce = useRef(false);
 
   const [normalRepeatX, normalRepeatY] = normalRepeat;
 
@@ -116,6 +119,12 @@ export function useTextureObject({
       return;
     }
 
+    const loadingId = `web-texture:${texturePath}:${currentSize}`;
+    const shouldTrackLoading = !hasLoadedOnce.current;
+    if (shouldTrackLoading) {
+      uiManager.add3DLoadingItem(loadingId);
+    }
+
     const controller = new AbortController();
     let active = true;
 
@@ -168,6 +177,7 @@ export function useTextureObject({
           if (prev !== texture) prev?.dispose();
           return texture;
         });
+        hasLoadedOnce.current = true;
         onTextureReadyRef.current?.(texture);
       } catch {
         if (!active) return;
@@ -176,14 +186,21 @@ export function useTextureObject({
           return null;
         });
         onTextureReadyRef.current?.(null);
+      } finally {
+        if (shouldTrackLoading) {
+          uiManager.remove3DLoadingItem(loadingId);
+        }
       }
     })();
 
     return () => {
       active = false;
       controller.abort();
+      if (shouldTrackLoading) {
+        uiManager.remove3DLoadingItem(loadingId);
+      }
     };
-  }, [currentSize, parsedSizes, texturePath]);
+  }, [currentSize, parsedSizes, texturePath, uiManager]);
 
   return material.current;
 }

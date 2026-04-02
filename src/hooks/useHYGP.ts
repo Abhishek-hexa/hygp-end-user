@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { CachedAssets } from '../loaders/CachedAssets';
 import { ProductType } from '../state/product/types';
 import { useMainContext } from './useMainContext';
-import { toJS } from 'mobx';
 
 interface Defaults {
   modelUrl: string | null;
@@ -66,6 +65,7 @@ export const useHYGP = () => {
     productManager.textureManager.selectedPattern?.pngImage ?? null;
   const selectedFont =
     productManager.webbingText.selectedFontDescription?.font_path ?? null;
+  const modelsKey = productManager.allModels.join('|');
 
   useEffect(() => {
     const defaultNormals = PRODUCT_DEFAULT_NORMALS[key] ?? [];
@@ -83,6 +83,5 @@ export const useHYGP = () => {
       uiManager.remove3DLoadingItem(key);
       void loadAllModels(productManager.allModels);
     });
-    console.log(toJS(productManager.allModels))
-  }, [key, productManager.allModels]);
+  }, [key, modelsKey]);
 };
