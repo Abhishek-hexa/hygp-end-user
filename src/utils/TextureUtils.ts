@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CachedAssets } from '../loaders/CachedAssets';
 export interface SizeEntry {
   size: string;
   translateX?: number;
@@ -16,7 +17,6 @@ export interface GridSVGData {
   svgDoc: Document;
 }
 export class TextureUtils {
-
   public static blobToDataURL(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -30,9 +30,65 @@ export class TextureUtils {
     url: string,
     signal?: AbortSignal,
   ): Promise<string> {
-    const response = await fetch(url, { cache: 'no-cache', signal });
+    if (signal?.aborted) {
+      throw new DOMException('The operation was aborted.', 'AbortError');
+    }
+
+    const texture =
+      CachedAssets.getTexture(url) ?? (await CachedAssets.loadTexture(url)).asset;
+
+    if (!texture) throw new Error('Failed to fetch texture image');
+    if (signal?.aborted) {
+      throw new DOMException('The operation was aborted.', 'AbortError');
+    }
+
+    const source = texture.image as
+      | HTMLImageElement
+      | HTMLCanvasElement
+      | ImageBitmap
+      | OffscreenCanvas
+      | undefined;
+
+    if (source instanceof HTMLImageElement) {
+      return this.imageElementToDataURL(source);
+    }
+    if (source instanceof HTMLCanvasElement) {
+      return source.toDataURL();
+    }
+    if (typeof ImageBitmap !== 'undefined' && source instanceof ImageBitmap) {
+      const canvas = document.createElement('canvas');
+      canvas.width = source.width;
+      canvas.height = source.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Failed to get canvas context');
+      ctx.drawImage(source, 0, 0);
+      return canvas.toDataURL();
+    }
+    if (
+      typeof OffscreenCanvas !== 'undefined' &&
+      source instanceof OffscreenCanvas
+    ) {
+      const blob = await source.convertToBlob();
+      return this.blobToDataURL(blob);
+    }
+
+    const response = await fetch(url, { signal });
     if (!response.ok) throw new Error('Failed to fetch texture image');
     return this.blobToDataURL(await response.blob());
+  }
+
+  private static imageElementToDataURL(image: HTMLImageElement): string {
+    const width = image.naturalWidth || image.width;
+    const height = image.naturalHeight || image.height;
+    if (!width || !height) throw new Error('Invalid texture image dimensions');
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Failed to get canvas context');
+    ctx.drawImage(image, 0, 0, width, height);
+    return canvas.toDataURL();
   }
 
   public static loadImageFromUrl(
