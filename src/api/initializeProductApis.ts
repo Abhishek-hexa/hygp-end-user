@@ -5,6 +5,7 @@ import { ProductType } from '../state/product/types';
 import { UiManager } from '../state/ui/UiManager';
 import { apiEndPointMap } from './ApiEndPointMap';
 import { Parser } from './Parser';
+import { CachedAssets } from '../loaders/CachedAssets';
 import {
   BucklesApiResponse,
   CollectionProductsApiResponse,
@@ -162,6 +163,13 @@ export const initializeProductApis = async (
         patterns,
       );
       productManager.textureManager.setSelectedPattern(matchedPatternId);
+
+      // Preload the pattern image immediately so it's cached by the time
+      // the 3D scene mounts — avoids the PNG loading last in the waterfall.
+      const selectedPattern = productManager.textureManager.selectedPattern;
+      if (selectedPattern?.pngImage) {
+        void CachedAssets.loadTexture(selectedPattern.pngImage);
+      }
     }
 
     if (productType === 'DOG_COLLAR' && leashes) {
