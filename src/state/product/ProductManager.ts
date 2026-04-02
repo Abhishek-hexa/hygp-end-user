@@ -58,13 +58,13 @@ export class ProductManager {
     const key =
       this.productId === 'DOG_COLLAR' &&
       this.buckleManager.material === 'PLASTIC' &&
-      this.getPlasticModelPath()
-        ? this.getPlasticModelPath()
-        : this.getModelPath();
+      this.plasticModelPath
+        ? this.plasticModelPath
+        : this.modelPath;
     return key;
   }
 
-  getModelPath() {
+  get modelPath() {
     const selectedSize = this._sizeManager.selectedSizeData;
     if (!selectedSize) {
       return null;
@@ -73,13 +73,17 @@ export class ProductManager {
     return selectedSize?.model ?? null;
   }
 
-  getPlasticModelPath() {
+  get plasticModelPath() {
     const selectedSize = this._sizeManager.selectedSizeData;
     if (!selectedSize) {
       return null;
     }
 
     return selectedSize?.plasticModel ?? null;
+  }
+
+  get allModels() {
+    return this._sizeManager.allModels;
   }
 
   setProduct(inProductId: ProductType) {

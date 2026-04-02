@@ -42,6 +42,19 @@ export class SizeManager {
     return String((parseFloat(lengthPrice) + parseFloat(sizePrice)).toFixed(2));
   }
 
+  get allModels() {
+    const uniqueModels = new Set<string>();
+    Array.from(this._availableSizes.values()).forEach((desc) => {
+      if (desc.model) {
+        uniqueModels.add(desc.model);
+      }
+      if (desc.plasticModel) {
+        uniqueModels.add(desc.plasticModel);
+      }
+    });
+    return Array.from(uniqueModels);
+  }
+
   setSelectedSizeData(sizeData: SizeDescription | null) {
     this._selectedSizeData = sizeData;
   }

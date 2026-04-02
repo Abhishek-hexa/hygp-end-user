@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { initializeProductApis } from '../../api/initializeProductApis';
+import { useHYGP } from '../../hooks/useHYGP';
 import { useMainContext } from '../../hooks/useMainContext';
 import {
   buildPatternPath,
@@ -15,6 +16,7 @@ import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
+  useHYGP();
   const mainContext = useMainContext();
   const productManager = mainContext.designManager.productManager;
   const uiManager = mainContext.uiManager;

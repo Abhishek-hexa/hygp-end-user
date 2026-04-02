@@ -9,8 +9,8 @@ import LoadMartingale from './LoadMartingale/LoadMartingale';
 const RenderModelByComponent = observer(() => {
   const { designManager } = useMainContext();
   const { productManager } = designManager;
-  const modelUrl = designManager.productManager.getModelPath();
-  const plasticModelUrl = productManager.getPlasticModelPath();
+  const modelUrl = designManager.productManager.modelPath;
+  const plasticModelUrl = productManager.plasticModelPath;
 
   if (!modelUrl) {
     return null;
