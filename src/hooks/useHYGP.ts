@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { reaction } from 'mobx';
+
 import { CachedAssets } from '../loaders/CachedAssets';
 import { ProductType } from '../state/product/types';
 import { useMainContext } from './useMainContext';
@@ -60,28 +62,55 @@ const loadAllModels = async (modelUrls: string[]) => {
 export const useHYGP = () => {
   const { designManager, uiManager } = useMainContext();
   const { productManager } = designManager;
-  const key = productManager.productId;
-  const selectedTexture =
-    productManager.textureManager.selectedPattern?.pngImage ?? null;
-  const selectedFont =
-    productManager.webbingText.selectedFontDescription?.font_path ?? null;
-  const modelsKey = productManager.allModels.join('|');
 
   useEffect(() => {
-    const defaultNormals = PRODUCT_DEFAULT_NORMALS[key] ?? [];
-    const defaults: Defaults = {
-      font: selectedFont,
-      hdrs: DEFAULT_HDRS,
-      modelUrl: productManager.modelPath,
-      textures: [
-        ...defaultNormals,
-        ...(selectedTexture ? [selectedTexture] : []),
-      ],
-    };
-    uiManager.add3DLoadingItem(key);
-    void initializeDefaults(defaults).finally(() => {
-      uiManager.remove3DLoadingItem(key);
-      void loadAllModels(productManager.allModels);
-    });
-  }, [key, modelsKey]);
+    const disposer = reaction(
+      () => ({
+        key: productManager.productId,
+        modelsKey: productManager.allModels.join('|'),
+        modelPath: productManager.modelPath,
+        selectedTexture:
+          productManager.textureManager.selectedPattern?.pngImage ?? null,
+        selectedFont:
+          productManager.webbingText.selectedFontDescription?.font_path ?? null,
+        isDataLoading: uiManager.isDataLoading,
+        allModels: productManager.allModels,
+      }),
+      ({
+        key,
+        modelPath,
+        selectedTexture,
+        selectedFont,
+        isDataLoading,
+        allModels,
+      }) => {
+        const defaultNormals = PRODUCT_DEFAULT_NORMALS[key] ?? [];
+
+        const defaults: Defaults = {
+          font: selectedFont,
+          hdrs: DEFAULT_HDRS,
+          modelUrl: modelPath,
+          textures: [
+            ...defaultNormals,
+            ...(selectedTexture ? [selectedTexture] : []),
+          ],
+        };
+
+        uiManager.add3DLoadingItem(key);
+
+        void initializeDefaults(defaults).finally(() => {
+          uiManager.remove3DLoadingItem(key);
+        });
+
+        if (!isDataLoading) {
+          void loadAllModels(allModels);
+        }
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+
+    return () => disposer();
+  }, []);
 };
