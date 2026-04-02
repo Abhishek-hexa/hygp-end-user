@@ -70,7 +70,7 @@ function createEmptyBuckets(): MeshBuckets {
 export class MeshManager {
   private _libState: StateManager;
   private _meshGroups: Record<string, THREE.Group> = {};
-  private _visibleMeshCenters: Record<string, [number, number, number] | null> =
+  private _visibleMeshCenters: Record<string, THREE.Vector3 | null> =
     {};
   private _meshBuckets: Record<ModelVariant, MeshBuckets> = {
     DEFAULT: createEmptyBuckets(),
@@ -204,8 +204,9 @@ export class MeshManager {
     return this._meshGroups[key];
   }
 
-  getVisibleMeshCenter(key: string): [number, number, number] | null {
-    return this._visibleMeshCenters[key] ?? null;
+  getVisibleMeshCenter(key: string): THREE.Vector3 | null {
+    const center = this._visibleMeshCenters[key];
+    return center ? center.clone() : null;
   }
 
   setMeshGroup(
@@ -264,7 +265,7 @@ export class MeshManager {
     // Bounding box center for rotation axes.
     const center = new THREE.Vector3();
     visibleBounds.getCenter(center);
-    this._visibleMeshCenters[key] = [center.x, center.y, center.z];
+    this._visibleMeshCenters[key] = center.clone();
 
     // Use model size to keep clipping stable across product scales.
     const boundsSize = new THREE.Vector3();
@@ -286,11 +287,7 @@ export class MeshManager {
     // In dual-variant products (plastic/metal), only the active variant should
     // set camera values; otherwise the second parsed variant can overwrite them.
     if (variant === this.activeVariant) {
-      this._libState.design3DManager.cameraManager.setTarget([
-        center.x,
-        center.y,
-        center.z,
-      ]);
+      this._libState.design3DManager.cameraManager.setTarget(center);
       this._libState.design3DManager.cameraManager.setNear(dynamicNear);
       this._libState.design3DManager.cameraManager.setFar(
         Math.max(dynamicFar, dynamicNear + 1),

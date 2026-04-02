@@ -37,7 +37,7 @@ export const CameraFitToModel = observer(() => {
       if (!center) return;
 
       cameraManager.setTarget(center);
-      controls.setTarget(center[0], center[1], center[2], true);
+      controls.setTarget(center.x, center.y, center.z, true);
     };
 
     void rotateAndFit();

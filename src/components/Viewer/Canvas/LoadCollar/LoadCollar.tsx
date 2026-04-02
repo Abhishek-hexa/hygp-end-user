@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
 import { useMyGLTF } from '../../../../hooks/useMyGLTF';
+import { CachedAssets } from '../../../../loaders/CachedAssets';
 import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
@@ -17,8 +18,6 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
   const { scene } = useMyGLTF(url);
-  const plasticRes = useMyGLTF(plasticUrl);
-  const plasticScene = plasticRes.scene;
 
   const webbingTextManager = designManager.productManager.webbingText;
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
@@ -27,8 +26,22 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
 
   useEffect(() => {
     meshManager.setMeshGroup(url, scene);
-    meshManager.setMeshGroup(plasticUrl, plasticScene, 'PLASTIC');
-  }, [meshManager, plasticScene, plasticUrl, scene, url]);
+  }, [meshManager, scene, url]);
+
+  useEffect(() => {
+    let active = true;
+
+    // Preload/register plastic variant in background so default loader can complete immediately.
+    void CachedAssets.loadModel(plasticUrl)
+      .then((result) => {
+        if (!active || !result.asset) return;
+        meshManager.setMeshGroup(plasticUrl, result.asset.scene, 'PLASTIC');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [meshManager, plasticUrl]);
 
   return (
     <>

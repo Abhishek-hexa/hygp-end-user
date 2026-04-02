@@ -10,7 +10,8 @@ export const CameraSync = observer(() => {
   } = useMainContext();
   const { camera } = useThree();
   const controlsRef = cameraManager.controllRef;
-  const [tx, ty, tz] = cameraManager.target;
+  const target = cameraManager.target;
+  const { x: tx, y: ty, z: tz } = target;
   const { near, far, fov, minDistance, maxDistance } = cameraManager;
 
 
