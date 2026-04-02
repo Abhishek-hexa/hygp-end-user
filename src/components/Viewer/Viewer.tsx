@@ -103,11 +103,12 @@ export const Viewer = observer(() => {
         uiManager.isBulkMode ? 'pt-24 lg:pt-28' : 'pt-16 lg:pt-20'
       }`}>
       <NavBar />
-      <div className="grid h-full w-full grid-cols-10 max-lg:grid-cols-1 max-lg:grid-rows-[minmax(0,1.18fr)_minmax(0,1fr)]">
-        <div className="col-span-6 custom-2:col-span-7 min-h-0 max-lg:col-span-1">
+      <div className="grid h-full w-full grid-cols-[minmax(0,1fr)_clamp(320px,35vw,600px)] max-lg:grid-cols-1 max-lg:grid-rows-[minmax(0,1.18fr)_minmax(0,1fr)]">
+        <div className="min-h-0 min-w-0">
           <CanvasPanel />
         </div>
-        <div className="col-span-4 custom-2:col-span-3 min-h-0 max-lg:col-span-1">
+
+        <div className="min-h-0 min-w-0 w-full">
           <ConfigurationPanel />
         </div>
       </div>
