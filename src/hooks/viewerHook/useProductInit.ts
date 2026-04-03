@@ -6,6 +6,7 @@ import {
   parsePatternIdParam,
   productSlugToType,
 } from '../../state/product/productRouting';
+import { ProductType } from '../../state/product/types';
 import { useMainContext } from '../useMainContext';
 
 export function useProductInit() {
@@ -29,7 +30,7 @@ export function useProductInit() {
   useInitializeProductApis(
     productManager,
     uiManager,
-    selectedProductType || 'DOG_COLLAR', // Use default if slug is invalid while redirect happens
+    selectedProductType || ProductType.DOG_COLLAR, // Use default if slug is invalid while redirect happens
     selectedPatternIdFromUrl,
   );
 }

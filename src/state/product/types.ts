@@ -1,10 +1,11 @@
-export type ProductType =
-  | 'DOG_COLLAR'
-  | 'CAT_COLLAR'
-  | 'MARTINGALE'
-  | 'LEASH'
-  | 'BANDANA'
-  | 'HARNESS';
+export enum ProductType {
+  DOG_COLLAR = 'DOG_COLLAR',
+  CAT_COLLAR = 'CAT_COLLAR',
+  MARTINGALE = 'MARTINGALE',
+  LEASH = 'LEASH',
+  BANDANA = 'BANDANA',
+  HARNESS = 'HARNESS',
+}
 
 export type ProductSizeType =
   | 'EXTRA_SMALL'

@@ -10,12 +10,12 @@ import { LazyImage } from '../../shared/LazyImage';
 import { MobileNavMenu } from './MobileNavMenu';
 
 const shopItems: Array<{ label: string; productType: ProductType }> = [
-  { label: 'Cat Collars', productType: 'CAT_COLLAR' },
-  { label: 'Dog Bandanas', productType: 'BANDANA' },
-  { label: 'Dog Collars', productType: 'DOG_COLLAR' },
-  { label: 'Dog Leashes', productType: 'LEASH' },
-  { label: 'Dog Harnesses', productType: 'HARNESS' },
-  { label: 'Martingale Collars', productType: 'MARTINGALE' },
+  { label: 'Cat Collars', productType: ProductType.CAT_COLLAR },
+  { label: 'Dog Bandanas', productType: ProductType.BANDANA },
+  { label: 'Dog Collars', productType: ProductType.DOG_COLLAR },
+  { label: 'Dog Leashes', productType: ProductType.LEASH },
+  { label: 'Dog Harnesses', productType: ProductType.HARNESS },
+  { label: 'Martingale Collars', productType: ProductType.MARTINGALE },
 ];
 
 const moreItems = ['Bulk Order', 'Contact US', 'FAQ'] as const;

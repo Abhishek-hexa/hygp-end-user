@@ -17,7 +17,7 @@ import {
 export const useInitializeProductApis = (
   productManager: ProductManager,
   uiManager: UiManager,
-  productType: ProductType = 'DOG_COLLAR',
+  productType: ProductType = ProductType.DOG_COLLAR,
   initialPatternId: number | null = null,
 ) => {
   const {
@@ -171,7 +171,7 @@ export const useInitializeProductApis = (
       }
     }
 
-    if (productType === 'DOG_COLLAR' && leashes) {
+    if (productType === ProductType.DOG_COLLAR && leashes) {
       const { orderedLengths, orderedLengthPrices } =
         Parser.parseLeashVariants(leashes);
       productManager.sizeManager.setAvailableLengths(orderedLengths);

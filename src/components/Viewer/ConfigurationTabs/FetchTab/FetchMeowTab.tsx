@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../../hooks/useMainContext';
-import { LeashLengthType } from '../../../../state/product/types';
+import { LeashLengthType, ProductType } from '../../../../state/product/types';
 import SectionHeader from '../../Global/SectionHeader';
 import { SizeOptionButton } from '../../Global/SizeOptionButton';
 import {
@@ -27,7 +27,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   const productManager = mainContext.designManager.productManager;
   const { sizeManager } = productManager;
   const heading = getFetchHeading(feature);
-  const isDogCollar = productManager.productId === 'DOG_COLLAR';
+  const isDogCollar = productManager.productId === ProductType.DOG_COLLAR;
 
   const selectedSize = sizeManager.selectedSizeData;
   const selectedSizePriceNumber = parsePrice(selectedSize?.price);

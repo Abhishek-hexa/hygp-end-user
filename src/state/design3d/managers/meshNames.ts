@@ -40,7 +40,7 @@ export const allMeshNames = [
 export type MeshName = (typeof allMeshNames)[number];
 
 export const visibleMeshNamesByProductType = {
-  DOG_COLLAR: [
+  [ProductType.DOG_COLLAR]: [
     'Buckle',
     'D_Ring',
     // 'Plane',
@@ -50,7 +50,7 @@ export const visibleMeshNamesByProductType = {
     // 'Web_Text',
     'Glass',
   ],
-  CAT_COLLAR: [
+  [ProductType.CAT_COLLAR]: [
     'Buckle', // wil toggle buckle later
     'Cat_Buckle',
     'D_Ring',
@@ -61,7 +61,7 @@ export const visibleMeshNamesByProductType = {
     // 'Web_Text',
     'Glass',
   ],
-  MARTINGALE: [
+  [ProductType.MARTINGALE]: [
     'D_Ring',
     'Martingle',
     'Stiches',
@@ -71,17 +71,17 @@ export const visibleMeshNamesByProductType = {
     'Web',
     'Web_Text',
   ],
-  LEASH: [
+  [ProductType.LEASH]: [
     'Hook', 
     'Stiches', 
     'Leash', 
     'Web_Text'
   ],
-  BANDANA: [
+  [ProductType.BANDANA]: [
     'Base',
     // 'Stitches'
   ],
-  HARNESS: [
+  [ProductType.HARNESS]: [
     'aLink',
     'base1',
     'base1Part',

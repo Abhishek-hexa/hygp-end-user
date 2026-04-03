@@ -88,7 +88,7 @@ export class MeshManager {
 
   private get shouldUsePlasticModel() {
     return (
-      this.productType === 'DOG_COLLAR' &&
+      this.productType === ProductType.DOG_COLLAR &&
       this._libState.designManager.productManager.buckleManager.material ===
         'PLASTIC'
     );

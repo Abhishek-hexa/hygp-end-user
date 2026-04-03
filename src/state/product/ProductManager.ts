@@ -6,7 +6,11 @@ import { SizeManager } from './managers/SizeManager';
 import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
-import { Features, ProductType, SerializedProductConfiguration } from './types';
+import {
+  Features,
+  ProductType,
+  SerializedProductConfiguration,
+} from './types';
 
 export class ProductManager {
   private _productId: ProductType = defaultProductId;
@@ -56,7 +60,7 @@ export class ProductManager {
 
   get activeModelKey() {
     const key =
-      this.productId === 'DOG_COLLAR' &&
+      this.productId === ProductType.DOG_COLLAR &&
       this.buckleManager.material === 'PLASTIC' &&
       this.plasticModelPath
         ? this.plasticModelPath

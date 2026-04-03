@@ -2,12 +2,12 @@ import { defaultProductId } from './productConfig';
 import { ProductType } from './types';
 
 const productSlugByType: Record<ProductType, string> = {
-  BANDANA: 'dog-bandana',
-  CAT_COLLAR: 'cat-collar',
-  DOG_COLLAR: 'dog-collar',
-  HARNESS: 'dog-harness',
-  LEASH: 'dog-leash',
-  MARTINGALE: 'martingale-collar',
+  [ProductType.BANDANA]: 'dog-bandana',
+  [ProductType.CAT_COLLAR]: 'cat-collar',
+  [ProductType.DOG_COLLAR]: 'dog-collar',
+  [ProductType.HARNESS]: 'dog-harness',
+  [ProductType.LEASH]: 'dog-leash',
+  [ProductType.MARTINGALE]: 'martingale-collar',
 };
 
 const productTypeBySlug: Record<string, ProductType> = Object.entries(

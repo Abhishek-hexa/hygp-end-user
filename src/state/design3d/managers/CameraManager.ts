@@ -2,13 +2,13 @@ import { makeAutoObservable, reaction } from 'mobx';
 import { StateManager } from '../../StateManager';
 import type CameraControlsImpl from 'camera-controls';
 import * as THREE from 'three';
-import { Feature, type Features } from '../../product/types';
+import { Feature, type Features, ProductType } from '../../product/types';
 import type { MeshManager } from './MeshManager';
 
 type CameraReactionState = {
   activeFeature: Features | null;
   modelKey: string | null;
-  productId: string;
+  productId: ProductType;
   controlsRef: CameraControlsImpl | null;
 };
 
@@ -170,7 +170,8 @@ export class CameraManager {
     controlsRef: CameraControlsImpl,
   ) {
     if (
-      this.stateManager.designManager.productManager.productId === 'CAT_COLLAR'
+      this.stateManager.designManager.productManager.productId ===
+      ProductType.CAT_COLLAR
     ) {
       const mesh = meshManager.catBuckleMesh;
       if (!mesh) return;
@@ -179,7 +180,8 @@ export class CameraManager {
       this.fitWithPadding(controlsRef, mesh, 10);
     }
     if (
-      this.stateManager.designManager.productManager.productId === 'MARTINGALE'
+      this.stateManager.designManager.productManager.productId ===
+      ProductType.MARTINGALE
     ) {
       const mesh = meshManager.dRingMesh;
       if (!mesh) return;
@@ -232,8 +234,8 @@ export class CameraManager {
     });
   }
 
-  private updatePolarAnglesForProduct(productId: string) {
-    if (productId === 'LEASH') {
+  private updatePolarAnglesForProduct(productId: ProductType) {
+    if (productId === ProductType.LEASH) {
       this._minPolarAngle = CameraManager.LEASH_MIN_POLAR_ANGLE;
       this._maxPolarAngle = CameraManager.DEFAULT_MAX_POLAR_ANGLE;
       return;

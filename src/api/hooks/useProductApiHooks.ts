@@ -41,7 +41,8 @@ export const useBucklesQuery = (productType: ProductType) => {
     queryKey: ['buckles', productType],
     queryFn: () => fetchJson<BucklesApiResponse>(path || '/buckle'),
     staleTime: Infinity,
-    enabled: !!path || productType === 'LEASH', // fallback to /buckle if undefined? Originally it was: endPoints.buckles ?? '/buckle'
+    enabled:
+      !!path || productType === ProductType.LEASH, // fallback to /buckle if undefined? Originally it was: endPoints.buckles ?? '/buckle'
   });
 };
 
@@ -76,7 +77,7 @@ export const useLeashVariantsQuery = (productType: ProductType) => {
     queryKey: ['leashVariants', productType],
     queryFn: () => fetchJson<LeashVariantsApiResponse>(path!),
     staleTime: Infinity,
-    enabled: productType === 'DOG_COLLAR' && !!path,
+    enabled: productType === ProductType.DOG_COLLAR && !!path,
   });
 };
 

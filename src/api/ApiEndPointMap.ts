@@ -10,21 +10,21 @@ export type ProductApiEndpoints = {
 };
 
 export const apiEndPointMap: Record<ProductType, ProductApiEndpoints> = {
-  BANDANA: {
+  [ProductType.BANDANA]: {
     buckles: '/buckle',
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',
     patternById: '/product',
     productVariants: '/product/dog-bandanas/9022848696535',
   },
-  CAT_COLLAR: {
+  [ProductType.CAT_COLLAR]: {
     buckles: '/cat-buckle',
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',
     patternById: '/product',
     productVariants: '/product/cat-collar/454325797079',
   },
-  DOG_COLLAR: {
+  [ProductType.DOG_COLLAR]: {
     buckles: '/buckle',
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',
@@ -32,20 +32,20 @@ export const apiEndPointMap: Record<ProductType, ProductApiEndpoints> = {
     patternById: '/product',
     productVariants: '/product/variants/8969048817879',
   },
-  HARNESS: {
+  [ProductType.HARNESS]: {
     buckles: '/harness-buckle',
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',
     patternById: '/product',
     productVariants: '/product/collar/9116181463255',
   },
-  LEASH: {
+  [ProductType.LEASH]: {
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',
     patternById: '/product',
     productVariants: '/product/dog-leases/8870433947863',
   },
-  MARTINGALE: {
+  [ProductType.MARTINGALE]: {
     buckles: '/buckle',
     collections: '/shopify-collection/',
     engravingFonts: '/engraving-fonts',

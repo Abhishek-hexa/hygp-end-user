@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useMainContext } from '../../../../hooks/useMainContext';
+import { ProductType } from '../../../../state/product/types';
 import { BreakAwayObj } from '../EffectObj/BreakAwayObj';
 import { GlassObj } from '../EffectObj/GlassObj';
 import { MetalObj } from '../EffectObj/MetalObj';
@@ -12,7 +13,7 @@ export const Buckle = observer(() => {
   const { meshManager } = design3DManager;
   const { productManager } = designManager;
   const buckleManager = productManager.buckleManager;
-  const isCatCollar = productManager.productId === 'CAT_COLLAR';
+  const isCatCollar = productManager.productId === ProductType.CAT_COLLAR;
   const selectedMetalHex = buckleManager.currentMetalColor?.hex;
   const selectedPlasticColor = buckleManager.plasticColorDescription?.hex;
   const selectedMaterial = buckleManager.material;

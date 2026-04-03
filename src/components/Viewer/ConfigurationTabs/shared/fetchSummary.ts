@@ -1,4 +1,4 @@
-import { LeashLengthType } from '../../../../state/product/types';
+import { LeashLengthType, ProductType } from '../../../../state/product/types';
 
 export type FetchFeature = 'FETCH' | 'MEOW';
 
@@ -33,13 +33,13 @@ export const sizeLabelMap: Record<string, string> = {
   XXL: 'XXLarge',
 };
 
-export const productSummaryLabelMap: Record<string, string> = {
-  BANDANA: 'BANDANA',
-  CAT_COLLAR: 'CAT COLLAR',
-  DOG_COLLAR: 'DOG COLLAR',
-  HARNESS: 'HARNESS',
-  LEASH: 'LEASH',
-  MARTINGALE: 'MARTINGALE COLLAR',
+export const productSummaryLabelMap: Record<ProductType, string> = {
+  [ProductType.BANDANA]: 'BANDANA',
+  [ProductType.CAT_COLLAR]: 'CAT COLLAR',
+  [ProductType.DOG_COLLAR]: 'DOG COLLAR',
+  [ProductType.HARNESS]: 'HARNESS',
+  [ProductType.LEASH]: 'LEASH',
+  [ProductType.MARTINGALE]: 'MARTINGALE COLLAR',
 };
 
 export const parsePrice = (value: string | null | undefined): number => {
