@@ -18,17 +18,29 @@ export type ProductSizeType =
 
 export type BuckleMaterialType = 'METAL' | 'PLASTIC' | 'BREAKAWAY';
 export type TextSize = 'SMALL' | 'MEDIUM' | 'LARGE';
+export enum Feature {
+  SIZE = 'SIZE',
+  DESIGN = 'DESIGN',
+  HARDWARE = 'HARDWARE',
+  COLLAR_TEXT = 'COLLAR_TEXT',
+  BUCKLE = 'BUCKLE',
+  ENGRAVING = 'ENGRAVING',
+  HARNESS_TEXT = 'HARNESS_TEXT',
+  FETCH = 'FETCH',
+  LEASH_TEXT = 'LEASH_TEXT',
+  MEOW = 'MEOW',
+}
 export type Features =
-  | 'SIZE'
-  | 'DESIGN'
-  | 'HARDWARE'
-  | 'COLLAR_TEXT'
-  | 'BUCKLE'
-  | 'ENGRAVING'
-  | 'HARNESS_TEXT'
-  | 'FETCH'
-  | 'LEASH_TEXT'
-  | 'MEOW';
+  | Feature.SIZE
+  | Feature.DESIGN
+  | Feature.HARDWARE
+  | Feature.COLLAR_TEXT
+  | Feature.BUCKLE
+  | Feature.ENGRAVING
+  | Feature.HARNESS_TEXT
+  | Feature.FETCH
+  | Feature.LEASH_TEXT
+  | Feature.MEOW;
 
 export type LeashLengthType = '3' | '4' | '5' | '6';
 
