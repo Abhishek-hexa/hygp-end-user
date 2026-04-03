@@ -59,6 +59,34 @@ const loadAllModels = async (modelUrls: string[]) => {
   );
 };
 
+const hasUncachedDefaults = (defaults: Defaults) => {
+  const modelPending = defaults.modelUrl
+    ? (() => {
+        const status = CachedAssets.getModelStatus(defaults.modelUrl);
+        return !status.isLoaded && !status.isLoading;
+      })()
+    : false;
+
+  const fontPending = defaults.font
+    ? (() => {
+        const status = CachedAssets.getFontStatus(defaults.font);
+        return !status.isLoaded && !status.isLoading;
+      })()
+    : false;
+
+  const hdrPending = defaults.hdrs.some((hdrUrl) => {
+    const status = CachedAssets.getHdrStatus(hdrUrl);
+    return !status.isLoaded && !status.isLoading;
+  });
+
+  const texturePending = defaults.textures.some((textureUrl) => {
+    const status = CachedAssets.getTextureStatus(textureUrl);
+    return !status.isLoaded && !status.isLoading;
+  });
+
+  return modelPending || fontPending || hdrPending || texturePending;
+};
+
 export const useHYGP = () => {
   const { designManager, uiManager } = useMainContext();
   const { productManager } = designManager;
@@ -96,10 +124,15 @@ export const useHYGP = () => {
           ],
         };
 
-        uiManager.add3DLoadingItem(key);
+        const shouldTrackLoading = hasUncachedDefaults(defaults);
+        if (shouldTrackLoading) {
+          uiManager.add3DLoadingItem(key);
+        }
 
         void initializeDefaults(defaults).finally(() => {
-          uiManager.remove3DLoadingItem(key);
+          if (shouldTrackLoading) {
+            uiManager.remove3DLoadingItem(key);
+          }
         });
 
         if (!isDataLoading) {
