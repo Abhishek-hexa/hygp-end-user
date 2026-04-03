@@ -21,7 +21,7 @@ export const SizeOptionButton = ({
       key={id}
       type="button"
       onClick={onClick}
-      className={`relative flex font-roboto min-w-32.5 shrink-0 flex-col items-start justify-center rounded-lg border border-border p-2.5 transition-colors lg:min-w-0 md:px-2 custom:!px-4 lg:py-3 ${
+      className={`relative flex font-roboto min-w-32.5 shrink-0 flex-col items-start justify-center rounded-lg border border-border p-2.5 transition-colors lg:min-w-0 md:px-2 custom:px-4! lg:py-3 ${
         isSelected ? 'border-primary-dark bg-selected text-primary' : ''
       }`}>
       <span
@@ -34,7 +34,7 @@ export const SizeOptionButton = ({
       </span>
 
       {isSelected && (
-        <div className="absolute right-2 top-2 shrink-0">
+        <div className="absolute right-1 top-1 shrink-0">
           <SelectedItemIcon />
         </div>
       )}
