@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { initializeProductApis } from '../../api/initializeProductApis';
+import { useInitializeProductApis } from '../../api/useInitializeProductApis';
 import {
   defaultProductSlug,
   parsePatternIdParam,
@@ -17,22 +17,19 @@ export function useProductInit() {
   }>();
   const selectedPatternIdFromUrl = parsePatternIdParam(patternID);
   const navigate = useNavigate();
-  const lastInitializedProductSlugRef = useRef<string | null>(null);
   const selectedProductType = productSlugToType(productSlug);
 
   useEffect(() => {
     if (!selectedProductType) {
       navigate(`/${defaultProductSlug}`, { replace: true });
-      return;
     }
-    if (lastInitializedProductSlugRef.current === productSlug) return;
+  }, [navigate, selectedProductType]);
 
-    lastInitializedProductSlugRef.current = productSlug ?? null;
-    void initializeProductApis(
-      productManager,
-      uiManager,
-      selectedProductType,
-      selectedPatternIdFromUrl,
-    );
-  }, [navigate, productManager, productSlug, selectedPatternIdFromUrl, selectedProductType, uiManager]);
+  // Hook natively handles tracking dependencies and API orchestration
+  useInitializeProductApis(
+    productManager,
+    uiManager,
+    selectedProductType || 'DOG_COLLAR', // Use default if slug is invalid while redirect happens
+    selectedPatternIdFromUrl,
+  );
 }
