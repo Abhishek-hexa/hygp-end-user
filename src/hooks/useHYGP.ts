@@ -59,7 +59,7 @@ const loadAllModels = async (modelUrls: string[]) => {
   );
 };
 
-const hasUncachedDefaults = (defaults: Defaults) => {
+const hasUncachedBlockingDefaults = (defaults: Defaults) => {
   const modelPending = defaults.modelUrl
     ? (() => {
         const status = CachedAssets.getModelStatus(defaults.modelUrl);
@@ -124,7 +124,14 @@ export const useHYGP = () => {
           ],
         };
 
-        const shouldTrackLoading = hasUncachedDefaults(defaults);
+        const blockingDefaults: Defaults = {
+          font: selectedFont,
+          hdrs: DEFAULT_HDRS,
+          modelUrl: modelPath,
+          textures: defaultNormals,
+        };
+
+        const shouldTrackLoading = hasUncachedBlockingDefaults(blockingDefaults);
         if (shouldTrackLoading) {
           uiManager.add3DLoadingItem(key);
         }

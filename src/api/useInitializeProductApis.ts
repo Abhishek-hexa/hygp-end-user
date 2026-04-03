@@ -121,7 +121,11 @@ export const useInitializeProductApis = (
     lastProcessedProductType.current = productType;
     lastProcessedPatternId.current = initialPatternId;
 
-    productManager.setProduct(productType);
+    // Changing pattern route should not reset the currently active tab.
+    // Only reset full product state when the actual product type changes.
+    if (productManager.productId !== productType) {
+      productManager.setProduct(productType);
+    }
 
     const { webbingFonts, engravingFonts: parsedEngravingFonts } =
       Parser.parseFonts(engravingFonts);
