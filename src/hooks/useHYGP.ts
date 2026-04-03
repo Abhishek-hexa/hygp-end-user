@@ -63,25 +63,25 @@ const hasUncachedDefaults = (defaults: Defaults) => {
   const modelPending = defaults.modelUrl
     ? (() => {
         const status = CachedAssets.getModelStatus(defaults.modelUrl);
-        return !status.isLoaded && !status.isLoading;
+        return !status.isLoaded;
       })()
     : false;
 
   const fontPending = defaults.font
     ? (() => {
         const status = CachedAssets.getFontStatus(defaults.font);
-        return !status.isLoaded && !status.isLoading;
+        return !status.isLoaded;
       })()
     : false;
 
   const hdrPending = defaults.hdrs.some((hdrUrl) => {
     const status = CachedAssets.getHdrStatus(hdrUrl);
-    return !status.isLoaded && !status.isLoading;
+    return !status.isLoaded;
   });
 
   const texturePending = defaults.textures.some((textureUrl) => {
     const status = CachedAssets.getTextureStatus(textureUrl);
-    return !status.isLoaded && !status.isLoading;
+    return !status.isLoaded;
   });
 
   return modelPending || fontPending || hdrPending || texturePending;

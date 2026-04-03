@@ -14,7 +14,9 @@ export function useMyGLTF(url: string) {
   }
 
   const status = CachedAssets.getModelStatus(url);
-  const shouldTrackWithUi = !status.isLoaded && !status.isLoading;
+  // Track UI loading for any not-yet-loaded model, including in-flight loads
+  // started by another caller.
+  const shouldTrackWithUi = !status.isLoaded;
   if (shouldTrackWithUi) {
     uiManager.add3DLoadingItem(url);
   }
