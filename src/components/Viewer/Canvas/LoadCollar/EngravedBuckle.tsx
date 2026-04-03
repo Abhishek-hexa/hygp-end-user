@@ -10,7 +10,7 @@ import { useMyTexture } from '../../../../hooks/useMyTexture';
 export const EngravedBuckle = observer(function EngravedMesh() {
   const { design3DManager } = useMainContext();
   const manager = design3DManager.engraving3Dmanager;
-  const texture = useMyTexture(manager.imageUrl);
+  const texture = useMyTexture(manager.imageUrl, { trackLoading: false});
   const [decalTransform, setDecalTransform] = useState<{
     position: [number, number, number];
     scale: [number, number, number];

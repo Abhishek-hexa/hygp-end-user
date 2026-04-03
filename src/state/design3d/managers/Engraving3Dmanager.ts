@@ -3,7 +3,6 @@ import {
   makeAutoObservable,
   reaction,
   runInAction,
-  toJS,
 } from 'mobx';
 
 import { StateManager } from '../../StateManager';
