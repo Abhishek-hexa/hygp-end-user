@@ -6,7 +6,6 @@ import { LinearToneMapping } from 'three';
 import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
-import { CameraFitToModel } from './CameraFitToModel';
 import { CameraFeatureAnimation } from './CameraFeatureAnimation';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 import { ModelLoadingFallback } from './ModelLoadingFallback';
@@ -45,15 +44,16 @@ export const CanvasPanel = observer(() => {
           <LoadEnvironment />
         </Suspense>
         <CameraSync />
-        <CameraFitToModel />
         <CameraFeatureAnimation />
 
         <CameraControls
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2.5}
+          maxPolarAngle={cameraManager.maxPolarAngle}
+          minPolarAngle={cameraManager.minPolarAngle}
           truckSpeed={0}
           maxDistance={cameraManager.maxDistance}
           minDistance={cameraManager.minDistance}
+          onControlStart={() => cameraManager.setIsUserControlling(true)}
+          onControlEnd={() => cameraManager.setIsUserControlling(false)}
           ref={handleCameraRef}
         />
       </Canvas>

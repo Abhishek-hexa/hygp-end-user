@@ -2,18 +2,34 @@ import { makeAutoObservable, reaction } from 'mobx';
 import { StateManager } from '../../StateManager';
 import type CameraControlsImpl from 'camera-controls';
 import * as THREE from 'three';
-import { Feature } from '../../product/types';
+import { Feature, type Features } from '../../product/types';
+import type { MeshManager } from './MeshManager';
+
+type CameraReactionState = {
+  activeFeature: Features | null;
+  modelKey: string | null;
+  productId: string;
+  controlsRef: CameraControlsImpl | null;
+};
 
 export class CameraManager {
+  private static readonly DEFAULT_MIN_POLAR_ANGLE = Math.PI / 2.5;
+  private static readonly DEFAULT_MAX_POLAR_ANGLE = Math.PI / 2;
+  private static readonly LEASH_MIN_POLAR_ANGLE = 0;
+
   private _target = new THREE.Vector3(0, 0, 0);
   private _fov = 26;
   private _near = 100;
   private _far = 2000;
   private _minDistance = 200;
   private _maxDistance = 800;
+  private _minPolarAngle = CameraManager.DEFAULT_MIN_POLAR_ANGLE;
+  private _maxPolarAngle = CameraManager.DEFAULT_MAX_POLAR_ANGLE;
   private _isAutoRotate = false;
   private _autoRotateSpeed = 0.5;
+  private _isUserControlling = false;
   private _controllRef: CameraControlsImpl | null = null;
+
   private stateManager: StateManager;
 
   constructor(stateManager: StateManager) {
@@ -24,102 +40,250 @@ export class CameraManager {
 
   private setupReactions() {
     reaction(
-      () => ({
-        activeFeature: this.stateManager.designManager.productManager.activeFeature,
-        modelKey: this.stateManager.designManager.productManager.activeModelKey,
-        controlsRef: this.controllRef,
-      }),
-      ({ activeFeature, modelKey, controlsRef }, previous) => {
+      () => this.reactionState,
+      (current, previous) => {
+        const { controlsRef } = current;
         if (!controlsRef) return;
 
-        const controlsRefChangedToInstance = !previous?.controlsRef && controlsRef !== null;
-        const featureChanged = activeFeature !== previous?.activeFeature;
-        const modelChanged = modelKey !== previous?.modelKey;
+        if (!this.shouldRunReaction(current, previous)) return;
 
-        // Only run if the feature tab changed, OR if we're on the SIZE tab and the model changed,
-        // OR if controlsRef just became available
-        if (
-          !controlsRefChangedToInstance &&
-          !featureChanged &&
-          !(activeFeature === Feature.SIZE && modelChanged)
-        ) {
-          return;
-        }
-
-        const meshManager = this.stateManager.design3DManager.meshManager;
-
-        if (activeFeature === Feature.BUCKLE || activeFeature === Feature.ENGRAVING) {
-          const buckleMesh = meshManager.buckleMesh;
-          if (!buckleMesh) return;
-
-          // Reset the camera to directly face the front of the buckle,
-          // so it doesn't zoom in on the side/back if the user previously spun the model.
-          void controlsRef.rotateTo(0, Math.PI / 2, true);
-
-          void controlsRef.fitToBox(buckleMesh, true, {
-            paddingTop: 10,
-            paddingLeft: 10,
-            paddingBottom: 10,
-            paddingRight: 10,
-          });
-          return;
-        }
-
-        if (
-          activeFeature === Feature.COLLAR_TEXT ||
-          activeFeature === Feature.HARNESS_TEXT ||
-          activeFeature === Feature.LEASH_TEXT
-        ) {
-          const webTextMesh = meshManager.webTextMesh;
-          if (!webTextMesh) return;
-
-          // Rotate to the side of the collar so the text faces the camera directly
-          void controlsRef.rotateTo(Math.PI / 2, Math.PI / 2, true);
-
-          void controlsRef.fitToBox(webTextMesh, true, {
-            paddingTop: 20,
-            paddingLeft: 20,
-            paddingBottom: 20,
-            paddingRight: 20,
-          });
-          return;
-        }
-
-        const modelGroup = modelKey
-          ? meshManager.getMeshGroup(modelKey)
-          : undefined;
-        if (!modelGroup) return;
-
-        void controlsRef.fitToBox(modelGroup, true);
-
-        if (modelKey) {
-          const center = meshManager.getVisibleMeshCenter(modelKey);
-          if (center) {
-            this.setTarget(center);
-            controlsRef.setTarget(center.x, center.y, center.z, true);
-          }
-        }
-      }
+        this.handleCameraUpdate(current, controlsRef);
+      },
     );
   }
 
-  updateCameraAnimation(delta: number) {
-    const activeFeature = this.stateManager.designManager.productManager.activeFeature;
-    const controlsRef = this.controllRef;
+  private get reactionState(): CameraReactionState {
+    const productManager = this.stateManager.designManager.productManager;
 
-    if (activeFeature === Feature.DESIGN && controlsRef) {
-      // Apply a subtle continuous rotation.
-      // 0.2 radians per second is relatively slow and subtle.
-      controlsRef.azimuthAngle += 0.3 * delta;
+    return {
+      activeFeature: productManager.activeFeature,
+      modelKey: productManager.activeModelKey,
+      productId: productManager.productId,
+      controlsRef: this.controllRef,
+    };
+  }
 
-      // Prevent the angle from winding up infinitely so it doesn't
-      // aggressively "anti-rotate" when transitioning back to the front facing view.
-      if (controlsRef.azimuthAngle > Math.PI) {
-        controlsRef.azimuthAngle -= 2 * Math.PI;
-      } else if (controlsRef.azimuthAngle < -Math.PI) {
-        controlsRef.azimuthAngle += 2 * Math.PI;
+  private shouldRunReaction(
+    current: CameraReactionState,
+    previous?: CameraReactionState,
+  ) {
+    const controlsReady =
+      !previous?.controlsRef && current.controlsRef !== null;
+    const featureChanged = current.activeFeature !== previous?.activeFeature;
+    const modelChanged = current.modelKey !== previous?.modelKey;
+    const productChanged = current.productId !== previous?.productId;
+
+    return (
+      controlsReady ||
+      featureChanged ||
+      productChanged ||
+      (current.activeFeature === Feature.SIZE && modelChanged)
+    );
+  }
+
+  private handleCameraUpdate(
+    state: CameraReactionState,
+    controlsRef: CameraControlsImpl,
+  ) {
+    const meshManager = this.stateManager.design3DManager.meshManager;
+    this.updatePolarAnglesForProduct(state.productId);
+
+    if (state.modelKey) {
+      const center = meshManager.getVisibleMeshCenter(state.modelKey);
+      if (center) {
+        this.setTarget(center);
+        controlsRef.setTarget(center.x, center.y, center.z, true);
       }
     }
+
+    switch (state.activeFeature) {
+      case Feature.SIZE:
+        this.focusSize(meshManager, controlsRef, state.modelKey);
+        break;
+
+      case Feature.BUCKLE:
+      case Feature.ENGRAVING:
+        this.focusBuckle(meshManager, controlsRef);
+        break;
+
+      case Feature.COLLAR_TEXT:
+        this.focusCollarText(meshManager, controlsRef);
+        break;
+
+      case Feature.LEASH_TEXT:
+        this.focusLeashText(meshManager, controlsRef);
+        break;
+
+      case Feature.HARDWARE:
+        this.focusHardware(meshManager, controlsRef);
+        break;
+
+      default:
+        this.focusModel(meshManager, state.modelKey, controlsRef);
+        break;
+    }
+
+    if (state.modelKey) {
+      const center = meshManager.getVisibleMeshCenter(state.modelKey);
+      if (center) {
+        this.setTarget(center);
+        controlsRef.setTarget(center.x, center.y, center.z, true);
+      }
+    }
+  }
+
+  private focusBuckle(
+    meshManager: MeshManager,
+    controlsRef: CameraControlsImpl,
+  ) {
+    const mesh = meshManager.buckleMesh;
+    if (!mesh) return;
+
+    void controlsRef.rotateTo(0, Math.PI / 2, true);
+    this.fitWithPadding(controlsRef, mesh, 10);
+  }
+
+  private focusCollarText(
+    meshManager: MeshManager,
+    controlsRef: CameraControlsImpl,
+  ) {
+    const mesh = meshManager.webTextMesh;
+    if (!mesh) return;
+
+    void controlsRef.rotateTo(Math.PI / 2, Math.PI / 2, true);
+    this.fitWithPadding(controlsRef, mesh, 20);
+  }
+
+  private async focusLeashText(
+    meshManager: MeshManager,
+    controlsRef: CameraControlsImpl,
+  ) {
+    const mesh = meshManager.webTextMesh;
+    if (!mesh) return;
+
+    await controlsRef.rotateTo(Math.PI / 2, Math.PI / 8);
+    this.fitWithPadding(controlsRef, mesh, 20);
+  }
+
+  private async focusHardware(
+    meshManager: MeshManager,
+    controlsRef: CameraControlsImpl,
+  ) {
+    if (
+      this.stateManager.designManager.productManager.productId === 'CAT_COLLAR'
+    ) {
+      const mesh = meshManager.catBuckleMesh;
+      if (!mesh) return;
+
+      void controlsRef.rotateTo(0, Math.PI / 2, true);
+      this.fitWithPadding(controlsRef, mesh, 10);
+    }
+    if (
+      this.stateManager.designManager.productManager.productId === 'MARTINGALE'
+    ) {
+      const mesh = meshManager.dRingMesh;
+      if (!mesh) return;
+
+      void controlsRef.rotateTo(0, Math.PI / 2, true);
+      this.fitWithPadding(controlsRef, mesh, 10);
+    }
+    const mesh = meshManager.hookMesh;
+    if (!mesh) return;
+    await controlsRef.rotateTo(Math.PI / 2, Math.PI / 8);
+
+    this.fitWithPadding(controlsRef, mesh, 20);
+  }
+
+  private focusSize(
+    meshManager: MeshManager,
+    controlsRef: CameraControlsImpl,
+    key: string | null,
+  ) {
+    if (!key) return;
+    const mesh = meshManager.getMeshGroup(key);
+    if (!mesh) return;
+    controlsRef.rotateTo(0, Math.PI / 2);
+    this.fitWithPadding(controlsRef, mesh, 20);
+  }
+
+  private focusModel(
+    meshManager: MeshManager,
+    modelKey: string | null,
+    controlsRef: CameraControlsImpl,
+  ) {
+    if (!modelKey) return;
+
+    const modelGroup = meshManager.getMeshGroup(modelKey);
+    if (!modelGroup) return;
+
+    void controlsRef.fitToBox(modelGroup, true);
+  }
+
+  private fitWithPadding(
+    controlsRef: CameraControlsImpl,
+    mesh: THREE.Object3D,
+    padding: number,
+  ) {
+    void controlsRef.fitToBox(mesh, true, {
+      paddingTop: padding,
+      paddingLeft: padding,
+      paddingBottom: padding,
+      paddingRight: padding,
+    });
+  }
+
+  private updatePolarAnglesForProduct(productId: string) {
+    if (productId === 'LEASH') {
+      this._minPolarAngle = CameraManager.LEASH_MIN_POLAR_ANGLE;
+      this._maxPolarAngle = CameraManager.DEFAULT_MAX_POLAR_ANGLE;
+      return;
+    }
+
+    this._minPolarAngle = CameraManager.DEFAULT_MIN_POLAR_ANGLE;
+    this._maxPolarAngle = CameraManager.DEFAULT_MAX_POLAR_ANGLE;
+  }
+
+  updateCameraAnimation(delta: number) {
+    const productManager = this.stateManager.designManager.productManager;
+    const activeFeature = productManager.activeFeature;
+
+    const controlsRef = this.controllRef;
+    if (!controlsRef) return;
+
+    if (activeFeature !== Feature.DESIGN) return;
+    if (this._isUserControlling) return;
+
+    if (productManager.activeModelKey) {
+      const center =
+        this.stateManager.design3DManager.meshManager.getVisibleMeshCenter(
+          productManager.activeModelKey,
+        );
+      if (center && center.distanceToSquared(this._target) > 0.0001) {
+        this.setTarget(center);
+        controlsRef.setTarget(center.x, center.y, center.z, false);
+      }
+    }
+
+    controlsRef.azimuthAngle += 0.3 * delta;
+
+    if (controlsRef.azimuthAngle > Math.PI) {
+      controlsRef.azimuthAngle -= 2 * Math.PI;
+    } else if (controlsRef.azimuthAngle < -Math.PI) {
+      controlsRef.azimuthAngle += 2 * Math.PI;
+    }
+
+    const targetPolarAngle = Math.PI / 2.15;
+    const blend = Math.min(1, delta * 4);
+    const nextPolarAngle = THREE.MathUtils.lerp(
+      controlsRef.polarAngle,
+      targetPolarAngle,
+      blend,
+    );
+    controlsRef.polarAngle = THREE.MathUtils.clamp(
+      nextPolarAngle,
+      controlsRef.minPolarAngle,
+      controlsRef.maxPolarAngle,
+    );
   }
 
   get target() {
@@ -146,6 +310,14 @@ export class CameraManager {
     return this._maxDistance;
   }
 
+  get minPolarAngle() {
+    return this._minPolarAngle;
+  }
+
+  get maxPolarAngle() {
+    return this._maxPolarAngle;
+  }
+
   get isAutoRotate() {
     return this._isAutoRotate;
   }
@@ -154,29 +326,44 @@ export class CameraManager {
     return this._autoRotateSpeed;
   }
 
+  get isUserControlling() {
+    return this._isUserControlling;
+  }
+
   get controllRef() {
     return this._controllRef;
   }
-
 
   setTarget(inTarget: THREE.Vector3) {
     this._target = inTarget.clone();
   }
 
   setNear(inNear: number) {
-    this._near = inNear
+    this._near = inNear;
   }
 
   setFar(inFar: number) {
-    this._far = inFar
+    this._far = inFar;
   }
 
   setMinDistance(inMinDistance: number) {
-    this._minDistance = inMinDistance
+    this._minDistance = inMinDistance;
   }
 
   setMaxDistance(inMaxDistance: number) {
-    this._maxDistance = inMaxDistance
+    this._maxDistance = inMaxDistance;
+  }
+
+  setMinPolarAngle(inMinPolarAngle: number) {
+    this._minPolarAngle = inMinPolarAngle;
+  }
+
+  setMaxPolarAngle(inMaxPolarAngle: number) {
+    this._maxPolarAngle = inMaxPolarAngle;
+  }
+
+  setIsUserControlling(inIsUserControlling: boolean) {
+    this._isUserControlling = inIsUserControlling;
   }
 
   setControllRef(inControllRef: CameraControlsImpl | null) {

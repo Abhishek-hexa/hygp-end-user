@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { GridSVGData, TextureUtils } from '../utils/TextureUtils';
 import { useMyHdr } from './useMyHdr';
 import { useMyTexture } from './useMyTexture';
+import { UiManager } from '../state/ui/UiManager';
+import { useMainContext } from './useMainContext';
 
 const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.jpg';
 const HDR_PATH = '/assets/texture/texture/white1.hdr';
@@ -43,6 +45,7 @@ export function useTextureObject({
   normalRepeat = [5, 5],
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
+  const { uiManager } = useMainContext();
 
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
   const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
@@ -51,6 +54,7 @@ export function useTextureObject({
   const material = useRef(createDefaultMaterial());
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
+  const bootLoader = useRef(0);
 
   const [normalRepeatX, normalRepeatY] = normalRepeat;
 
@@ -118,7 +122,9 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
-
+    if (bootLoader.current === 0) {
+      uiManager.add3DLoadingItem(`bootLoader${bootLoader.current}`);
+    }
     (async () => {
       try {
         const dataUrl = await TextureUtils.fetchImageAsDataURL(
@@ -176,6 +182,11 @@ export function useTextureObject({
           return null;
         });
         onTextureReadyRef.current?.(null);
+      } finally {
+        if (bootLoader) {
+          uiManager.remove3DLoadingItem(`bootLoader${bootLoader.current}`);
+          bootLoader.current++;
+        }
       }
     })();
 

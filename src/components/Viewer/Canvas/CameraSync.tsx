@@ -12,7 +12,15 @@ export const CameraSync = observer(() => {
   const controlsRef = cameraManager.controllRef;
   const target = cameraManager.target;
   const { x: tx, y: ty, z: tz } = target;
-  const { near, far, fov, minDistance, maxDistance } = cameraManager;
+  const {
+    near,
+    far,
+    fov,
+    minDistance,
+    maxDistance,
+    minPolarAngle,
+    maxPolarAngle,
+  } = cameraManager;
 
 
   useEffect(() => {
@@ -31,6 +39,8 @@ export const CameraSync = observer(() => {
 
     controlsRef.minDistance = minDistance;
     controlsRef.maxDistance = Math.max(maxDistance, minDistance + 1);
+    controlsRef.minPolarAngle = minPolarAngle;
+    controlsRef.maxPolarAngle = Math.max(maxPolarAngle, minPolarAngle);
     controlsRef.setTarget(tx, ty, tz, true);
 
     const clampedDistance = Math.min(
@@ -40,7 +50,20 @@ export const CameraSync = observer(() => {
     if (Math.abs(clampedDistance - controlsRef.distance) > 0.001) {
       void controlsRef.dollyTo(clampedDistance, true);
     }
-  }, [camera, controlsRef, tx, ty, tz, near, far, fov, minDistance, maxDistance]);
+  }, [
+    camera,
+    controlsRef,
+    tx,
+    ty,
+    tz,
+    near,
+    far,
+    fov,
+    minDistance,
+    maxDistance,
+    minPolarAngle,
+    maxPolarAngle,
+  ]);
 
   return null;
 });
