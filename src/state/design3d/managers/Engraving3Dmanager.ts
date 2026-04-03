@@ -1,13 +1,18 @@
 import {
-  IReactionDisposer,
   makeAutoObservable,
   reaction,
   runInAction,
 } from 'mobx';
+import * as THREE from 'three';
 
 import { StateManager } from '../../StateManager';
-import { Service3D } from '../services/Service3D';
 import { CachedAssets } from '../../../loaders/CachedAssets';
+import {
+  FabricCanvasService,
+  EngravingRenderLine,
+} from '../../../service/FabricCanvasService ';
+
+// Types
 
 export type EngravingConfigLine = {
   text: string;
@@ -24,31 +29,27 @@ export type EngravingConfig = {
   fontWeight?: string;
 };
 
-const MAX_LINES = 4;
-const LINE_GAP_RATIO = 0.002;
+export type DecalTransform = {
+  position: [number, number, number];
+  scale: [number, number, number];
+};
+
+// Constants
+
 const DEFAULT_FONT_FAMILY = 'Arial';
 const DEFAULT_FONT_WEIGHT = 'bold';
 
-const HERO_HEIGHT_RATIOS: Record<number, number> = {
-  1: 1.0,
-  2: 0.75,
-  3: 0.55,
-  4: 0.35,
-};
-
 export const DEFAULT_ENGRAVING_CONFIG: EngravingConfig = {
   height: 11 * 40,
-  lines: [],
   width: 14 * 40,
+  lines: [],
 };
 
-const cloneLines = (lines: EngravingConfigLine[]): EngravingConfigLine[] =>
-  lines.map((line) => ({ ...line }));
+
+// Manager
 
 export class Engraving3Dmanager {
-  private _libstate: StateManager;
   private requestId = 0;
-  private syncDisposer: IReactionDisposer;
 
   config: EngravingConfig;
   imageUrl: string | null = null;
@@ -57,42 +58,71 @@ export class Engraving3Dmanager {
   error: string | null = null;
 
   constructor(
-    inLibstate: StateManager,
+    private readonly libstate: StateManager,
     initialConfig: EngravingConfig = DEFAULT_ENGRAVING_CONFIG,
   ) {
-    this._libstate = inLibstate;
-    this.config = { ...initialConfig, lines: cloneLines(initialConfig.lines) };
+    this.config = { ...initialConfig, lines: this.cloneLines(initialConfig.lines) };
     this.aspect = this.config.width / this.config.height;
 
     makeAutoObservable(this, {}, { autoBind: true });
 
-    this.syncDisposer = reaction(
-      () => this.getEngravingConfigLines(),
+    reaction(
+      () => this.selectEngravingLines(),
       (lines) => this.setConfig({ lines }),
       { fireImmediately: true },
     );
   }
 
-  setConfig(partial: Partial<EngravingConfig>): void {
+  // Public API
+
+  get planeMesh() {
+    return this.libstate.design3DManager.meshManager.planeMesh;
+  }
+
+  get decalTransform(): DecalTransform | null {
+    const mesh = this.planeMesh;
+    if (!mesh) return null;
+
+    mesh.geometry.computeBoundingBox();
+    const box = mesh.geometry.boundingBox;
+    if (!box) return null;
+
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    return {
+      position: [center.x, center.y, center.z + 0.001],
+      scale: [size.x, size.y, size.z || 0.01],
+    };
+  }
+
+  prepareDecalTexture(texture: THREE.Texture | null): THREE.Texture | null {
+    if (!texture) return null;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }
+
+  private setConfig(partial: Partial<EngravingConfig>): void {
     this.config = {
       ...this.config,
       ...partial,
-      lines: partial.lines
-        ? cloneLines(partial.lines)
-        : cloneLines(this.config.lines),
+      lines: this.cloneLines(partial.lines ?? this.config.lines),
     };
     void this.refreshTexture();
   }
 
-  async refreshTexture(): Promise<void> {
-    const currentRequestId = ++this.requestId;
+  private async refreshTexture(): Promise<void> {
+    const id = ++this.requestId;
     this.loading = true;
     this.error = null;
 
     try {
-      const result = await this.generateEngravingTexture(this.config);
+      const result = await this.buildTexture();
 
-      if (currentRequestId !== this.requestId) {
+      if (id !== this.requestId) {
         URL.revokeObjectURL(result.imageUrl);
         return;
       }
@@ -103,206 +133,86 @@ export class Engraving3Dmanager {
         this.aspect = result.aspect;
         this.loading = false;
       });
-    } catch (error) {
-      if (currentRequestId !== this.requestId) return;
-
+    } catch (err) {
+      if (id !== this.requestId) return;
       runInAction(() => {
         this.loading = false;
         this.error =
-          error instanceof Error
-            ? error.message
+          err instanceof Error
+            ? err.message
             : 'Failed to generate engraving texture';
       });
     }
   }
 
-  dispose(): void {
-    this.requestId += 1;
-    this.syncDisposer();
 
-    if (this.imageUrl) {
-      URL.revokeObjectURL(this.imageUrl);
-      this.imageUrl = null;
-    }
-  }
+  // Private
 
-  private async generateEngravingTexture(
-    config: EngravingConfig,
-  ): Promise<{ imageUrl: string; aspect: number }> {
+  private async buildTexture() {
     const {
       lines,
       width,
       height,
       fontFamily = DEFAULT_FONT_FAMILY,
       fontWeight = DEFAULT_FONT_WEIGHT,
-    } = config;
+    } = this.config;
 
-    const renderLines = this.calculateRenderLines(lines);
-
-    const fontUrls = renderLines
-      .map((line) => line.fontUrl)
-      .filter((url): url is string => !!url)
-      .filter((url, index, arr) => arr.indexOf(url) === index);
-
-    if (fontUrls.length > 0) {
-      const fontLoadResult = await CachedAssets.loadFonts(fontUrls);
-      if (fontLoadResult.isError) {
-        throw fontLoadResult.error ?? new Error('Failed to load one or more fonts');
-      }
-    }
-
-    const canvas = Service3D.createCanvas(width, height);
-
-    try {
-      if (renderLines.length === 0) {
-        return {
-          aspect: width / height,
-          imageUrl: await Service3D.canvasToBlobUrl(canvas),
-        };
-      }
-
-      const paddingX = width * 0.01;
-      const paddingY = height * 0.05;
-      const usableWidth = width - paddingX * 2;
-      const usableHeightMax = height - paddingY * 2;
-
-      const lineCount = renderLines.length;
-      const lineGap = LINE_GAP_RATIO * height;
-      const totalGapHeight = lineGap * (lineCount - 1);
-      const usableHeight = usableHeightMax - totalGapHeight;
-
-      const heroRatio = HERO_HEIGHT_RATIOS[lineCount] ?? 0.4;
-      const secondaryRatio =
-        lineCount > 1 ? (1 - heroRatio) / (lineCount - 1) : 0;
-
-      const heightBudgets = renderLines.map((_, i) =>
-        i === 0 ? usableHeight * heroRatio : usableHeight * secondaryRatio,
-      );
-
-      const textObjects = renderLines.map((line, i) =>
-        Service3D.createTextObjectForBudget(
-          line.text,
-          heightBudgets[i],
-          usableWidth,
-          line.fontUrl
-            ? CachedAssets.getFontFamily(line.fontUrl)
-            : fontFamily,
-          line.fontWeight ?? fontWeight,
-        ),
-      );
-
-      const totalRenderedHeight =
-        textObjects.reduce((sum, t) => sum + t.getScaledHeight(), 0) +
-        totalGapHeight;
-
-      if (totalRenderedHeight > usableHeightMax) {
-        const scale = usableHeightMax / totalRenderedHeight;
-        textObjects.forEach((t) => {
-          t.set({
-            scaleX: (t.scaleX ?? 1) * scale,
-            scaleY: (t.scaleY ?? 1) * scale,
-          });
-        });
-        Service3D.positionTextObjects(
-          textObjects,
-          lineGap * scale,
-          width,
-          height,
-        );
-      } else {
-        Service3D.positionTextObjects(textObjects, lineGap, width, height);
-      }
-
-      canvas.add(...textObjects);
-      canvas.renderAll();
-
-      const htmlCanvas = canvas.getElement();
-
-      const trimmedCanvas = this.trimCanvas(htmlCanvas);
-
-      const blob = await new Promise<Blob>((resolve) => {
-        trimmedCanvas.toBlob((b) => resolve(b!), 'image/png');
-      });
-
-      const imageUrl = URL.createObjectURL(blob);
-
-      return {
-        aspect: trimmedCanvas.width / trimmedCanvas.height,
-        imageUrl,
-      };
-    } finally {
-      await canvas.dispose();
-    }
-  }
-
-  private getEngravingConfigLines(): EngravingConfigLine[] {
-    const { engravingManager } = this._libstate.designManager.productManager;
-    const fonts = engravingManager.availableFonts;
-
-    return engravingManager.lines
-      .map((line) => ({
-        fontFamily: line.font !== null ? fonts.get(line.font)?.name : undefined,
-        fontUrl:
-          line.font !== null ? fonts.get(line.font)?.font_path : undefined,
-        text: line.text.trim(),
-      })); 
-  }
-
-  private trimCanvas(canvas: HTMLCanvasElement) {
-    const ctx = canvas.getContext('2d')!;
-    const { width, height } = canvas;
-
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data = imageData.data;
-
-    let top = null,
-      bottom = null,
-      left = null,
-      right = null;
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const alpha = data[(y * width + x) * 4 + 3];
-        if (alpha > 0) {
-          if (top === null) top = y;
-          bottom = y;
-          if (left === null || x < left) left = x;
-          if (right === null || x > right) right = x;
-        }
-      }
-    }
-
-    if (top === null) return canvas;
-
-    const trimmedWidth = right! - left! + 1;
-    const trimmedHeight = bottom! - top! + 1;
-
-    const trimmedCanvas = document.createElement('canvas');
-    trimmedCanvas.width = trimmedWidth;
-    trimmedCanvas.height = trimmedHeight;
-
-    const trimmedCtx = trimmedCanvas.getContext('2d')!;
-    trimmedCtx.putImageData(
-      ctx.getImageData(left!, top!, trimmedWidth, trimmedHeight),
-      0,
-      0,
+    // Resolve fonts and build render lines in one pass
+    const renderLines = await this.resolveRenderLines(
+      lines,
+      fontFamily,
+      fontWeight,
     );
 
-    return trimmedCanvas;
+    const fabricService = new FabricCanvasService();
+    return fabricService.generateEngravingTexture({
+      lines: renderLines,
+      width,
+      height,
+    });
   }
 
-  private calculateRenderLines(lines: EngravingConfigLine[]) {
-    let renderLines: EngravingConfigLine[] = [];
+  /**
+   * Loads any custom fonts, then maps config lines to resolved render lines
+   * with concrete fontFamily names ready for Fabric.
+   */
+  private async resolveRenderLines(
+    lines: EngravingConfigLine[],
+    defaultFontFamily: string,
+    defaultFontWeight: string,
+  ): Promise<EngravingRenderLine[]> {
+    const fontUrls = [
+      ...new Set(lines.map((l) => l.fontUrl).filter(Boolean) as string[]),
+    ];
 
-    lines.forEach((line) => {
-      renderLines.push({
-        text: line.text.length === 0 ? ' ' : line.text,
-        fontFamily: line.fontFamily,
-        fontWeight: line.fontWeight,
-        fontUrl: line.fontUrl,
-      });
-    });
+    if (fontUrls.length > 0) {
+      const result = await CachedAssets.loadFonts(fontUrls);
+      if (result.isError)
+        throw result.error ?? new Error('Failed to load fonts');
+    }
 
-    return renderLines;
+    return lines.map((line) => ({
+      // Empty lines render as a space so Fabric still allocates height
+      text: line.text.trim() || ' ',
+      fontFamily: line.fontUrl
+        ? CachedAssets.getFontFamily(line.fontUrl)
+        : (line.fontFamily ?? defaultFontFamily),
+      fontWeight: line.fontWeight ?? defaultFontWeight,
+    }));
+  }
+
+  private selectEngravingLines(): EngravingConfigLine[] {
+    const { engravingManager } = this.libstate.designManager.productManager;
+    const fonts = engravingManager.availableFonts;
+
+    return engravingManager.lines.map((line) => ({
+      text: line.text.trim(),
+      fontFamily: line.font !== null ? fonts.get(line.font)?.name : undefined,
+      fontUrl: line.font !== null ? fonts.get(line.font)?.font_path : undefined,
+    }));
+  }
+  private cloneLines(lines: EngravingConfigLine[]): EngravingConfigLine[] {
+    return lines.map((line) => ({ ...line }));
   }
 }
+
