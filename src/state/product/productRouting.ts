@@ -43,3 +43,14 @@ export const buildPatternPath = (
   isBulkMode
     ? `/${productSlug}/bulk/patterns/${patternId}`
     : `/${productSlug}/pattern/${patternId}`;
+
+export const parsePatternIdParam = (
+  patternID: string | undefined,
+): number | null => {
+  if (!patternID) {
+    return null;
+  }
+
+  const parsedPatternId = Number.parseInt(patternID, 10);
+  return Number.isFinite(parsedPatternId) ? parsedPatternId : null;
+};

@@ -129,7 +129,7 @@ export const useHYGP = () => {
           uiManager.add3DLoadingItem(key);
         }
 
-        void initializeDefaults(defaults).finally(() => {
+        initializeDefaults(defaults).finally(() => {
           if (shouldTrackLoading) {
             uiManager.remove3DLoadingItem(key);
           }
