@@ -49,7 +49,7 @@ export const useBucklesQuery = (productType: ProductType) => {
 // 3. Engraving Fonts
 export const useEngravingFontsQuery = (productType: ProductType) => {
   return useQuery({
-    queryKey: ['engravingFonts', productType],
+    queryKey: ['engravingFonts'],
     queryFn: () =>
       fetchJson<EngravingFontsApiResponse>(
         apiEndPointMap[productType].engravingFonts,
