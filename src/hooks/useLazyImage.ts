@@ -26,6 +26,10 @@ function load(src: string): Promise<string> {
   return p;
 }
 
+export function preloadImages(images: string[]) {
+  return Promise.all(images.map((src) => load(src)));
+}
+
 export function useLazyImage(src: string, isVisible = true) {
   const [status, setStatus] = useState<ImageStatus>(
     cache.has(src) ? 'loaded' : isVisible ? 'loading' : 'idle',

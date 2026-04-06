@@ -12,7 +12,7 @@ export const useFitModel = ({ controlsRef, mesh, key }: FitModelOptions) => {
   useEffect(() => {
     if (!mesh || !controlsRef) return;
 
-    void controlsRef.rotateTo(0, Math.PI / 2, true);
+    void controlsRef.rotateTo(0, Math.PI / 2);
 
     void controlsRef.fitToBox(mesh, true, {
       paddingTop: 40,

@@ -4,6 +4,7 @@ import { ProductType } from '../state/product/types';
 import { UiManager } from '../state/ui/UiManager';
 import { CachedAssets } from '../loaders/CachedAssets';
 import { Parser } from './Parser';
+import { usePreload2D } from '../hooks/usePreload2D';
 import {
   useBucklesQuery,
   useCollectionProductsQuery,
@@ -35,6 +36,8 @@ export const useInitializeProductApis = (
     isLoading: isEngravingFontsLoading,
     isError: isEngravingFontsError,
   } = useEngravingFontsQuery(productType);
+
+  usePreload2D(engravingFonts, uiManager.isDefaultLoaded);
   const {
     data: collections,
     isLoading: isCollectionsLoading,

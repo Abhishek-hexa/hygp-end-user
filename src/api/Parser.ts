@@ -28,8 +28,13 @@ export class Parser {
 
     const webbingFonts: Map<number, FontDescription> = new Map();
     const engravingFonts: Map<number, FontDescription> = new Map();
+    const fontPreviewImages = new Set<string>();
 
     fontOptions.forEach((font) => {
+      if (font.preview) {
+        fontPreviewImages.add(font.preview);
+      }
+
       if (font.use_case.includes('webbing')) {
         webbingFonts.set(font.id, {
           font_path: font.font_path,
@@ -48,7 +53,11 @@ export class Parser {
       }
     });
 
-    return { webbingFonts, engravingFonts };
+    return {
+      webbingFonts,
+      engravingFonts,
+      fontPreviewImages: Array.from(fontPreviewImages),
+    };
   };
 
   public static parseSizes = (sizeOptions: ProductVariantsApiResponse) => {
