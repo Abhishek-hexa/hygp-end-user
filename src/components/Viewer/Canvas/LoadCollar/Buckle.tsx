@@ -69,7 +69,6 @@ export const Buckle = observer(() => {
           mesh={meshManager.glassMesh}
         />
       )}
-      {meshManager.planeMesh && <primitive key={meshManager.planeMesh.uuid} object={meshManager.planeMesh} />}
     </>
   );
 });

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMainContext } from '../../../../hooks/useMainContext';
 import { useMyGLTF } from '../../../../hooks/useMyGLTF';
-import { CachedAssets } from '../../../../loaders/CachedAssets';
+import { ProductType } from '../../../../state/product/types';
 import WebTextured from '../EffectObj/WebTextured';
 import { Buckle } from './Buckle';
 import { Stitches } from './Stitches';
@@ -17,7 +17,13 @@ type LoadCollarProps = {
 export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { meshManager } = design3DManager;
-  const { scene } = useMyGLTF(url);
+  const { productManager } = designManager;
+  const { buckleManager } = productManager;
+  const isPlasticMaterial = buckleManager.material === 'PLASTIC';
+  const modelUrl = isPlasticMaterial ? plasticUrl : url;
+  const isDogPlasticModel =
+    productManager.productId === ProductType.DOG_COLLAR && isPlasticMaterial;
+  const { scene } = useMyGLTF(modelUrl);
 
   const webbingTextManager = designManager.productManager.webbingText;
   const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
@@ -25,23 +31,14 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
   const selectedSize = webbingTextManager.size;
 
   useEffect(() => {
-    meshManager.setMeshGroup(url, scene);
-  }, [meshManager, scene, url]);
+    meshManager.setMeshGroup(
+      modelUrl,
+      scene,
+      isDogPlasticModel ? 'PLASTIC' : 'DEFAULT',
+    );
+  }, [isDogPlasticModel, meshManager, modelUrl, scene]);
 
-  useEffect(() => {
-    let active = true;
 
-    // Preload/register plastic variant in background so default loader can complete immediately.
-    void CachedAssets.loadModel(plasticUrl)
-      .then((result) => {
-        if (!active || !result.asset) return;
-        meshManager.setMeshGroup(plasticUrl, result.asset.scene, 'PLASTIC');
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [meshManager, plasticUrl]);
 
   return (
     <>
