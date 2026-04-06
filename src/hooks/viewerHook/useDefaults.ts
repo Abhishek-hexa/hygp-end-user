@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
 import { reaction } from 'mobx';
+import { useEffect, useRef } from 'react';
 
-import { CachedAssets } from '../loaders/CachedAssets';
-import { ProductType } from '../state/product/types';
-import { useMainContext } from './useMainContext';
+import { CachedAssets } from '../../loaders/CachedAssets';
+import { ProductType } from '../../state/product/types';
+import { useMainContext } from '../useMainContext';
 
 interface Defaults {
   modelUrl: string | null;
@@ -14,7 +14,7 @@ interface Defaults {
 
 const DEFAULT_HDRS = [
   '/assets/texture/texture/white1.hdr',
-  '/assets/texture/texture/photo_studio_01_1k.hdr',
+  '/assets/texture/texture/metro_vijzelgracht_1k2.hdr',
 ];
 
 const PRODUCT_DEFAULT_NORMALS: Record<ProductType, string[]> = {
@@ -53,12 +53,6 @@ const initializeDefaults = async (defaults: Defaults) => {
   await Promise.allSettled(tasks);
 };
 
-const loadAllModels = async (modelUrls: string[]) => {
-  await Promise.allSettled(
-    modelUrls.map((modelUrl) => CachedAssets.loadModel(modelUrl)),
-  );
-};
-
 const hasUncachedBlockingDefaults = (defaults: Defaults) => {
   const modelPending = defaults.modelUrl
     ? (() => {
@@ -87,9 +81,10 @@ const hasUncachedBlockingDefaults = (defaults: Defaults) => {
   return modelPending || fontPending || hdrPending || texturePending;
 };
 
-export const useHYGP = () => {
+export const useDefaults = () => {
   const { designManager, uiManager } = useMainContext();
   const { productManager } = designManager;
+  const defaultsRunIdRef = useRef(0);
 
   useEffect(() => {
     const disposer = reaction(
@@ -101,18 +96,11 @@ export const useHYGP = () => {
           productManager.textureManager.selectedPattern?.pngImage ?? null,
         selectedFont:
           productManager.webbingText.selectedFontDescription?.font_path ?? null,
-        isDataLoading: uiManager.isDataLoading,
-        allModels: productManager.allModels,
       }),
-      ({
-        key,
-        modelPath,
-        selectedTexture,
-        selectedFont,
-        isDataLoading,
-        allModels,
-      }) => {
+      ({ key, modelPath, selectedTexture, selectedFont }) => {
         const defaultNormals = PRODUCT_DEFAULT_NORMALS[key] ?? [];
+        const runId = ++defaultsRunIdRef.current;
+        const loadingItemId = `defaults:${key}:${runId}`;
 
         const defaults: Defaults = {
           font: selectedFont,
@@ -131,20 +119,22 @@ export const useHYGP = () => {
           textures: defaultNormals,
         };
 
-        const shouldTrackLoading = hasUncachedBlockingDefaults(blockingDefaults);
+        const shouldTrackLoading =
+          hasUncachedBlockingDefaults(blockingDefaults);
+        uiManager.setDefaultLoaded(false);
+
         if (shouldTrackLoading) {
-          uiManager.add3DLoadingItem(key);
+          uiManager.add3DLoadingItem(loadingItemId);
         }
 
         initializeDefaults(defaults).finally(() => {
           if (shouldTrackLoading) {
-            uiManager.remove3DLoadingItem(key);
+            uiManager.remove3DLoadingItem(loadingItemId);
+          }
+          if (runId === defaultsRunIdRef.current) {
+            uiManager.setDefaultLoaded(true);
           }
         });
-
-        if (!isDataLoading) {
-          void loadAllModels(allModels);
-        }
       },
       {
         fireImmediately: true,
@@ -152,5 +142,5 @@ export const useHYGP = () => {
     );
 
     return () => disposer();
-  }, []);
+  }, [productManager, uiManager]);
 };

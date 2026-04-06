@@ -67,6 +67,12 @@ export const useInitializeProductApis = (
     }
   }
 
+  if (patternData) {
+    const preloadImage = patternData.product.png_image;
+    if (!preloadImage) return;
+    void CachedAssets.loadTexture(preloadImage);
+  }
+
   const { data: collectionProducts, isLoading: isCollectionProductsLoading } =
     useCollectionProductsQuery(collectionIdToFetch);
 

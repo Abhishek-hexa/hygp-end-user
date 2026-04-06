@@ -4,6 +4,7 @@ export class UiManager {
   private _isDataLoading = false;
   private _dataError: string | null = null;
   private _isBulkMode = false;
+  private _isDefaultLoaded = false;
   private _3dLoadingItems = new Set<string>();
   private _is3DLoadingDebounced = false;
   private _loadingDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -22,6 +23,10 @@ export class UiManager {
 
   get isBulkMode() {
     return this._isBulkMode;
+  }
+
+  get isDefaultLoaded() {
+    return this._isDefaultLoaded;
   }
 
   get is3DLoading() {
@@ -66,5 +71,9 @@ export class UiManager {
 
   setBulkMode(inIsBulkMode: boolean) {
     this._isBulkMode = inIsBulkMode;
+  }
+
+  setDefaultLoaded(inIsDefaultLoaded: boolean) {
+    this._isDefaultLoaded = inIsDefaultLoaded;
   }
 }

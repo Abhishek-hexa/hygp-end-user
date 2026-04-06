@@ -1,17 +1,19 @@
 import { observer } from 'mobx-react-lite';
 
-import { useHYGP } from '../../hooks/useHYGP';
 import { useMainContext } from '../../hooks/useMainContext';
+import { usePreloadOther } from '../../hooks/viewerHook/usePreloadOther';
 import { useBulkMode } from '../../hooks/viewerHook/useBulkMode';
-import { useProductInit } from '../../hooks/viewerHook/useProductInit';
+import { useDefaults } from '../../hooks/viewerHook/useDefaults';
 import { usePatternSync } from '../../hooks/viewerHook/usePatternSync';
+import { useProductInit } from '../../hooks/viewerHook/useProductInit';
 import CustomLoader from '../shared/CustomLoader';
 import { CanvasPanel } from './Canvas/CanvasPanel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NavBar } from './NavBar/NavBar';
 
 export const Viewer = observer(() => {
-  useHYGP();
+  useDefaults();
+  usePreloadOther();
 
   const { uiManager } = useMainContext();
   const isBulkMode = useBulkMode();
@@ -33,7 +35,9 @@ export const Viewer = observer(() => {
           <ConfigurationPanel />
         </div>
       </div>
-      {uiManager.isDataLoading || uiManager.is3DLoading ? <CustomLoader /> : null}
+      {uiManager.isDataLoading || uiManager.is3DLoading ? (
+        <CustomLoader />
+      ) : null}
       {uiManager.dataError ? (
         <div className="pointer-events-none absolute inset-x-4 top-20 z-20 flex justify-center">
           <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 shadow-sm">
