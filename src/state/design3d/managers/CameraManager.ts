@@ -215,7 +215,7 @@ export class CameraManager {
   ) {
     if (!modelKey) return;
 
-    const modelGroup = meshManager.getMeshGroup(modelKey);
+    const modelGroup = meshManager.webMesh;
     if (!modelGroup) return;
 
     void controlsRef.fitToBox(modelGroup, true);

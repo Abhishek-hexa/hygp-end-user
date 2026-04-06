@@ -8,13 +8,23 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
 import { CameraFeatureAnimation } from './CameraFeatureAnimation';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
-import { ModelLoadingFallback } from './ModelLoadingFallback';
 import RenderModelByComponent from './RenderModelByComponent';
+import { useFitModel } from '../../../hooks/useFitModel';
 
 export const CanvasPanel = observer(() => {
-  const { design3DManager, uiManager } = useMainContext();
-  const { cameraManager } = design3DManager;
+  const { design3DManager, designManager, uiManager } = useMainContext();
+  const { cameraManager, meshManager } = design3DManager;
   const controlsRef = useRef<CameraControlsImpl | null>(null);
+  const activeModelKey = designManager.productManager.activeModelKey;
+  const activeMesh = activeModelKey
+    ? meshManager.webMesh
+    : undefined;
+
+  useFitModel({
+    controlsRef: cameraManager.controllRef,
+    mesh: activeMesh,
+    key: activeModelKey,
+  });
 
   const handleCameraRef = useCallback(
     (controls: CameraControlsImpl | null) => {
