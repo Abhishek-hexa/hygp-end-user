@@ -101,27 +101,33 @@ export const NavBar = observer(() => {
             onShopSelect={handleShopSelect}
           />
           <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
-            <button type="button" className="uppercase">
+            <button
+              type="button"
+              className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1">
               Size Guide
+              <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
             </button>
-            <div ref={shopsMenuRef} className="relative">
+
+            {/* Shops Dropdown */}
+            <div ref={shopsMenuRef} className="relative group">
               <button
                 type="button"
-                className="uppercase flex items-center gap-1"
+                className="uppercase flex items-center gap-1 relative transition-colors duration-200 hover:text-[#f6c9c4] py-1"
                 onClick={() => {
                   setIsShopsOpen((prev) => !prev);
                   setIsMoreOpen(false);
                 }}>
                 Shops <ChevronDownIcon className="w-6 h-6" />
+                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
               </button>
               {isShopsOpen ? (
-                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary shadow-xl">
                   <div className="flex flex-col gap-1 text-xl text-nowrap uppercase text-[#fbf2e8]">
                     {shopItems.map((shopItem) => (
                       <button
                         key={shopItem.productType}
                         type="button"
-                        className="text-left transition-opacity hover:opacity-80"
+                        className="text-left px-4 py-1  transition-all duration-250 hover:text-white hover:bg-[#0f7662]"
                         onClick={() => handleShopSelect(shopItem.productType)}>
                         {shopItem.label}
                       </button>
@@ -130,27 +136,35 @@ export const NavBar = observer(() => {
                 </div>
               ) : null}
             </div>
-            <button type="button" className="uppercase">
+
+            {/* Sell Your Own */}
+            <button
+              type="button"
+              className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1">
               Sell Your Own
+              <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
             </button>
+
+            {/* More Dropdown */}
             <div ref={moreMenuRef} className="relative">
               <button
                 type="button"
-                className="uppercase flex items-center gap-1"
+                className="uppercase flex items-center gap-1 relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1"
                 onClick={() => {
                   setIsMoreOpen((prev) => !prev);
                   setIsShopsOpen(false);
                 }}>
                 More <ChevronDownIcon className="w-6 h-6" />
+                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
               </button>
               {isMoreOpen ? (
-                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary px-5 py-4 shadow-xl">
+                <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary shadow-xl">
                   <div className="flex flex-col gap-1 text-xl text-nowrap uppercase text-[#fbf2e8]">
                     {moreItems.map((item) => (
                       <button
                         key={item}
                         type="button"
-                        className="flex items-center gap-2 text-left transition-opacity hover:opacity-80"
+                        className="flex items-center gap-2 text-left px-4 py-1 transition-all duration-250 hover:text-white hover:bg-[#0f7662]"
                         onClick={() => handleMoreSelect(item)}>
                         {item === 'Bulk Order' && uiManager.isBulkMode ? (
                           <span className="h-2 w-2 rounded-full bg-[#6f9e9d]" />
