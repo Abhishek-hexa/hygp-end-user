@@ -101,18 +101,21 @@ export const NavBar = observer(() => {
             onShopSelect={handleShopSelect}
           />
           <nav className="hidden font-ranchers items-center gap-10 text-xl font-normal tracking-wide text-amber-50 lg:flex">
-            <button
-              type="button"
-              className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1">
-              Size Guide
-              <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
-            </button>
-
-            {/* Shops Dropdown */}
-            <div ref={shopsMenuRef} className="relative group">
+            <div className="disabled-wrapper cursor-not-allowed">
               <button
                 type="button"
-                className="uppercase flex items-center gap-1 relative transition-colors duration-200 hover:text-[#f6c9c4] py-1"
+                disabled
+                className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1 disabled:pointer-events-none disabled:opacity-60">
+                Size Guide
+                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
+              </button>
+            </div>
+
+            {/* Shops Dropdown */}
+            <div ref={shopsMenuRef} className="relative">
+              <button
+                type="button"
+                className="uppercase flex items-center gap-1 relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1"
                 onClick={() => {
                   setIsShopsOpen((prev) => !prev);
                   setIsMoreOpen(false);
@@ -127,7 +130,7 @@ export const NavBar = observer(() => {
                       <button
                         key={shopItem.productType}
                         type="button"
-                        className="text-left px-4 py-1  transition-all duration-250 hover:text-white hover:bg-[#0f7662]"
+                        className="text-left px-4 py-1 transition-all duration-200 hover:text-white hover:bg-[#0f7662]"
                         onClick={() => handleShopSelect(shopItem.productType)}>
                         {shopItem.label}
                       </button>
@@ -138,13 +141,15 @@ export const NavBar = observer(() => {
             </div>
 
             {/* Sell Your Own */}
-            <button
-              type="button"
-              className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1">
-              Sell Your Own
-              <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
-            </button>
-
+            <div className="disabled-wrapper cursor-not-allowed">
+              <button
+                type="button"
+                disabled
+                className="uppercase relative group transition-colors duration-200 hover:text-[#f6c9c4] py-1 disabled:pointer-events-none disabled:opacity-60">
+                Select Your Own
+                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#f6c9c4] transition-all duration-300 group-hover:w-full" />
+              </button>
+            </div>
             {/* More Dropdown */}
             <div ref={moreMenuRef} className="relative">
               <button
@@ -160,18 +165,27 @@ export const NavBar = observer(() => {
               {isMoreOpen ? (
                 <div className="absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 bg-primary shadow-xl">
                   <div className="flex flex-col gap-1 text-xl text-nowrap uppercase text-[#fbf2e8]">
-                    {moreItems.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        className="flex items-center gap-2 text-left px-4 py-1 transition-all duration-250 hover:text-white hover:bg-[#0f7662]"
-                        onClick={() => handleMoreSelect(item)}>
-                        {item === 'Bulk Order' && uiManager.isBulkMode ? (
-                          <span className="h-2 w-2 rounded-full bg-[#6f9e9d]" />
-                        ) : null}
-                        {item}
-                      </button>
-                    ))}
+                    {moreItems.map((item) => {
+                      const isBulkOrder = item === 'Bulk Order';
+                      const isDisabled = !isBulkOrder;
+
+                      return (
+                        <div
+                          key={item}
+                          className={isDisabled ? 'cursor-not-allowed' : ''}>
+                          <button
+                            type="button"
+                            disabled={isDisabled}
+                            className="flex items-center gap-2 text-left px-4 py-1 transition-all duration-200 hover:text-white hover:bg-[#0f7662] disabled:pointer-events-none disabled:opacity-40 w-full"
+                            onClick={() => handleMoreSelect(item)}>
+                            {isBulkOrder && uiManager.isBulkMode ? (
+                              <span className="h-2 w-2 rounded-full bg-[#6f9e9d]" />
+                            ) : null}
+                            {item}
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ) : null}
