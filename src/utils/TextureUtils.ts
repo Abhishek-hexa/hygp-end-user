@@ -159,10 +159,11 @@ export class TextureUtils {
     unitCenterX: number,
     unitCenterY: number,
     unitCropHeight: number,
+    heightRepeat: number
   ): { svg: string; width: number; height: number } {
     const { oWidth, oHeight, svgDoc } = grid;
     const cropWidth = oWidth;
-    const cropHeight = unitCropHeight * oHeight;
+    const cropHeight = unitCropHeight * oHeight * heightRepeat;
     const offsetX = oWidth * 1.5 - cropWidth / 2 + unitCenterX * (oWidth / 2);
     const offsetY =
       oHeight * 1.5 - cropHeight / 2 + unitCenterY * (oHeight / 2);

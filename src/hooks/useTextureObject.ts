@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { GridSVGData, TextureUtils } from '../utils/TextureUtils';
 import { useMyHdr } from './useMyHdr';
 import { useMyTexture } from './useMyTexture';
-import { UiManager } from '../state/ui/UiManager';
 import { useMainContext } from './useMainContext';
 
 const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.jpg';
@@ -31,6 +30,7 @@ export interface UseTextureObjectOptions {
   side?: THREE.Side;
   normalMapPath?: string;
   normalRepeat?: [number, number];
+  heightRepeat?: number
 }
 
 export function useTextureObject({
@@ -43,6 +43,7 @@ export function useTextureObject({
   side = THREE.FrontSide,
   normalMapPath = DEFAULT_NORMAL_MAP_PATH,
   normalRepeat = [5, 5],
+  heightRepeat = 1
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
   const { uiManager } = useMainContext();
@@ -152,6 +153,7 @@ export function useTextureObject({
           entry.translateX ?? 0,
           entry.translateY ?? 0,
           entry.scale ?? 1,
+          heightRepeat
         );
 
         const texture = await TextureUtils.svgToTexture(
@@ -194,7 +196,7 @@ export function useTextureObject({
       active = false;
       controller.abort();
     };
-  }, [currentSize, parsedSizes, texturePath]);
+  }, [currentSize, parsedSizes, texturePath, heightRepeat]);
 
   return material.current;
 }

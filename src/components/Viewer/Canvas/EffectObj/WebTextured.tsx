@@ -6,11 +6,12 @@ import TextureObj from './TextureObj';
 
 interface WebTexturedProps {
   texturedName: MeshName;
-  side?: Boolean
-  normalMapPath?: string | undefined ;
+  side?: boolean;
+  normalMapPath?: string | undefined;
+  heightRepeat?: number | undefined;
 }
 
-const WebTextured = observer(({ texturedName, side = false, normalMapPath }: WebTexturedProps) => {
+const WebTextured = observer(({ texturedName, side = false, normalMapPath, heightRepeat }: WebTexturedProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { productManager } = designManager;
   const { meshManager } = design3DManager;
@@ -40,8 +41,9 @@ const WebTextured = observer(({ texturedName, side = false, normalMapPath }: Web
       currentSize={currentSize}
       productKey={productKey}
       envMap={sourceMaterial?.envMap ?? null}
-      side={ side ? THREE.DoubleSide : THREE.FrontSide}
+      side={side ? THREE.DoubleSide : THREE.FrontSide}
       normalMapPath={normalMapPath}
+      heightRepeat={heightRepeat}
     />
   );
 });

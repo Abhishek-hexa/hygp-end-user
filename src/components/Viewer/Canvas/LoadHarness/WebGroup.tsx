@@ -7,8 +7,8 @@ import Base from './Base'
 const WebGroup = observer(() => {
   return (
     <>
-    <WebTextured texturedName={'base1'} normalMapPath={'/assets/texture/texture/base1Normal.webp'} />
-    <WebTextured texturedName={'base1Part'} normalMapPath={'/assets/texture/texture/base2Normal.webp'} />
+    <WebTextured texturedName={'base1'} normalMapPath={'/assets/texture/texture/base1Normal.webp'} heightRepeat={3} />
+    <WebTextured texturedName={'base1Part'} normalMapPath={'/assets/texture/texture/base2Normal.webp'} heightRepeat={3} />
     <Belt />
     <Bottom />
     <Base />

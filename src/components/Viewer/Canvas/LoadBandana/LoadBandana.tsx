@@ -12,7 +12,7 @@ const LoadBandana = observer(({ url }: LoadBandanaProps) => {
 
   return (
     <>
-      <WebTextured texturedName='Base' />
+      <WebTextured texturedName='Base' heightRepeat={3} />
       <Stitches />
     </>
   );
