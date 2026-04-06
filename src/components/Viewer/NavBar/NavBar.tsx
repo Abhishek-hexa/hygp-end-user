@@ -85,12 +85,12 @@ export const NavBar = observer(() => {
         <div className="mx-auto flex h-full w-full items-center justify-between px-3 lg:px-5">
           <div className="flex items-center">
             <LazyImage
-              src="/logo/mobileNavbar.png"
+              src="/logo/mobileNavbar.webp"
               alt="Here You Go Pup Logo"
               className="h-8 w-auto lg:hidden"
             />
             <LazyImage
-              src="/logo/desktopNavbar.png"
+              src="/logo/desktopNavbar.webp"
               alt="Here You Go Pup Logo"
               className="hidden h-14 w-auto lg:block"
             />
