@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
-import { useMainContext } from '../../../../hooks/useMainContext';
-import { useMyGLTF } from '../../../../hooks/useMyGLTF';
+import { useModel } from '../../../../hooks/useModel';
 import WebTextured from '../EffectObj/WebTextured';
 import Hook from './Hook';
 import WebbingText from '../LoadCollar/WebbingText';
@@ -11,28 +9,18 @@ interface LoadLeashProps {
 }
 
 const LoadLeash = observer(({ url }: LoadLeashProps) => {
-  const { designManager, design3DManager } = useMainContext();
-  const meshManager = design3DManager.meshManager;
-  const { scene } = useMyGLTF(url);
-
-  const webbingTextManager = designManager.productManager.webbingText;
-  const selectedFont = webbingTextManager.selectedFontDescription?.font_path;
-  const fontSize = webbingTextManager.size;
-
-  useEffect(() => {
-    meshManager.setMeshGroup(url, scene);
-  }, [meshManager, scene, url]);
+  const { webTextMesh, webbingText } = useModel(url);
 
   return (
     <>
       <Hook />
       <WebTextured texturedName="Leash" side={true} />
       <WebbingText
-        mesh={meshManager.webTextMesh}
-        text={webbingTextManager.value}
-        color={webbingTextManager.selectedColor}
-        fontUrl={selectedFont}
-        fontSize={fontSize}
+        mesh={webTextMesh}
+        text={webbingText.text}
+        color={webbingText.color}
+        fontUrl={webbingText.fontUrl}
+        fontSize={webbingText.fontSize}
         side={true}
       />
     </>
