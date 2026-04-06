@@ -69,9 +69,13 @@ function createEmptyBuckets(): MeshBuckets {
 
 export class MeshManager {
   private _libState: StateManager;
-  private _meshGroups: Record<string, THREE.Group> = {};
-  private _visibleMeshCenters: Record<string, THREE.Vector3 | null> =
-    {};
+  private _variantGroups: Record<
+    ModelVariant,
+    { key: string | null; group: THREE.Group | null }
+  > = {
+    DEFAULT: { key: null, group: null },
+    PLASTIC: { key: null, group: null },
+  };
   private _meshBuckets: Record<ModelVariant, MeshBuckets> = {
     DEFAULT: createEmptyBuckets(),
     PLASTIC: createEmptyBuckets(),
@@ -201,12 +205,16 @@ export class MeshManager {
   }
 
   getMeshGroup(key: string): THREE.Group | undefined {
-    return this._meshGroups[key];
+    return this.getGroupByKey(key) ?? undefined;
   }
 
   getVisibleMeshCenter(key: string): THREE.Vector3 | null {
-    const center = this._visibleMeshCenters[key];
-    return center ? center.clone() : null;
+    const group = this.getGroupByKey(key);
+    if (!group) {
+      return null;
+    }
+
+    return this.computeVisibleCenter(group);
   }
 
   setMeshGroup(
@@ -214,15 +222,61 @@ export class MeshManager {
     group: THREE.Group,
     variant: ModelVariant = 'DEFAULT',
   ) {
-    this._meshGroups[key] = group;
-    this.parseMeshGroup(key, group, variant);
+    this._variantGroups[variant] = { key, group };
+    this.parseMeshGroup(group, variant);
   }
 
-  private parseMeshGroup(
-    key: string,
-    group: THREE.Group,
-    variant: ModelVariant,
-  ) {
+  private getGroupByKey(key: string): THREE.Group | null {
+    const defaultGroup = this._variantGroups.DEFAULT;
+    if (defaultGroup.key === key && defaultGroup.group) {
+      return defaultGroup.group;
+    }
+
+    const plasticGroup = this._variantGroups.PLASTIC;
+    if (plasticGroup.key === key && plasticGroup.group) {
+      return plasticGroup.group;
+    }
+
+    return null;
+  }
+
+  private computeVisibleCenter(group: THREE.Group): THREE.Vector3 | null {
+    const visibleNames = new Set<MeshName>(
+      visibleMeshNamesByProductType[this.productType] as readonly MeshName[],
+    );
+    const shouldFilterByNames = visibleNames.size > 0;
+    const visibleBounds = new THREE.Box3().makeEmpty();
+    const meshBounds = new THREE.Box3();
+
+    group.updateMatrixWorld(true);
+
+    group.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+
+      const meshName = child.name as MeshName;
+      child.visible = !shouldFilterByNames || visibleNames.has(meshName);
+      if (!child.visible) return;
+
+      const geometry = child.geometry;
+      if (!geometry.boundingBox) {
+        geometry.computeBoundingBox();
+      }
+      if (!geometry.boundingBox) return;
+
+      meshBounds.copy(geometry.boundingBox).applyMatrix4(child.matrixWorld);
+      visibleBounds.union(meshBounds);
+    });
+
+    if (visibleBounds.isEmpty()) {
+      return null;
+    }
+
+    const center = new THREE.Vector3();
+    visibleBounds.getCenter(center);
+    return center;
+  }
+
+  private parseMeshGroup(group: THREE.Group, variant: ModelVariant) {
     const visibleNames = new Set<MeshName>(
       visibleMeshNamesByProductType[this.productType] as readonly MeshName[],
     );
@@ -258,14 +312,12 @@ export class MeshManager {
 
     this._meshBuckets[variant] = bucket;
     if (visibleBounds.isEmpty()) {
-      this._visibleMeshCenters[key] = null;
       return;
     }
 
     // Bounding box center for rotation axes.
     const center = new THREE.Vector3();
     visibleBounds.getCenter(center);
-    this._visibleMeshCenters[key] = center.clone();
 
     // Use model size to keep clipping stable across product scales.
     const boundsSize = new THREE.Vector3();
