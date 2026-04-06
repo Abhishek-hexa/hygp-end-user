@@ -204,6 +204,30 @@ export class MeshManager {
     return this.stitchMeshes.get('Stitches');
   }
 
+  get fitModelMesh(): THREE.Object3D | undefined {
+    switch (this.productType) {
+      case ProductType.DOG_COLLAR:
+      case ProductType.CAT_COLLAR:
+        return this.webMesh;
+      case ProductType.MARTINGALE:
+        return this.martingleMesh ?? this.webMesh;
+      case ProductType.LEASH:
+        return this.leashMesh;
+      case ProductType.BANDANA:
+        return this.baseMesh;
+      case ProductType.HARNESS:
+        return (
+          this.base1Mesh ??
+          this.base1PartMesh ??
+          this.base2Mesh ??
+          this.beltsMesh ??
+          this.bottomMesh
+        );
+      default:
+        return this.webMesh;
+    }
+  }
+
   getMeshGroup(key: string): THREE.Group | undefined {
     return this.getGroupByKey(key) ?? undefined;
   }
