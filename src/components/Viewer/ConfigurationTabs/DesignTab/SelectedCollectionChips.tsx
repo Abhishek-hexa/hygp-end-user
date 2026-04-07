@@ -18,6 +18,7 @@ export const SelectedCollectionChips = ({
       {selectedCollections.map((collection) => (
         <button
           key={`chip-${collection.id}`}
+          disabled={isOnlyOne}
           type="button"
           onClick={() => {
             if (isOnlyOne) {
@@ -29,7 +30,7 @@ export const SelectedCollectionChips = ({
           }}
           className={`inline-flex items-center justify-center gap-1 rounded-full border border-gray-200 px-3 py-1 text-xs ${
             isOnlyOne
-              ? 'bg-gray-100 text-gray-400'
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed!'
               : 'bg-gray-100 text-black hover:bg-gray-200'
           }`}
           title={isOnlyOne ? 'At least one collection is required' : ''}>
