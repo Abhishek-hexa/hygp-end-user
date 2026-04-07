@@ -7,6 +7,10 @@ export enum ProductType {
   HARNESS = 'HARNESS',
 }
 
+export enum MiscPatternID {
+  MISC = '454325862615',
+}
+
 export type ProductSizeType =
   | 'EXTRA_SMALL'
   | 'SMALL'

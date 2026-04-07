@@ -4,6 +4,7 @@ import {
   ColorDescription,
   FontDescription,
   LeashLengthType,
+  MiscPatternID,
   PatternType,
   ProductSizeType,
   SizeDescription,
@@ -125,12 +126,16 @@ export class Parser {
 
   public static parseCollections = (
     collectionsResponse: ShopifyCollectionsApiResponse,
-    textureManager: TextureManager,
   ) => {
     const allCollections = collectionsResponse.custom_collections;
 
+    const filteredCollections = allCollections.filter((collection) => {
+      return collection.id !== MiscPatternID.MISC;
+    });
+
     const collections: Collection[] = [];
-    allCollections.forEach((collection: ShopifyCollectionApiItem) => {
+
+    filteredCollections.forEach((collection: ShopifyCollectionApiItem) => {
       const parsedCollection: Collection = {
         id: parseInt(collection.id),
         image: collection.image,
@@ -138,6 +143,7 @@ export class Parser {
       };
       collections.push(parsedCollection);
     });
+
     return { collections };
   };
 
