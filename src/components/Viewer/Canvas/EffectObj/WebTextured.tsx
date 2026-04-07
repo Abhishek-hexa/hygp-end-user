@@ -9,9 +9,10 @@ interface WebTexturedProps {
   side?: boolean;
   normalMapPath?: string | undefined;
   heightRepeat?: number | undefined;
+  rasterHeight?: number | undefined;
 }
 
-const WebTextured = observer(({ texturedName, side = false, normalMapPath, heightRepeat }: WebTexturedProps) => {
+const WebTextured = observer(({ texturedName, side = false, normalMapPath, heightRepeat, rasterHeight }: WebTexturedProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { productManager } = designManager;
   const { meshManager } = design3DManager;
@@ -44,6 +45,7 @@ const WebTextured = observer(({ texturedName, side = false, normalMapPath, heigh
       side={side ? THREE.DoubleSide : THREE.FrontSide}
       normalMapPath={normalMapPath}
       heightRepeat={heightRepeat}
+      rasterHeight={rasterHeight}
     />
   );
 });

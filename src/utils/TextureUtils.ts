@@ -6,7 +6,7 @@ export interface SizeEntry {
   translateY?: number;
   scale?: number;
 }
-const MAX_TEXTURE_SIZE = 2048;
+const DEFAULT_MAX_TEXTURE_SIZE = 4096;
 
 export interface GridSVGData {
   svgString: string;
@@ -181,7 +181,8 @@ export class TextureUtils {
 
   public static svgToTexture(
     svgString: string,
-    targetHeight: number,
+    targetShortSide: number,
+    maxTextureSize = DEFAULT_MAX_TEXTURE_SIZE,
   ): Promise<THREE.Texture> {
     return new Promise((resolve, reject) => {
       const parser = new DOMParser();
@@ -196,11 +197,18 @@ export class TextureUtils {
         parseFloat(svgElem.getAttribute('height') ?? '1') || 1;
       const aspect = originalWidth / originalHeight;
 
-      let tw = targetHeight * aspect;
-      let th = targetHeight;
+      // Keep the shorter side at the target resolution for better detail
+      // on non-square crops (e.g. tall bandana UV slices).
+      let tw = targetShortSide;
+      let th = targetShortSide;
+      if (aspect >= 1) {
+        tw = targetShortSide * aspect;
+      } else {
+        th = targetShortSide / aspect;
+      }
 
-      if (tw > MAX_TEXTURE_SIZE || th > MAX_TEXTURE_SIZE) {
-        const scale = MAX_TEXTURE_SIZE / Math.max(tw, th);
+      if (tw > maxTextureSize || th > maxTextureSize) {
+        const scale = maxTextureSize / Math.max(tw, th);
         tw = Math.floor(tw * scale);
         th = Math.floor(th * scale);
       }
@@ -260,6 +268,26 @@ export class TextureUtils {
       }
     } catch {
       // invalid JSON — return empty
+    }
+    return [];
+  }
+
+  public static parseCollarSizeEntries(
+    dataX: string | null | undefined,
+  ): SizeEntry[] {
+    if (!dataX) return [];
+    try {
+      const parsed = JSON.parse(dataX);
+      if (Array.isArray(parsed)) return parsed as SizeEntry[];
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        Array.isArray((parsed as Record<string, unknown>).collar)
+      ) {
+        return (parsed as Record<string, unknown>).collar as SizeEntry[];
+      }
+    } catch {
+      // invalid JSON - return empty
     }
     return [];
   }

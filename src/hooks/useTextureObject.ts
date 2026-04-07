@@ -3,13 +3,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { GridSVGData, TextureUtils } from '../utils/TextureUtils';
+import { ProductType } from '../state/product/types';
 import { useMyHdr } from './useMyHdr';
 import { useMyTexture } from './useMyTexture';
 import { useMainContext } from './useMainContext';
 
-const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.jpg';
+const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.webp';
 const HDR_PATH = '/assets/texture/texture/white1.hdr';
-const SVG_RASTER_HEIGHT = 500;
+const DEFAULT_SVG_RASTER_HEIGHT = 1024;
 
 function createDefaultMaterial() {
   return new THREE.MeshPhysicalMaterial({
@@ -30,7 +31,8 @@ export interface UseTextureObjectOptions {
   side?: THREE.Side;
   normalMapPath?: string;
   normalRepeat?: [number, number];
-  heightRepeat?: number
+  heightRepeat?: number;
+  rasterHeight?: number;
 }
 
 export function useTextureObject({
@@ -43,7 +45,8 @@ export function useTextureObject({
   side = THREE.FrontSide,
   normalMapPath = DEFAULT_NORMAL_MAP_PATH,
   normalRepeat = [5, 5],
-  heightRepeat = 1
+  heightRepeat = 1,
+  rasterHeight = DEFAULT_SVG_RASTER_HEIGHT,
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
   const { uiManager } = useMainContext();
@@ -67,10 +70,15 @@ export function useTextureObject({
     webTextureRef.current = webTexture;
   }, [webTexture]);
 
-  const parsedSizes = useMemo(
-    () => TextureUtils.parseSizeEntries(dataX, productKey),
-    [dataX, productKey],
-  );
+  const parsedSizes = useMemo(() => {
+    const isCollar =
+      productKey === ProductType.DOG_COLLAR ||
+      productKey === ProductType.CAT_COLLAR;
+    if (isCollar) {
+      return TextureUtils.parseCollarSizeEntries(dataX);
+    }
+    return TextureUtils.parseSizeEntries(dataX, productKey);
+  }, [dataX, productKey]);
 
   useEffect(() => {
     return () => {
@@ -102,14 +110,14 @@ export function useTextureObject({
 
   useEffect(() => {
     const mat = material.current;
-    const finalEnvMap = localEnvMap ?? envMap ?? null;
+    const finalEnvMap = envMap ?? localEnvMap ?? null;
     mat.normalMap = normalMap ?? null;
     mat.side = side;
     mat.map = webTexture;
     mat.envMap = finalEnvMap;
-    mat.envMapIntensity = finalEnvMap ? 6.5 : 0;
+    mat.envMapIntensity = 6.5;
     mat.needsUpdate = true;
-  }, [normalMap, side, webTexture, localEnvMap, envMap]);
+  }, [normalMap, side, webTexture, envMap, localEnvMap]);
 
   useEffect(() => {
     if (!texturePath || !currentSize) {
@@ -144,21 +152,27 @@ export function useTextureObject({
           img.height,
         );
 
-        const entry = TextureUtils.resolveClampedSizeEntry(
-          parsedSizes,
-          currentSize,
-        );
+        const entry = TextureUtils.resolveClampedSizeEntry(parsedSizes, currentSize);
+        let textureScale = entry.scale ?? 1;
+        if (textureScale === 1) {
+          textureScale = 1.005;
+        } else if (textureScale <= 0) {
+          textureScale = 0.01;
+        } else if (textureScale > 2) {
+          textureScale = 2;
+        }
         const cropped = TextureUtils.buildCroppedSVG(
           gridSVGData,
           entry.translateX ?? 0,
           entry.translateY ?? 0,
-          entry.scale ?? 1,
+          textureScale,
           heightRepeat
         );
 
         const texture = await TextureUtils.svgToTexture(
           cropped.svg,
-          SVG_RASTER_HEIGHT,
+          rasterHeight,
+          Math.min(gl.capabilities.maxTextureSize, 4096),
         );
         if (!active) {
           texture.dispose();
@@ -169,6 +183,8 @@ export function useTextureObject({
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.colorSpace = THREE.SRGBColorSpace;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.magFilter = THREE.LinearFilter;
         texture.repeat.set(1 / (cropped.width / cropped.height), 1);
         texture.needsUpdate = true;
 
@@ -196,7 +212,7 @@ export function useTextureObject({
       active = false;
       controller.abort();
     };
-  }, [currentSize, parsedSizes, texturePath, heightRepeat]);
+  }, [currentSize, parsedSizes, texturePath, heightRepeat, rasterHeight]);
 
   return material.current;
 }
