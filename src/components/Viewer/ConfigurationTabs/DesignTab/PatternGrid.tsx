@@ -24,6 +24,7 @@ export const PatternGrid = ({
           <button
             key={pattern.id}
             type="button"
+            title={pattern.name}
             onClick={() => onSelectPattern(pattern.id)}
             className={`group relative overflow-hidden rounded-md  transition-all ${
               selectedPatternId === pattern.id
