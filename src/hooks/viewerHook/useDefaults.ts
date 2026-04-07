@@ -18,17 +18,17 @@ const DEFAULT_HDRS = [
 ];
 
 const PRODUCT_DEFAULT_NORMALS: Record<ProductType, string[]> = {
-  [ProductType.BANDANA]: ['/assets/texture/texture/webbingNormal.jpg'],
-  [ProductType.CAT_COLLAR]: ['/assets/texture/texture/webbingNormal.jpg'],
-  [ProductType.DOG_COLLAR]: ['/assets/texture/texture/webbingNormal.jpg'],
+  [ProductType.BANDANA]: ['/assets/texture/texture/webbingNormal.webp'],
+  [ProductType.CAT_COLLAR]: ['/assets/texture/texture/webbingNormal.webp'],
+  [ProductType.DOG_COLLAR]: ['/assets/texture/texture/webbingNormal.webp'],
   [ProductType.HARNESS]: [
     '/assets/texture/texture/base1Normal.webp',
     '/assets/texture/texture/base2Normal.webp',
     '/assets/texture/texture/beltNormal.webp',
     '/assets/texture/texture/bottomNormal.webp',
   ],
-  [ProductType.LEASH]: ['/assets/texture/texture/webbingNormal.jpg'],
-  [ProductType.MARTINGALE]: ['/assets/texture/texture/webbingNormal.jpg'],
+  [ProductType.LEASH]: ['/assets/texture/texture/webbingNormal.webp'],
+  [ProductType.MARTINGALE]: ['/assets/texture/texture/webbingNormal.webp'],
 };
 
 const initializeDefaults = async (defaults: Defaults) => {
