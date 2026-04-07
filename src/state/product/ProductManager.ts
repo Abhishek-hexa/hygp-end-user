@@ -7,6 +7,7 @@ import { TextureManager } from './managers/TextureManager';
 import { WebbingTextManager } from './managers/WebbingTextManager';
 import { defaultProductId, productConfigs } from './productConfig';
 import {
+  Feature,
   Features,
   ProductType,
   SerializedProductConfiguration,
@@ -23,6 +24,7 @@ export class ProductManager {
 
   constructor() {
     makeAutoObservable(this);
+    this.syncEngravingAvailability();
     this._activeFeature = this.getAllFeatures()[0] ?? null;
   }
 
@@ -93,6 +95,7 @@ export class ProductManager {
   setProduct(inProductId: ProductType) {
     this._productId = inProductId;
     this._activeFeature = this.getAllFeatures()[0] ?? null;
+    this.syncEngravingAvailability();
     this.reset();
     this._buckleManager.setProductId(inProductId);
   }
@@ -153,5 +156,11 @@ export class ProductManager {
     this._engravingManager.resetSelection();
     this._webbingTextManager.resetSelection();
     this._textureManager.resetSelection();
+  }
+
+  private syncEngravingAvailability() {
+    this._engravingManager.setEnabled(
+      this.productConfig.features.includes(Feature.ENGRAVING),
+    );
   }
 }

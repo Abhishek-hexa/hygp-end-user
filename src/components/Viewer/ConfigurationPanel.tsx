@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
 import { Features } from '../../state/product/types';
@@ -18,6 +18,7 @@ export const ConfigurationPanel = observer(() => {
   const selectedSize = sizeManager.selectedSizeData;
   const selectedSizePrice = selectedSize ? selectedSize.price : null;
   const addToCartPrice = selectedSizePrice ?? '44.98';
+  const engravingManager = productManager.engravingManager;
 
   useEffect(() => {
     if (!features.length) {
@@ -44,8 +45,25 @@ export const ConfigurationPanel = observer(() => {
     }
   };
 
+  const handleInputInteractionCapture = useCallback(
+    (event: React.SyntheticEvent<HTMLElement>) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
+        engravingManager.clearDefaultsOnInputInteraction();
+      }
+    },
+    [engravingManager],
+  );
+
   return (
-    <aside className="flex h-full min-h-0 min-w-0 flex-col text-primary">
+    <aside
+      className="flex h-full min-h-0 min-w-0 flex-col text-primary"
+      onClickCapture={handleInputInteractionCapture}
+      onFocusCapture={handleInputInteractionCapture}>
       <FeatureTabsHeader
         features={features}
         activeFeature={activeFeature}
