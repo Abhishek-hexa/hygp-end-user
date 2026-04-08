@@ -54,7 +54,6 @@ export function useTextureObject({
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
   const { uiManager } = useMainContext();
-  console.log(dataX)
 
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
   const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
