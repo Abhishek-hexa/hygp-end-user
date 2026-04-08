@@ -15,8 +15,8 @@ const LoadBandana = observer(({ url }: LoadBandanaProps) => {
       <WebTextured
         texturedName='Base'
         side={true}
-        normalRepeat={[5.7, 5.7]}
-        rasterHeight={2048}
+        normalRepeat={[10, 10]}
+        rasterHeight={1024}
         useLegacyBandanaTransform={true}
       />
       <Stitches />
