@@ -7,13 +7,25 @@ import Base from './Base'
 const WebGroup = observer(() => {
   return (
     <>
-    <WebTextured texturedName={'base1'} normalMapPath={'/assets/texture/texture/base1Normal.webp'} heightRepeat={3} />
-    <WebTextured texturedName={'base1Part'} normalMapPath={'/assets/texture/texture/base2Normal.webp'} heightRepeat={3} />
-    <Belt />
-    <Bottom />
-    <Base />
+      <WebTextured
+        texturedName={'base1'}
+        side={true}
+        normalMapPath={'/assets/texture/texture/base1Normal.webp'}
+        normalRepeat={[1, 1]}
+        useLegacyHarnessTransform={true}
+      />
+      <WebTextured
+        texturedName={'base1Part'}
+        side={true}
+        normalMapPath={'/assets/texture/texture/base2Normal.webp'}
+        normalRepeat={[1, 1]}
+        useLegacyHarnessTransform={true}
+      />
+      <Belt />
+      <Bottom />
+      <Base />
     </>
-  )
-})
+  );
+});
 
-export default WebGroup
+export default WebGroup;
