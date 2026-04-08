@@ -10,7 +10,7 @@ import { useMainContext } from './useMainContext';
 
 const DEFAULT_NORMAL_MAP_PATH = '/assets/texture/texture/webbingNormal.webp';
 const HDR_PATH = '/assets/texture/texture/white1.hdr';
-const DEFAULT_SVG_RASTER_HEIGHT = 1024;
+const DEFAULT_SVG_RASTER_HEIGHT = 500;
 
 function createDefaultMaterial() {
   return new THREE.MeshPhysicalMaterial({
@@ -33,6 +33,8 @@ export interface UseTextureObjectOptions {
   normalRepeat?: [number, number];
   heightRepeat?: number;
   rasterHeight?: number;
+  useLegacyBandanaTransform?: boolean;
+  useLegacyHarnessTransform?: boolean;
 }
 
 export function useTextureObject({
@@ -47,9 +49,12 @@ export function useTextureObject({
   normalRepeat = [5, 5],
   heightRepeat = 1,
   rasterHeight = DEFAULT_SVG_RASTER_HEIGHT,
+  useLegacyBandanaTransform = false,
+  useLegacyHarnessTransform = false,
 }: UseTextureObjectOptions) {
   const { gl } = useThree();
   const { uiManager } = useMainContext();
+  console.log(dataX)
 
   const [webTexture, setWebTexture] = useState<THREE.Texture | null>(null);
   const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
@@ -79,6 +84,16 @@ export function useTextureObject({
     }
     return TextureUtils.parseSizeEntries(dataX, productKey);
   }, [dataX, productKey]);
+  const parsedBandanaSizes = useMemo(() => {
+    if (!useLegacyBandanaTransform) return [];
+    return TextureUtils.parseBandanaSizeEntries(dataX);
+  }, [dataX, useLegacyBandanaTransform]);
+  const parsedHarnessSizes = useMemo(() => {
+    if (!useLegacyHarnessTransform) return [];
+    return TextureUtils.parseHarnessSizeEntries(dataX);
+  }, [dataX, useLegacyHarnessTransform]);
+  const useLegacyUvTransform =
+    useLegacyBandanaTransform || useLegacyHarnessTransform;
 
   useEffect(() => {
     return () => {
@@ -131,10 +146,9 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
-    if (bootLoader.current === 0) {
-      uiManager.add3DLoadingItem(`bootLoader${bootLoader.current}`);
-    }
+
     (async () => {
+      uiManager.add3DLoadingItem(`bootLoader${bootLoader.current}`);
       try {
         const dataUrl = await TextureUtils.fetchImageAsDataURL(
           texturePath,
@@ -152,28 +166,42 @@ export function useTextureObject({
           img.height,
         );
 
-        const entry = TextureUtils.resolveClampedSizeEntry(parsedSizes, currentSize);
+        const entry = useLegacyBandanaTransform
+          ? TextureUtils.resolveLegacyBandanaEntry(
+              parsedBandanaSizes,
+              currentSize,
+            )
+          : useLegacyHarnessTransform
+            ? TextureUtils.resolveLegacyHarnessEntry(
+                parsedHarnessSizes,
+                currentSize,
+              )
+          : TextureUtils.resolveClampedSizeEntry(parsedSizes, currentSize);
         let textureScale = entry.scale ?? 1;
-        if (textureScale === 1) {
+        if (!useLegacyUvTransform && textureScale === 1) {
           textureScale = 1.005;
         } else if (textureScale <= 0) {
           textureScale = 0.01;
         } else if (textureScale > 2) {
           textureScale = 2;
         }
-        const cropped = TextureUtils.buildCroppedSVG(
-          gridSVGData,
-          entry.translateX ?? 0,
-          entry.translateY ?? 0,
-          textureScale,
-          heightRepeat
-        );
+        const cropped = useLegacyUvTransform
+          ? null
+          : TextureUtils.buildCroppedSVG(
+              gridSVGData,
+              entry.translateX ?? 0,
+              entry.translateY ?? 0,
+              textureScale,
+              heightRepeat,
+            );
 
-        const texture = await TextureUtils.svgToTexture(
-          cropped.svg,
-          rasterHeight,
-          Math.min(gl.capabilities.maxTextureSize, 4096),
-        );
+        const texture = useLegacyUvTransform
+          ? await TextureUtils.svgToTextureViaLoader(gridSVGData.svgString)
+          : await TextureUtils.svgToTexture(
+              cropped?.svg ?? gridSVGData.svgString,
+              rasterHeight,
+              Math.min(gl.capabilities.maxTextureSize, 4096),
+            );
         if (!active) {
           texture.dispose();
           return;
@@ -185,7 +213,17 @@ export function useTextureObject({
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.minFilter = THREE.LinearMipmapLinearFilter;
         texture.magFilter = THREE.LinearFilter;
-        texture.repeat.set(1 / (cropped.width / cropped.height), 1);
+        if (useLegacyUvTransform) {
+          const baseAspect = gridSVGData.width / gridSVGData.height;
+          const repeatX = 1 / baseAspect;
+          const finalScale = textureScale * 3;
+          texture.repeat.set((repeatX / 3) * finalScale, (1 / 3) * finalScale);
+          const bufferValue = 1 - finalScale;
+          texture.offset.x = (entry.translateX ?? 0) / 6;
+          texture.offset.y = ((entry.translateY ?? 0) + bufferValue) / 6;
+        } else {
+          texture.repeat.set(1 / (cropped!.width / cropped!.height), 1);
+        }
         texture.needsUpdate = true;
 
         setWebTexture((prev) => {
@@ -201,10 +239,8 @@ export function useTextureObject({
         });
         onTextureReadyRef.current?.(null);
       } finally {
-        if (bootLoader) {
-          uiManager.remove3DLoadingItem(`bootLoader${bootLoader.current}`);
-          bootLoader.current++;
-        }
+        uiManager.remove3DLoadingItem(`bootLoader${bootLoader.current}`);
+        bootLoader.current++;
       }
     })();
 
@@ -212,7 +248,17 @@ export function useTextureObject({
       active = false;
       controller.abort();
     };
-  }, [currentSize, parsedSizes, texturePath, heightRepeat, rasterHeight]);
+  }, [
+    currentSize,
+    parsedSizes,
+    parsedBandanaSizes,
+    parsedHarnessSizes,
+    texturePath,
+    heightRepeat,
+    rasterHeight,
+    useLegacyBandanaTransform,
+    useLegacyHarnessTransform,
+  ]);
 
   return material.current;
 }
