@@ -17,6 +17,59 @@ export interface GridSVGData {
   svgDoc: Document;
 }
 export class TextureUtils {
+  private static normalizeSizeToken(value: string | null | undefined): string {
+    return String(value ?? '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+  }
+
+  private static canonicalizeSize(value: string | null | undefined): string {
+    const normalized = this.normalizeSizeToken(value);
+    const lookup: Record<string, string> = {
+      EXTRASMALL: 'EXTRA_SMALL',
+      XS: 'EXTRA_SMALL',
+      XSMALL: 'EXTRA_SMALL',
+      SMALL: 'SMALL',
+      SM: 'SMALL',
+      MEDIUM: 'MEDIUM',
+      MD: 'MEDIUM',
+      MEDIUMNARROW: 'MEDIUM_NARROW',
+      MN: 'MEDIUM_NARROW',
+      MEDIUMWIDE: 'MEDIUM_WIDE',
+      MW: 'MEDIUM_WIDE',
+      LARGE: 'LARGE',
+      LG: 'LARGE',
+      XLARGE: 'XLARGE',
+      EXTRALARGE: 'XLARGE',
+      XL: 'XLARGE',
+      XXL: 'XXLARGE',
+      XXLARGE: 'XXLARGE',
+    };
+    return lookup[normalized] ?? normalized;
+  }
+
+  private static findLegacyPreferredSizeMatch(
+    entries: SizeEntry[],
+    currentSize: string,
+  ): SizeEntry | undefined {
+    const currentCanonical = this.canonicalizeSize(currentSize);
+    const preferredTokens =
+      currentCanonical === 'EXTRA_SMALL'
+        ? ['XSMALL', 'EXTRASMALL', 'XS']
+        : [this.normalizeSizeToken(currentSize)];
+
+    for (const token of preferredTokens) {
+      const match = entries.find(
+        (entry) => this.normalizeSizeToken(entry.size) === token,
+      );
+      if (match) return match;
+    }
+
+    return entries.find(
+      (entry) => this.canonicalizeSize(entry.size) === currentCanonical,
+    );
+  }
+
   public static blobToDataURL(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -181,7 +234,7 @@ export class TextureUtils {
 
   public static svgToTexture(
     svgString: string,
-    targetShortSide: number,
+    targetHeight: number,
     maxTextureSize = DEFAULT_MAX_TEXTURE_SIZE,
   ): Promise<THREE.Texture> {
     return new Promise((resolve, reject) => {
@@ -196,16 +249,8 @@ export class TextureUtils {
       const originalHeight =
         parseFloat(svgElem.getAttribute('height') ?? '1') || 1;
       const aspect = originalWidth / originalHeight;
-
-      // Keep the shorter side at the target resolution for better detail
-      // on non-square crops (e.g. tall bandana UV slices).
-      let tw = targetShortSide;
-      let th = targetShortSide;
-      if (aspect >= 1) {
-        tw = targetShortSide * aspect;
-      } else {
-        th = targetShortSide / aspect;
-      }
+      let tw = targetHeight * aspect;
+      let th = targetHeight;
 
       if (tw > maxTextureSize || th > maxTextureSize) {
         const scale = maxTextureSize / Math.max(tw, th);
@@ -292,11 +337,143 @@ export class TextureUtils {
     return [];
   }
 
+  public static svgToTextureViaLoader(
+    svgString: string,
+  ): Promise<THREE.Texture> {
+    return new Promise((resolve, reject) => {
+      if (!svgString) {
+        reject(new Error('No svgString provided'));
+        return;
+      }
+      const textureLoader = new THREE.TextureLoader();
+      const dataUrl = `data:image/svg+xml,${encodeURIComponent(svgString)}`;
+      textureLoader.load(
+        dataUrl,
+        (texture) => resolve(texture),
+        undefined,
+        (err) => reject(err),
+      );
+    });
+  }
+
+  public static parseBandanaSizeEntries(
+    dataX: string | null | undefined,
+  ): SizeEntry[] {
+    if (!dataX) return [];
+    try {
+      const parsed = JSON.parse(dataX);
+      if (Array.isArray(parsed)) return parsed as SizeEntry[];
+      if (!parsed || typeof parsed !== 'object') return [];
+      const source = parsed as Record<string, unknown>;
+      if (Array.isArray(source.bandana)) {
+        return source.bandana as SizeEntry[];
+      }
+      if (Array.isArray(source.collar)) {
+        return source.collar as SizeEntry[];
+      }
+    } catch {
+      // invalid JSON - return empty
+    }
+    return [];
+  }
+
+  public static parseHarnessSizeEntries(
+    dataX: string | null | undefined,
+  ): SizeEntry[] {
+    if (!dataX) return [];
+    try {
+      const parsed = JSON.parse(dataX);
+      if (Array.isArray(parsed)) {
+        if (parsed.length > 0 && Array.isArray(parsed[0])) {
+          return parsed[0] as SizeEntry[];
+        }
+        return parsed as SizeEntry[];
+      }
+      if (!parsed || typeof parsed !== 'object') return [];
+      const source = parsed as Record<string, unknown>;
+      if (Array.isArray(source.harness)) {
+        return source.harness as SizeEntry[];
+      }
+      if (Array.isArray(source['0'])) {
+        return source['0'] as SizeEntry[];
+      }
+    } catch {
+      // invalid JSON - return empty
+    }
+    return [];
+  }
+
+  public static resolveLegacyBandanaEntry(
+    entries: SizeEntry[],
+    currentSize: string,
+  ): SizeEntry {
+    const mediumNarrowCanonical = this.canonicalizeSize('Medium Narrow');
+    const found =
+      this.findLegacyPreferredSizeMatch(entries, currentSize) ??
+      entries.find(
+        (e) => this.canonicalizeSize(e.size) === mediumNarrowCanonical,
+      ) ??
+      entries.find(
+        (e) =>
+          this.normalizeSizeToken(e.size) ===
+          this.normalizeSizeToken('Medium Narrow'),
+      ) ??
+      {
+        size: currentSize,
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      };
+
+    return {
+      ...found,
+      translateX: found.translateX ?? 0,
+      translateY: found.translateY ?? 0,
+      scale: Math.min(Math.max(found.scale ?? 1, 0.01), 2),
+    };
+  }
+
+  public static resolveLegacyHarnessEntry(
+    entries: SizeEntry[],
+    currentSize: string,
+  ): SizeEntry {
+    const mediumNarrowCanonical = this.canonicalizeSize('Medium Narrow');
+    const found =
+      this.findLegacyPreferredSizeMatch(entries, currentSize) ??
+      entries.find(
+        (e) => this.canonicalizeSize(e.size) === mediumNarrowCanonical,
+      ) ??
+      entries.find(
+        (e) =>
+          this.normalizeSizeToken(e.size) ===
+          this.normalizeSizeToken('Medium Narrow'),
+      ) ??
+      {
+        size: currentSize,
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      };
+
+    return {
+      ...found,
+      translateX: found.translateX ?? 0,
+      translateY: found.translateY ?? 0,
+      scale: Math.min(Math.max(found.scale ?? 1, 0.01), 2),
+    };
+  }
+
   public static resolveClampedSizeEntry(
     entries: SizeEntry[],
     currentSize: string,
   ): SizeEntry {
-    const found = entries.find((e) => e.size === currentSize) ?? {
+    const currentCanonical = this.canonicalizeSize(currentSize);
+    const found =
+      entries.find((e) => this.canonicalizeSize(e.size) === currentCanonical) ??
+      entries.find(
+        (e) =>
+          this.normalizeSizeToken(e.size) === this.normalizeSizeToken(currentSize),
+      ) ?? {
       size: currentSize,
       translateX: 0,
       translateY: 0,

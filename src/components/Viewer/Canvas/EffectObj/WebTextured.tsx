@@ -8,11 +8,14 @@ interface WebTexturedProps {
   texturedName: MeshName;
   side?: boolean;
   normalMapPath?: string | undefined;
+  normalRepeat?: [number, number] | undefined;
   heightRepeat?: number | undefined;
   rasterHeight?: number | undefined;
+  useLegacyBandanaTransform?: boolean | undefined;
+  useLegacyHarnessTransform?: boolean | undefined;
 }
 
-const WebTextured = observer(({ texturedName, side = false, normalMapPath, heightRepeat, rasterHeight }: WebTexturedProps) => {
+const WebTextured = observer(({ texturedName, side = false, normalMapPath, normalRepeat, heightRepeat, rasterHeight, useLegacyBandanaTransform, useLegacyHarnessTransform }: WebTexturedProps) => {
   const { designManager, design3DManager } = useMainContext();
   const { productManager } = designManager;
   const { meshManager } = design3DManager;
@@ -44,8 +47,11 @@ const WebTextured = observer(({ texturedName, side = false, normalMapPath, heigh
       envMap={sourceMaterial?.envMap ?? null}
       side={side ? THREE.DoubleSide : THREE.FrontSide}
       normalMapPath={normalMapPath}
+      normalRepeat={normalRepeat}
       heightRepeat={heightRepeat}
       rasterHeight={rasterHeight}
+      useLegacyBandanaTransform={useLegacyBandanaTransform}
+      useLegacyHarnessTransform={useLegacyHarnessTransform}
     />
   );
 });

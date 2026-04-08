@@ -18,7 +18,7 @@ export const LoadCollar = observer(({ url, plasticUrl }: LoadCollarProps) => {
     <>
       <Buckle />
       <Stitches />
-      <WebTextured texturedName="Web" />
+      <WebTextured texturedName="Web" normalRepeat={[0.7,0.7]} />
       <EngravedBuckle />
       <WebbingText
         mesh={webTextMesh}

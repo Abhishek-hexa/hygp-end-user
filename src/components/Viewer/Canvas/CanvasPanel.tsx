@@ -2,7 +2,7 @@ import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { observer } from 'mobx-react-lite';
 import { Suspense, useCallback, useRef } from 'react';
-import { LinearToneMapping } from 'three';
+import { LinearToneMapping, SRGBColorSpace } from 'three';
 import type CameraControlsImpl from 'camera-controls';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { CameraSync } from './CameraSync';
@@ -48,7 +48,7 @@ export const CanvasPanel = observer(() => {
         }}
         gl={{
           antialias: true,
-          outputColorSpace: 'srgb' as const,
+          outputColorSpace: SRGBColorSpace,
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
         }}>

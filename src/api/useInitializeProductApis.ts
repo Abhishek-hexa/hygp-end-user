@@ -101,8 +101,26 @@ export const useInitializeProductApis = (
     isEngravingFontsError ||
     isCollectionsError;
 
+  const hasCompletedInitialLoadRef = useRef(false);
+  const previousProductTypeRef = useRef<ProductType>(productType);
+
+  if (previousProductTypeRef.current !== productType) {
+    previousProductTypeRef.current = productType;
+    hasCompletedInitialLoadRef.current = false;
+  }
+
   useEffect(() => {
+    if (hasCompletedInitialLoadRef.current) {
+      uiManager.setDataLoading(false);
+      return;
+    }
+
     uiManager.setDataLoading(isDataLoading);
+
+    if (!isDataLoading) {
+      hasCompletedInitialLoadRef.current = true;
+      uiManager.setDataLoading(false);
+    }
   }, [isDataLoading, uiManager]);
 
   useEffect(() => {
