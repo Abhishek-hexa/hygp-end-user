@@ -74,7 +74,6 @@ export class UiManager {
   }
 
   add3DLoadingItem(id: string) {
-    console.log(id)
     this._3dLoadingItems.add(id);
     if (this._loadingDebounceTimer !== null) {
       clearTimeout(this._loadingDebounceTimer);
