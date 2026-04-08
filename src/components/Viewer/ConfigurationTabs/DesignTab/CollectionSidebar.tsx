@@ -32,17 +32,10 @@ export const CollectionSidebar = ({
               }`}
               onClick={() => {
                 const isOnlyOne = selectedCollectionIds.length - 1 === 0;
-                const isMaxSelected = selectedCollectionIds.length >= 10;
-
                 if (isOnlyOne && isSelected) {
                   message.warning(
                     'At least one collection must remain selected',
                   );
-                  return;
-                }
-
-                if (!isSelected && isMaxSelected) {
-                  message.warning('You can select a maximum of 10 collections');
                   return;
                 }
                 onToggleCollection(collection.id);
