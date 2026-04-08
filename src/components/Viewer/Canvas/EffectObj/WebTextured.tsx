@@ -26,6 +26,8 @@ const WebTextured = observer(({ texturedName, side = false, normalMapPath, norma
   const dataX = selectedPattern?.dataX;
   const currentSize = productManager.sizeManager.selectedSizeData?.size;
   const productKey = productManager.productId;
+  const buckleMaterial = productManager.buckleManager.material;
+  const loadDependencyKey = `${productKey}:${buckleMaterial}`;
 
   if (!webMesh || !texturePath || !dataX || !currentSize) {
     return null;
@@ -44,6 +46,7 @@ const WebTextured = observer(({ texturedName, side = false, normalMapPath, norma
       dataX={dataX}
       currentSize={currentSize}
       productKey={productKey}
+      loadDependencyKey={loadDependencyKey}
       envMap={sourceMaterial?.envMap ?? null}
       side={side ? THREE.DoubleSide : THREE.FrontSide}
       normalMapPath={normalMapPath}

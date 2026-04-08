@@ -26,6 +26,7 @@ export interface UseTextureObjectOptions {
   dataX: string | null | undefined;
   currentSize: string | null | undefined;
   productKey?: string;
+  loadDependencyKey?: string;
   envMap?: THREE.Texture | null;
   onTextureReady?: (tex: THREE.Texture | null) => void;
   side?: THREE.Side;
@@ -42,6 +43,7 @@ export function useTextureObject({
   dataX,
   currentSize,
   productKey,
+  loadDependencyKey,
   envMap,
   onTextureReady,
   side = THREE.FrontSide,
@@ -144,7 +146,9 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
-    const loadSession = uiManager.beginProduct3DLoad(productKey);
+    const loadSession = uiManager.beginProduct3DLoad(
+      loadDependencyKey ?? productKey,
+    );
 
     (async () => {
       try {
@@ -252,6 +256,7 @@ export function useTextureObject({
     parsedHarnessSizes,
     texturePath,
     productKey,
+    loadDependencyKey,
     heightRepeat,
     rasterHeight,
     useLegacyBandanaTransform,

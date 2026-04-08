@@ -16,6 +16,7 @@ export class UiManager {
   private _loadingDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   private _hasCompletedInitialProductLoad = false;
   private _lastLoadedProductKey: string | null = null;
+  private _loadedProductKeys = new Set<string | null>();
   private _bootLoaderCounter = 0;
 
   constructor() {
@@ -46,7 +47,7 @@ export class UiManager {
     const resolvedProductKey = productKey ?? null;
     const shouldShowLoader =
       !this._hasCompletedInitialProductLoad ||
-      this._lastLoadedProductKey !== resolvedProductKey;
+      !this._loadedProductKeys.has(resolvedProductKey);
     const loaderId = `bootLoader${this._bootLoaderCounter}`;
 
     this._bootLoaderCounter++;
@@ -67,9 +68,10 @@ export class UiManager {
       this.remove3DLoadingItem(session.loaderId);
     }
 
-    if (commit && session.shouldShowLoader) {
+    if (commit) {
       this._hasCompletedInitialProductLoad = true;
       this._lastLoadedProductKey = session.productKey;
+      this._loadedProductKeys.add(session.productKey);
     }
   }
 
