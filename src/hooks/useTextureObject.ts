@@ -62,7 +62,6 @@ export function useTextureObject({
   const material = useRef(createDefaultMaterial());
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
-  const bootLoader = useRef(0);
 
   const [normalRepeatX, normalRepeatY] = normalRepeat;
 
@@ -145,9 +144,9 @@ export function useTextureObject({
 
     const controller = new AbortController();
     let active = true;
+    const loadSession = uiManager.beginProduct3DLoad(productKey);
 
     (async () => {
-      uiManager.add3DLoadingItem(`bootLoader${bootLoader.current}`);
       try {
         const dataUrl = await TextureUtils.fetchImageAsDataURL(
           texturePath,
@@ -238,8 +237,7 @@ export function useTextureObject({
         });
         onTextureReadyRef.current?.(null);
       } finally {
-        uiManager.remove3DLoadingItem(`bootLoader${bootLoader.current}`);
-        bootLoader.current++;
+        uiManager.finishProduct3DLoad(loadSession, active);
       }
     })();
 
@@ -253,6 +251,7 @@ export function useTextureObject({
     parsedBandanaSizes,
     parsedHarnessSizes,
     texturePath,
+    productKey,
     heightRepeat,
     rasterHeight,
     useLegacyBandanaTransform,

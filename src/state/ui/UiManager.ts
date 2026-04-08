@@ -1,5 +1,11 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 
+export interface Product3DLoadSession {
+  loaderId: string;
+  shouldShowLoader: boolean;
+  productKey: string | null;
+}
+
 export class UiManager {
   private _isDataLoading = false;
   private _dataError: string | null = null;
@@ -8,6 +14,9 @@ export class UiManager {
   private _3dLoadingItems = new Set<string>();
   private _is3DLoadingDebounced = false;
   private _loadingDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private _hasCompletedInitialProductLoad = false;
+  private _lastLoadedProductKey: string | null = null;
+  private _bootLoaderCounter = 0;
 
   constructor() {
     makeAutoObservable(this);
@@ -33,7 +42,39 @@ export class UiManager {
     return this._is3DLoadingDebounced;
   }
 
+  beginProduct3DLoad(productKey?: string | null): Product3DLoadSession {
+    const resolvedProductKey = productKey ?? null;
+    const shouldShowLoader =
+      !this._hasCompletedInitialProductLoad ||
+      this._lastLoadedProductKey !== resolvedProductKey;
+    const loaderId = `bootLoader${this._bootLoaderCounter}`;
+
+    this._bootLoaderCounter++;
+
+    if (shouldShowLoader) {
+      this.add3DLoadingItem(loaderId);
+    }
+
+    return {
+      loaderId,
+      shouldShowLoader,
+      productKey: resolvedProductKey,
+    };
+  }
+
+  finishProduct3DLoad(session: Product3DLoadSession, commit = true) {
+    if (session.shouldShowLoader) {
+      this.remove3DLoadingItem(session.loaderId);
+    }
+
+    if (commit && session.shouldShowLoader) {
+      this._hasCompletedInitialProductLoad = true;
+      this._lastLoadedProductKey = session.productKey;
+    }
+  }
+
   add3DLoadingItem(id: string) {
+    console.log(id)
     this._3dLoadingItems.add(id);
     if (this._loadingDebounceTimer !== null) {
       clearTimeout(this._loadingDebounceTimer);
