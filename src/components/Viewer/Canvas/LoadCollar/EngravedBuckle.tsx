@@ -5,7 +5,7 @@ import { useMainContext } from '../../../../hooks/useMainContext';
 import { useMyTexture } from '../../../../hooks/useMyTexture';
 
 export const EngravedBuckle = observer(function EngravedBuckle() {
-  const { design3DManager } = useMainContext();
+  const { designManager, design3DManager } = useMainContext();
   const { engraving3Dmanager } = design3DManager;
   const { decalTransform, planeMesh } = engraving3Dmanager;
 
@@ -21,6 +21,7 @@ export const EngravedBuckle = observer(function EngravedBuckle() {
         position={planeMesh.position}
         rotation={planeMesh.rotation}
         scale={planeMesh.scale}
+        visible={designManager.productManager.buckleManager.isMetal}
       >
         <meshStandardMaterial transparent opacity={0} depthWrite={false} />
 

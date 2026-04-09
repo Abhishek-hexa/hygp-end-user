@@ -88,6 +88,10 @@ export class BuckleManager {
     return this._productId;
   }
 
+  get isMetal() {
+    return this.material === 'METAL';
+  }
+
   setMaterial(inMaterial: BuckleMaterialType) {
     this._material = inMaterial;
     this.syncSelection();
