@@ -185,3 +185,11 @@ export interface ProductByIdApiResponse {
   success: boolean;
   product: ProductByIdApiItem;
 }
+
+//    Search Patterns API
+//    GET /product/search?collectionId=<id1,id2>&search=<query>
+
+export interface SearchPatternsApiResponse {
+  success: boolean;
+  products: CollectionProductApiItem[];
+}

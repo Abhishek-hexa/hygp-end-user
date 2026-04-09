@@ -1,9 +1,11 @@
 import { observer } from 'mobx-react-lite';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useSearchPatterns } from '../../../api/hooks/useSearchPatterns';
 import { useMainContext } from '../../../hooks/useMainContext';
 import { buildPatternPath } from '../../../state/product/productRouting';
+import { ProductType } from '../../../state/product/types';
 import { CategoryIcon, SearchIcon } from '../../icons/Icons';
 import { CollectionSidebar } from './DesignTab/CollectionSidebar';
 import { MobileCategoryModal } from './DesignTab/MobileCategoryModal';
@@ -14,6 +16,8 @@ import { usePatternLoader } from './DesignTab/usePatternLoader';
 export const DesignTab = observer(() => {
   const { designManager, uiManager } = useMainContext();
   const textureManager = designManager.productManager.textureManager;
+  const productType =
+    designManager.productManager.productId ?? ProductType.DOG_COLLAR;
   const navigate = useNavigate();
   const { productSlug } = useParams<{ productSlug: string }>();
   const collections = Array.from(textureManager.availableCollections.values());
@@ -23,31 +27,40 @@ export const DesignTab = observer(() => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
-  const { clearError, error, loading } = usePatternLoader(
+  const { clearError, error, loading: collectionLoading } = usePatternLoader(
     selectedCollectionIds,
     textureManager,
   );
 
-  const filteredPatterns = useMemo(() => {
-    const availablePatterns = patterns ?? [];
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) {
-      return availablePatterns;
-    }
+  // ── API-backed search ──────────────────────────────────────────────────────
+  // When searchQuery is non-empty, useSearchPatterns pushes search results into
+  // TextureManager (replacing collection patterns). On clear it restores them.
+  const { isLoading: isSearchLoading, isError: isSearchError } =
+    useSearchPatterns({
+      collectionIds: selectedCollectionIds,
+      productType,
+      search: searchQuery,
+      textureManager,
+    });
 
-    return availablePatterns.filter((pattern) =>
-      pattern.name.toLowerCase().includes(query),
-    );
-  }, [patterns, searchQuery]);
-  const lastVisiblePatternsRef = useRef(filteredPatterns);
+  const isSearchActive = searchQuery.trim().length > 0;
+  const loading = isSearchActive ? isSearchLoading : collectionLoading;
 
-  if (!loading && filteredPatterns.length > 0) {
-    lastVisiblePatternsRef.current = filteredPatterns;
+  // The patterns getter on TextureManager already returns search results
+  // when search is active, so we consume it directly.
+  const visiblePatterns = patterns ?? [];
+
+  const lastVisiblePatternsRef = useRef(visiblePatterns);
+  if (!loading && visiblePatterns.length > 0) {
+    lastVisiblePatternsRef.current = visiblePatterns;
   }
 
-  const visiblePatterns =
-    filteredPatterns.length > 0 ? filteredPatterns : lastVisiblePatternsRef.current;
+  const displayedPatterns =
+    visiblePatterns.length > 0
+      ? visiblePatterns
+      : lastVisiblePatternsRef.current;
   const loadingSkeletonItems = Array.from({ length: 10 }, (_, index) => index);
+
 
   return (
     <div className="relative flex h-full min-h-0 flex-col md:flex-row md:gap-2">
@@ -114,10 +127,14 @@ export const DesignTab = observer(() => {
           />
         </div>
 
-        {error ? <p className="text-sm text-red-500">{error}</p> : null}
-        {!error && visiblePatterns.length > 0 ? (
+        {error || isSearchError ? (
+          <p className="text-sm text-red-500">
+            {error ?? 'Search failed. Please try again.'}
+          </p>
+        ) : null}
+        {!error && !isSearchError && displayedPatterns.length > 0 ? (
           <PatternGrid
-            patterns={visiblePatterns}
+            patterns={displayedPatterns}
             selectedPatternId={textureManager.selectedPatternId}
             onSelectPattern={(patternId) => {
               textureManager.setSelectedPattern(patternId);
@@ -143,7 +160,7 @@ export const DesignTab = observer(() => {
             </div>
           </div>
         ) : null}
-        {!loading && !error && filteredPatterns.length === 0 ? (
+        {!loading && !error && !isSearchError && displayedPatterns.length === 0 ? (
           <p className="text-sm text-gray-500">No designs found.</p>
         ) : null}
       </div>

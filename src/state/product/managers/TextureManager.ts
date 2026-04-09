@@ -10,6 +10,9 @@ export class TextureManager {
   private _availablePatterns: Map<number, PatternType[]> = new Map();
   private _selectedPatternId: number | null = null;
 
+  private _isSearchActive = false;
+  private _searchPatterns: PatternType[] = [];
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -53,14 +56,30 @@ export class TextureManager {
       return null;
     }
 
-    return (
+    const fromActiveView =
       this.availablePatterns?.find(
         (pattern) => pattern.id === this._selectedPatternId,
-      ) ?? null
-    );
+      ) ?? null;
+    if (fromActiveView) {
+      return fromActiveView;
+    }
+
+    for (const patterns of this._availablePatterns.values()) {
+      const fallbackPattern =
+        patterns.find((pattern) => pattern.id === this._selectedPatternId) ??
+        null;
+      if (fallbackPattern) {
+        return fallbackPattern;
+      }
+    }
+
+    return null;
   }
 
   get availablePatterns(): PatternType[] | null {
+    if (this._isSearchActive) {
+      return this._searchPatterns;
+    }
     if (this._selectedCollectionIds.length === 0) {
       return null;
     }
@@ -68,6 +87,14 @@ export class TextureManager {
       (collectionId) => this._availablePatterns.get(collectionId) ?? [],
     );
     return mergedPatterns;
+  }
+
+  get isSearchActive() {
+    return this._isSearchActive;
+  }
+
+  get searchPatterns() {
+    return this._searchPatterns;
   }
 
   setSelectedCollection(id: number) {
@@ -136,6 +163,33 @@ export class TextureManager {
   }
 
   setSelectedPattern(inPatternId: number | null) {
+    if (inPatternId !== null) {
+      let patternCollectionId: number | null = null;
+      
+      if (this._isSearchActive) {
+        const pattern = this._searchPatterns.find((p) => p.id === inPatternId);
+        if (pattern) patternCollectionId = pattern.collectionId;
+      }
+      
+      if (!patternCollectionId) {
+        for (const patterns of this._availablePatterns.values()) {
+          const pattern = patterns.find((p) => p.id === inPatternId);
+          if (pattern) {
+            patternCollectionId = pattern.collectionId;
+            break;
+          }
+        }
+      }
+
+      if (patternCollectionId) {
+        if (!this._selectedCollectionIds.includes(patternCollectionId)) {
+          this._selectedCollectionIds = [...this._selectedCollectionIds, patternCollectionId];
+          if (this._activeCollectionId === null) {
+            this._activeCollectionId = patternCollectionId;
+          }
+        }
+      }
+    }
     this.ensureSelectedPattern(inPatternId);
   }
 
@@ -157,6 +211,28 @@ export class TextureManager {
     this._selectedCollectionIds = [];
     this._activeCollectionId = null;
     this._selectedPatternId = null;
+    this._isSearchActive = false;
+    this._searchPatterns = [];
+  }
+
+  setSearchActive(active: boolean) {
+    this._isSearchActive = active;
+    if (!active) {
+      this._searchPatterns = [];
+    }
+    this.ensureSelectedPattern();
+  }
+
+  setSearchPatterns(patterns: PatternType[]) {
+    this._searchPatterns = patterns;
+    this._isSearchActive = true;
+    this.ensureSelectedPattern();
+  }
+
+  clearSearchPatterns() {
+    this._isSearchActive = false;
+    this._searchPatterns = [];
+    this.ensureSelectedPattern();
   }
 
   
@@ -164,7 +240,13 @@ export class TextureManager {
     const patterns = this.availablePatterns ?? [];
 
     if (patterns.length === 0) {
-      this._selectedPatternId = null;
+      // Keep the current selection while selected collections are being loaded.
+      if (!this._isSearchActive && this._selectedCollectionIds.length > 0) {
+        return;
+      }
+      if (!this._isSearchActive) {
+        this._selectedPatternId = null;
+      }
       return;
     }
 
@@ -173,8 +255,12 @@ export class TextureManager {
       targetPatternId !== null &&
       patterns.some((pattern) => pattern.id === targetPatternId);
 
-    this._selectedPatternId = hasTargetPattern
-      ? targetPatternId
-      : patterns[0].id;
+    if (preferredPatternId !== null) {
+      this._selectedPatternId = preferredPatternId;
+    } else if (hasTargetPattern) {
+      this._selectedPatternId = targetPatternId;
+    } else if (!this._isSearchActive) {
+      this._selectedPatternId = patterns[0].id;
+    }
   }
 }
