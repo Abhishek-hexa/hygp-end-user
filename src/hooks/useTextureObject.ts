@@ -53,7 +53,7 @@ export function useTextureObject({
   rasterHeight = DEFAULT_SVG_RASTER_HEIGHT,
   useLegacyBandanaTransform = false,
   useLegacyHarnessTransform = false,
-}: UseTextureObjectOptions) {
+}: UseTextureObjectOptions): THREE.MeshPhysicalMaterial {
   const { gl } = useThree();
   const { uiManager } = useMainContext();
 
@@ -61,7 +61,10 @@ export function useTextureObject({
   const localEnvMap = useMyHdr(HDR_PATH, { trackLoading: false });
 
   const normalMap = useMyTexture(normalMapPath, { trackLoading: false });
-  const material = useRef(createDefaultMaterial());
+  const material = useRef<THREE.MeshPhysicalMaterial | null>(null);
+  if (!material.current) {
+    material.current = createDefaultMaterial();
+  }
   const webTextureRef = useRef<THREE.Texture | null>(null);
   const onTextureReadyRef = useRef(onTextureReady);
 
@@ -97,7 +100,7 @@ export function useTextureObject({
 
   useEffect(() => {
     return () => {
-      material.current.dispose();
+      material.current?.dispose();
     };
   }, []);
 
@@ -124,7 +127,7 @@ export function useTextureObject({
   }, [gl, webTexture]);
 
   useEffect(() => {
-    const mat = material.current;
+    const mat = material.current!;
     const finalEnvMap = envMap ?? localEnvMap ?? null;
     mat.normalMap = normalMap ?? null;
     mat.side = side;
@@ -263,5 +266,5 @@ export function useTextureObject({
     useLegacyHarnessTransform,
   ]);
 
-  return material.current;
+  return material.current!;
 }
