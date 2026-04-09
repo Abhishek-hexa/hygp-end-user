@@ -22,6 +22,8 @@ export const useInitializeProductApis = (
   productType: ProductType = ProductType.DOG_COLLAR,
   initialPatternId: number | null = null,
 ) => {
+  const hasInitializedCollectionsRef = useRef(false);
+
   /** ---------------------------------------
    * 🔹 Queries
    * -------------------------------------- */
@@ -100,9 +102,10 @@ export const useInitializeProductApis = (
 
   const isDataLoading =
     isInitialQueriesLoading ||
-    (targetPatternId !== null && isPatternLoading) ||
-    (collectionIdToFetch !== null && isCollectionProductsLoading) ||
-    (!collections && !isCollectionsLoading && !isCollectionsError);
+    (!hasInitializedCollectionsRef.current &&
+      ((targetPatternId !== null && isPatternLoading) ||
+        (collectionIdToFetch !== null && isCollectionProductsLoading) ||
+        (!collections && !isCollectionsLoading && !isCollectionsError)));
 
   const isDataError =
     isVariantsError ||
@@ -126,8 +129,6 @@ export const useInitializeProductApis = (
   /** ---------------------------------------
    * 🔹 Reset on Product Type Change
    * -------------------------------------- */
-  const hasInitializedCollectionsRef = useRef(false);
-
   useEffect(() => {
     if (productManager.productId !== productType) {
       productManager.setProduct(productType);
