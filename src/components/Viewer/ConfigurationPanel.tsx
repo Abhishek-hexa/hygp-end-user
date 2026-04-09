@@ -73,7 +73,7 @@ export const ConfigurationPanel = observer(() => {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <FeatureContentRenderer activeFeature={activeFeature} />
       </div>
-      <div className="hidden border-t border-green bg-white lg:block lg:px-12 lg:py-4">
+      <div className="hidden border-t border-green bg-white lg:block lg:px-16 lg:py-3">
         {uiManager.isBulkMode ? (
           <div className="flex items-center gap-2">
             <button

@@ -15,12 +15,7 @@ export const BuckleTab = observer(() => {
   return (
     <div className="">
       <div className="p-4 lg:p-6">
-        <SectionHeader
-          title="Buckle Customization"
-          subtitle={`Select ${
-            availableBuckleMaterials.length > 0 ? 'material and ' : ''
-          }finish for hardware.`}
-        />
+        <SectionHeader title="Buckle Customization" />
 
         {availableBuckleMaterials.length > 0 && (
           <BuckleMaterialSelector

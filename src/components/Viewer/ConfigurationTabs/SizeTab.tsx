@@ -16,13 +16,10 @@ export const SizeTab = observer(() => {
 
   return (
     <div className="">
-      <div className="p-4 lg:p-6">
-        <SectionHeader
-          title="Select Collar Size"
-          subtitle="Choose the perfect fit for your furry friend"
-        />
+      <div className="p-4 lg:p-4">
+        <SectionHeader title="Select Collar Size" />
         <div
-          className="feature-tabs-scroll -mx-1 flex gap-2 md:gap-4 overflow-x-auto px-1 whitespace-nowrap lg:mx-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-visible lg:px-0"
+          className="feature-tabs-scroll -mx-1 flex gap-2 md:gap-4 overflow-x-auto px-1 whitespace-nowrap lg:mx-0 lg:grid lg:grid-cols-2 xl:grid-cols-4 lg:overflow-visible lg:px-0"
           style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
           {sizeEntries.map(([id, data]) => (
             <SizeOptionButton
@@ -39,13 +36,13 @@ export const SizeTab = observer(() => {
         </div>
       </div>
 
-      <div className="flex justify-center border-t border-divider p-4 lg:p-6">
+      <div className="flex justify-center border-t border-divider p-4 lg:p-1">
         <div className="w-full max-w-md min-h-50">
           <LazyImage
             key={productManager.sizeManager.selectedSizeData?.id} // ← forces skeleton on size change
             src={productManager.sizeManager.selectedSizeData?.sizeImage}
             alt="Collar Measurement Guide"
-            className="w-full max-w-md object-contain min-h-40"
+            className="w-full max-w-sm object-contain min-h-40 mx-auto"
           />
         </div>
       </div>

@@ -4,7 +4,6 @@ import { useMainContext } from '../../../hooks/useMainContext';
 import SectionHeader from '../Global/SectionHeader';
 import {
   FetchFeature,
-  fetchReviewCopy,
   formatPrice,
   getFetchHeading,
   parsePrice,
@@ -28,7 +27,7 @@ export const BulkFetchTab = observer(({ feature }: FetchMeowTabProps) => {
   return (
     <div className="">
       <div className="p-4 lg:p-6">
-        <SectionHeader title={heading} subtitle={fetchReviewCopy} />
+        <SectionHeader title={heading} />
       </div>
 
       <section className="mt-6 rounded-xl border border-primary/20 bg-primary-dark/5 p-5">

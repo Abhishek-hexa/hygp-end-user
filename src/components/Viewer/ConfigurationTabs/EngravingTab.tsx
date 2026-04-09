@@ -23,10 +23,7 @@ export const EngravingTab = observer(() => {
   return (
     <div className="">
       <section className="p-4 lg:p-6">
-        <SectionHeader
-          title="Buckle Engraving"
-          subtitle="Add your pet's details for safety."
-        />
+        <SectionHeader title="Buckle Engraving" />
       </section>
 
       <div className="flex items-center gap-2 mb-4 px-4 lg:hidden">

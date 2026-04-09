@@ -25,11 +25,11 @@ export const SizeOptionButton = ({
         isSelected ? 'border-primary-dark bg-selected text-primary' : ''
       }`}>
       <span
-        className={`text-sm font-semibold text-left text-font w-full leading-tight whitespace-normal ${isSelected ? '' : ''}`}>
+        className={`text-xs font-semibold text-left text-font w-full leading-tight whitespace-normal ${isSelected ? '' : ''}`}>
         {label}
       </span>
 
-      <span className="mt-1 text-sm font-normal text-font whitespace-normal">
+      <span className="mt-1 text-xs font-normal text-font whitespace-normal">
         ${price}
       </span>
 

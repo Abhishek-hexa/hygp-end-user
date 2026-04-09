@@ -98,7 +98,7 @@ export const FeatureTabsHeader = observer(
     };
 
     return (
-      <div className="flex p-3 lg:p-6 items-center gap-2 border-b border-gray-300 bg-white lg:gap-3">
+      <div className="flex p-3 lg:p-3 items-center gap-2 border-b border-gray-300 bg-white lg:gap-3">
         <button
           type="button"
           disabled={isAtStart}

@@ -25,9 +25,9 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
   return (
     <div className="p-4 lg:p-6">
-      <SectionHeader title={copy.title} subtitle={copy.description} />
+      <SectionHeader title={copy.title} />
 
-      <section className=" border-b-divider py-4 lg:pb-6">
+      <section className=" border-b-divider py-4 lg:pb-6 lg:pt-0">
         <h4 className="text-base mb-3 h-5 font-semibold text-gray-400  flex gap-1 items-center">
           <TextIcon className="h-5 w-5 shrink-0 text-primary/70 lg:hidden" />
           Custom Text

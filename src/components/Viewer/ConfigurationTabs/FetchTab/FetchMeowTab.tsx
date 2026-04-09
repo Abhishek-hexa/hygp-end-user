@@ -6,7 +6,6 @@ import SectionHeader from '../../Global/SectionHeader';
 import { SizeOptionButton } from '../../Global/SizeOptionButton';
 import {
   FetchFeature,
-  fetchReviewCopy,
   formatPrice,
   getFetchHeading,
   leashLabelMap,
@@ -79,7 +78,7 @@ export const FetchMeowTab = observer(({ feature }: FetchMeowTabProps) => {
   return (
     <div className="">
       <div className="p-4 lg:p-6">
-        <SectionHeader title={heading} subtitle={fetchReviewCopy} />
+        <SectionHeader title={heading} />
         {isDogCollar && (
           <div className="mt-4 md:mt-7">
             <h4 className="mb-3 text-sm md:text-base font-semibold text-innerTitle leading-5.5">
