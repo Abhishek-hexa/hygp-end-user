@@ -10,8 +10,10 @@ import {
   LeashVariantsApiResponse,
   ProductByIdApiResponse,
   ProductVariantsApiResponse,
+  SearchPatternsApiResponse,
   ShopifyCollectionsApiResponse,
 } from '../types/api.types';
+
 
 const getBaseUrl = () =>
   String(import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
@@ -102,5 +104,30 @@ export const useCollectionProductsQuery = (collectionId: string | null) => {
       ),
     queryKey: ['collectionProducts', collectionId],
     staleTime: Infinity,
+  });
+};
+
+// 8. Search Patterns
+export const useSearchPatternsQuery = (
+  productType: ProductType,
+  search: string,
+  collectionIds?: number[],
+) => {
+  const path = apiEndPointMap[productType].search;
+  const trimmed = search.trim();
+
+  return useQuery({
+    queryKey: ['searchPatterns', productType, trimmed],
+    queryFn: async () => {
+      const queryParts: string[] = [];
+      // if (collectionIds && collectionIds.length > 0) {
+      //   queryParts.push(`collectionId=${collectionIds.join(',')}`);
+      // }
+      queryParts.push(`search=${encodeURIComponent(trimmed)}`);
+      return fetchJson<SearchPatternsApiResponse>(`${path}?${queryParts.join('&')}`);
+    },
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 10,
+    enabled: trimmed.length > 0,
   });
 };
