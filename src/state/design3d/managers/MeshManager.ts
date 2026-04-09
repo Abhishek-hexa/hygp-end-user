@@ -198,10 +198,10 @@ export class MeshManager {
 
   // --- Stitch Mesh Getters ---
   get stichesMesh() {
-    return this.stitchMeshes.get('Stiches');
+    return this.stitchMeshes.get('Stiches') ?? this.stitchMeshes.get('Stitches');
   }
   get stitchesMesh() {
-    return this.stitchMeshes.get('Stitches');
+    return this.stitchMeshes.get('Stitches') ?? this.stitchMeshes.get('Stiches');
   }
 
   get fitModelMesh(): THREE.Object3D | undefined {

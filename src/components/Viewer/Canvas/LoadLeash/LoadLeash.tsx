@@ -3,6 +3,7 @@ import { useModel } from '../../../../hooks/useModel';
 import WebTextured from '../EffectObj/WebTextured';
 import Hook from './Hook';
 import WebbingText from '../LoadCollar/WebbingText';
+import { Stitches } from '../LoadCollar/Stitches';
 
 interface LoadLeashProps {
   url: string;
@@ -23,6 +24,7 @@ const LoadLeash = observer(({ url }: LoadLeashProps) => {
         fontSize={webbingText.fontSize}
         side={true}
       />
+      <Stitches />
     </>
   );
 });
