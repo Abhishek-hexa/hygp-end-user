@@ -1,4 +1,3 @@
-import { TextureManager } from '../state/product/managers/TextureManager';
 import {
   Collection,
   ColorDescription,
@@ -55,9 +54,9 @@ export class Parser {
     });
 
     return {
-      webbingFonts,
       engravingFonts,
       fontPreviewImages: Array.from(fontPreviewImages),
+      webbingFonts,
     };
   };
 
@@ -77,6 +76,8 @@ export class Parser {
         id: typeof size.id === 'string' ? parseInt(size.id) : size.id,
         model: size.model,
         plasticModel: size.plasticModel,
+        prefix: size.prefix,
+
         price: size.price ? size.price : size.withoutBellPrice,
         // Keep one canonical enum value across app state/UI/render logic.
         size: parsedSize,
@@ -102,21 +103,21 @@ export class Parser {
       .replace(/-/g, '');
 
     const sizeLookup: Record<string, ProductSizeType> = {
+      EXTRALARGE: 'XLARGE',
       EXTRASMALL: 'EXTRA_SMALL',
-      XS: 'EXTRA_SMALL',
       LARGE: 'LARGE',
       LG: 'LARGE',
-      MEDIUM: 'MEDIUM',
       MD: 'MEDIUM',
+      MEDIUM: 'MEDIUM',
       MEDIUMNARROW: 'MEDIUM_NARROW',
-      MN: 'MEDIUM_NARROW',
       MEDIUMWIDE: 'MEDIUM_WIDE',
+      MN: 'MEDIUM_NARROW',
       MW: 'MEDIUM_WIDE',
-      SMALL: 'SMALL',
       SM: 'SMALL',
-      EXTRALARGE: 'XLARGE',
-      XLARGE: 'XLARGE',
+      SMALL: 'SMALL',
       XL: 'XLARGE',
+      XLARGE: 'XLARGE',
+      XS: 'EXTRA_SMALL',
       XXL: 'XXLARGE',
       XXLARGE: 'XXLARGE',
     };
@@ -206,7 +207,7 @@ export class Parser {
       }
     });
 
-    return { metalColors, plasticColors, breakawayColors };
+    return { breakawayColors, metalColors, plasticColors };
   };
 
   public static parsePatterns = (
@@ -234,7 +235,7 @@ export class Parser {
         ? preferredPatternId
         : (patterns[0]?.id ?? null);
 
-    return { parsedCollectionId, patterns, matchedPatternId };
+    return { matchedPatternId, parsedCollectionId, patterns };
   };
 
   public static parseLeashVariants = (
@@ -268,7 +269,7 @@ export class Parser {
       }
     });
 
-    return { orderedLengths, orderedLengthPrices };
+    return { orderedLengthPrices, orderedLengths };
   };
 
   public static parseLeashLengthLabel = (

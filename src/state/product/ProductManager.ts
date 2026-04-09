@@ -112,6 +112,7 @@ export class ProductManager {
     const productConfig: SerializedProductConfiguration = {
       buckle: {
         color: this.buckleManager.selectedColor,
+        colorName: this.buckleManager.selectedColorName,
         material: this.buckleManager.material,
       },
       engraving: {
@@ -123,11 +124,17 @@ export class ProductManager {
       qty: 1,
       size: {
         length: this.sizeManager.selectedLength,
+        lengthPrice: this.sizeManager.selectedLength
+          ? (this.sizeManager.lengthPrices.get(
+              this.sizeManager.selectedLength,
+            ) ?? null)
+          : null,
         size: this.sizeManager.selectedSizeData,
       },
       texture: {
         collections: this.textureManager.selectedCollectionIds[0],
         pattern: this.textureManager.selectedPatternId,
+        patternName: this.textureManager.selectedPatternName,
       },
       webbing: {
         color: this.webbingText.selectedColor,

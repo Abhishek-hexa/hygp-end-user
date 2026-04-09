@@ -17,7 +17,7 @@ export const ConfigurationPanel = observer(() => {
   const activeFeature = productManager.activeFeature;
   const selectedSize = sizeManager.selectedSizeData;
   const selectedSizePrice = selectedSize ? selectedSize.price : null;
-  const addToCartPrice = selectedSizePrice ?? '44.98';
+  const addToCartPrice = selectedSizePrice ?? '0';
   const engravingManager = productManager.engravingManager;
 
   useEffect(() => {
@@ -94,8 +94,11 @@ export const ConfigurationPanel = observer(() => {
           </div>
         ) : (
           <CartButton
-            addToCartPrice={addToCartPrice}
             onClick={handleAddToBundle}
+            onBeforePost={(payload) => {
+              console.log('payload before post:', payload);
+              return payload;
+            }}
             type="button"
           />
         )}

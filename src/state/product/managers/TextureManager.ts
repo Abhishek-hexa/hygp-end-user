@@ -60,6 +60,10 @@ export class TextureManager {
     );
   }
 
+  get selectedPatternName(): string | null {
+    return this.selectedPattern?.name ?? null;
+  }
+
   get availablePatterns(): PatternType[] | null {
     if (this._selectedCollectionIds.length === 0) {
       return null;
@@ -158,8 +162,6 @@ export class TextureManager {
     this._activeCollectionId = null;
     this._selectedPatternId = null;
   }
-
-  
   private ensureSelectedPattern(preferredPatternId: number | null = null) {
     const patterns = this.availablePatterns ?? [];
 

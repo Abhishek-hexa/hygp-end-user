@@ -59,6 +59,12 @@ export class BuckleManager {
     return this._metalColors;
   }
 
+  // get currentColors() {
+  //   if (this._material === 'METAL') return this._metalColors;
+  //   if (this._material === 'PLASTIC') return this._plasticColors;
+  //   return this._breakawayColors;
+  // }
+
   get selectedColor() {
     return this._selectedColor;
   }
@@ -67,21 +73,31 @@ export class BuckleManager {
     if (this._selectedColor === null) {
       return null;
     }
-    const currentColors = this.material === 'METAL' ? this._metalColors : this._plasticColors;
+    const currentColors =
+      this.material === 'METAL' ? this._metalColors : this._plasticColors;
     return (
       currentColors.find((color) => color.id === this._selectedColor) ?? null
     );
+  }
+
+  get selectedColorName() {
+    return this.currentSelectedColorDescription?.name ?? null;
   }
 
   get currentMetalColor() {
     if (this._selectedColor === null) {
       return null;
     }
-    return this._metalColors.find((color) => color.id === this.selectedColor) ?? null;
+    return (
+      this._metalColors.find((color) => color.id === this.selectedColor) ?? null
+    );
   }
 
-  get plasticColorDescription()  {
-    return this.plasticColors.find((color) => color.id === this.selectedColor) ?? null;
+  get plasticColorDescription() {
+    return (
+      this.plasticColors.find((color) => color.id === this.selectedColor) ??
+      null
+    );
   }
 
   get productId() {

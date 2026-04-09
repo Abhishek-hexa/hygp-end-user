@@ -67,6 +67,7 @@ export interface SizeDescription {
   model: string;
   plasticModel: string;
   sizeImage: string;
+  prefix: string;
 }
 
 export interface ColorDescription {
@@ -100,16 +101,20 @@ export interface FontDescription {
 export type SerializedSizeConfig = {
   size: SizeDescription | null;
   length: LeashLengthType | null;
+  lengthPrice: string | null;
 };
 
 export type SerializedBuckleConfig = {
   material: BuckleMaterialType | null;
   color: number | null;
+  colorName: string | null;
 };
 
 export type SerializedEngravingLine = {
   text: string;
   font: number | null;
+  fontName: string;
+  isStretched: boolean;
 };
 
 export type SerializedEngravingConfig = {
@@ -126,6 +131,12 @@ export type SerializedWebbingConfig = {
 export type SerializedTextureConfig = {
   pattern: number | null;
   collections: number;
+  patternName: string | null;
+};
+
+export type SerializedLeashConfig = {
+  size: string;
+  price: string | null;
 };
 
 export type SerializedProductConfiguration = {
@@ -138,4 +149,5 @@ export type SerializedProductConfiguration = {
   engraving: SerializedEngravingConfig;
   webbing: SerializedWebbingConfig;
   texture: SerializedTextureConfig;
+  leash: SerializedLeashConfig;
 };

@@ -1,29 +1,29 @@
 import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import type CameraControlsImpl from 'camera-controls';
 import { observer } from 'mobx-react-lite';
 import { Suspense, useCallback, useRef } from 'react';
+import * as THREE from 'three';
 import { LinearToneMapping, SRGBColorSpace } from 'three';
-import type CameraControlsImpl from 'camera-controls';
+
+import { useFitModel } from '../../../hooks/useFitModel';
 import { useMainContext } from '../../../hooks/useMainContext';
-import { CameraSync } from './CameraSync';
 import { CameraFeatureAnimation } from './CameraFeatureAnimation';
+import { CameraSync } from './CameraSync';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 import RenderModelByComponent from './RenderModelByComponent';
-import { useFitModel } from '../../../hooks/useFitModel';
 
 export const CanvasPanel = observer(() => {
   const { design3DManager, designManager, uiManager } = useMainContext();
   const { cameraManager, meshManager } = design3DManager;
   const controlsRef = useRef<CameraControlsImpl | null>(null);
   const activeModelKey = designManager.productManager.activeModelKey;
-  const activeMesh = activeModelKey
-    ? meshManager.webMesh
-    : undefined;
+  const activeMesh = activeModelKey ? meshManager.webMesh : undefined;
 
   useFitModel({
     controlsRef: cameraManager.controllRef,
-    mesh: activeMesh,
     key: activeModelKey,
+    mesh: activeMesh,
   });
 
   const handleCameraRef = useCallback(
@@ -34,6 +34,13 @@ export const CanvasPanel = observer(() => {
     [design3DManager.cameraManager],
   );
 
+  const handleCreated = useCallback(
+    ({ gl }: { gl: THREE.WebGLRenderer }) => {
+      design3DManager.setCanvasRef(gl.domElement);
+    },
+    [design3DManager],
+  );
+
   return (
     <section className="h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
       <Canvas
@@ -41,17 +48,19 @@ export const CanvasPanel = observer(() => {
           visibility: uiManager.isCanvasVisible ? 'hidden' : 'visible',
         }}
         camera={{
-          position: [0, 0, 300],
           far: cameraManager.far,
-          near: cameraManager.near,
           fov: cameraManager.fov,
+          near: cameraManager.near,
+          position: [0, 0, 300],
         }}
         gl={{
           antialias: true,
           outputColorSpace: SRGBColorSpace,
+          preserveDrawingBuffer: true,
           toneMapping: LinearToneMapping,
           toneMappingExposure: 1.2,
-        }}>
+        }}
+        onCreated={handleCreated}>
         <Suspense fallback={null}>
           <RenderModelByComponent />
           <LoadEnvironment />
