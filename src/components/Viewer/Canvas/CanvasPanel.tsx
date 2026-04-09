@@ -38,7 +38,7 @@ export const CanvasPanel = observer(() => {
     <section className="h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
       <Canvas
         style={{
-          visibility: uiManager.is3DLoading ? 'hidden' : 'visible',
+          visibility: uiManager.isCanvasVisible ? 'hidden' : 'visible',
         }}
         camera={{
           position: [0, 0, 300],

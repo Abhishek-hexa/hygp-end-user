@@ -43,6 +43,10 @@ export class UiManager {
     return this._is3DLoadingDebounced;
   }
 
+  get isCanvasVisible() {
+    return this.is3DLoading || this.isDataLoading;
+  }
+
   beginProduct3DLoad(productKey?: string | null): Product3DLoadSession {
     const resolvedProductKey = productKey ?? null;
     const shouldShowLoader =
