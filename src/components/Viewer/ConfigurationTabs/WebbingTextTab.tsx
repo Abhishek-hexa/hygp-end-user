@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { TextIcon } from '../../icons/Icons';
+import SectionHeader from '../Global/SectionHeader';
 import { FontSelectField } from './shared/FontSelectField';
 import { TextInputWithCounter } from './shared/TextInputWithCounter';
 import { CustomColorPicker } from './WebbingTextTab/CustomColorPicker';
@@ -11,7 +12,6 @@ import {
   textSizes,
   WebbingTextTarget,
 } from './WebbingTextTab/webbingTextConfig';
-import SectionHeader from '../Global/SectionHeader';
 
 const MAX_TEXT_LENGTH = 20;
 
@@ -58,10 +58,10 @@ export const WebbingTextTab = observer(({ target }: WebbingTextTabProps) => {
 
       <section className="py-4 space-y-3">
         <h4 className="text-base font-semibold text-gray-400">Color of text</h4>
-          <CustomColorPicker
-            selectedColor={webbingText.selectedColor}
-            onChange={webbingText.setColor.bind(webbingText)}
-          />
+        <CustomColorPicker
+          selectedColor={webbingText.selectedColor}
+          onChange={webbingText.setColor.bind(webbingText)}
+        />
       </section>
 
       <div className="border-t border-gray-200" />

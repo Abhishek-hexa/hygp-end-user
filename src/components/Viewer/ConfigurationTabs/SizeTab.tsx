@@ -12,7 +12,6 @@ export const SizeTab = observer(() => {
   const sizeEntries = Array.from(
     productManager.sizeManager.availableSizes.entries(),
   );
-  const selectedSize = productManager.sizeManager.selectedSizeData;
 
   return (
     <div className="">
@@ -27,7 +26,7 @@ export const SizeTab = observer(() => {
               id={id}
               label={sizeLabelMap[id] ?? id}
               price={data.price}
-              isSelected={selectedSize?.id === data.id}
+              isSelected={productManager.sizeManager.selectedSizeKey === id}
               onClick={() =>
                 productManager.sizeManager.setSelectedSizeData(data)
               }

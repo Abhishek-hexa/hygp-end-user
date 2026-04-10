@@ -41,10 +41,18 @@ export class Design3DManager {
     this._canvasRef = canvas;
   }
 
-  takeScreenshot(): string | null {
-    if (!this._canvasRef) {
-      return null;
+  async takeScreenshot(): Promise<string | null> {
+    if (!this._canvasRef) return null;
+
+    const controlsRef = this._cameraManager.controllRef;
+
+    if (controlsRef) {
+      await controlsRef.rotateTo(0.2, Math.PI / 2.2, true);
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => resolve()),
+      );
     }
+
     return (
       this._canvasRef.toDataURL('image/webp', 0.92) ||
       this._canvasRef.toDataURL('image/png')

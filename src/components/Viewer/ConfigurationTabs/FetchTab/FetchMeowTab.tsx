@@ -14,8 +14,8 @@ import {
   shippingCopy,
   sizeLabelMap,
 } from '../shared/fetchSummary';
-import { PriceSummaryDetails } from './PriceSummaryDetails';
 import { MobileCartSection } from './MobileCartSection';
+import { PriceSummaryDetails } from './PriceSummaryDetails';
 
 type FetchMeowTabProps = {
   feature: FetchFeature;

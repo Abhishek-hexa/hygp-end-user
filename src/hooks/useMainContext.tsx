@@ -5,7 +5,9 @@ import { MainContext } from '../context/MainContext';
 export const useMainContext = () => {
   const context = useContext(MainContext);
   if (!context) {
-    throw new Error('MainContext is not initialized. Wrap with MainContextProvider.');
+    throw new Error(
+      'MainContext is not initialized. Wrap with MainContextProvider.',
+    );
   }
   return context;
 };

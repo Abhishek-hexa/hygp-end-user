@@ -158,9 +158,13 @@ export class TextureManager {
   }
 
   reset() {
-    this._selectedCollectionIds = [];
-    this._activeCollectionId = null;
-    this._selectedPatternId = null;
+    const firstCollectionId = this._selectedCollectionIds[0] ?? null;
+    this._activeCollectionId = firstCollectionId;
+    this._selectedCollectionIds = firstCollectionId ? [firstCollectionId] : [];
+
+    // Reset to first available pattern
+    const patterns = this.availablePatterns ?? [];
+    this._selectedPatternId = patterns[0]?.id ?? null;
   }
   private ensureSelectedPattern(preferredPatternId: number | null = null) {
     const patterns = this.availablePatterns ?? [];

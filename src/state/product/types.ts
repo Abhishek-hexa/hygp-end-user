@@ -35,6 +35,9 @@ export enum Feature {
   LEASH_TEXT = 'LEASH_TEXT',
   MEOW = 'MEOW',
 }
+export enum LeashType {
+  LEASH = 'DOG_LEASH',
+}
 export type Features =
   | Feature.SIZE
   | Feature.DESIGN
@@ -100,6 +103,9 @@ export interface FontDescription {
 
 export type SerializedSizeConfig = {
   size: SizeDescription | null;
+};
+
+export type SerializedLeashConfig = {
   length: LeashLengthType | null;
   lengthPrice: string | null;
 };
@@ -125,6 +131,7 @@ export type SerializedWebbingConfig = {
   value: string;
   size: TextSize;
   font: number | null;
+  fontName: string;
   color: string;
 };
 
@@ -132,11 +139,6 @@ export type SerializedTextureConfig = {
   pattern: number | null;
   collections: number;
   patternName: string | null;
-};
-
-export type SerializedLeashConfig = {
-  size: string;
-  price: string | null;
 };
 
 export type SerializedProductConfiguration = {
@@ -151,3 +153,21 @@ export type SerializedProductConfiguration = {
   texture: SerializedTextureConfig;
   leash: SerializedLeashConfig;
 };
+
+export interface CartProduct {
+  name: string;
+  price: string;
+  type: string;
+  properties: Record<string, unknown>;
+}
+
+export interface CartPayload {
+  type: 'ADD_TO_CART';
+  products: CartProduct[];
+  redirectData?: {
+    collectionId: number | undefined;
+    patternId: number | null;
+    patternName: number | null;
+    size: string | undefined;
+  }[];
+}

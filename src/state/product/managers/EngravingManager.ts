@@ -1,10 +1,12 @@
 import { makeAutoObservable } from 'mobx';
 
-import { FontDescription } from '../types';
+import { FontDescription, SerializedEngravingLine } from '../types';
 
 export interface EngravingLine {
   text: string;
   font: number | null;
+  fontName: string;
+  isStretched: boolean;
 }
 
 export class EngravingManager {
@@ -44,7 +46,9 @@ export class EngravingManager {
 
   setEnabled(inIsEnabled: boolean) {
     this._isEnabled = inIsEnabled;
-    this._lines = inIsEnabled ? this.createDefaultLines() : this.createEmptyLines();
+    this._lines = inIsEnabled
+      ? this.createDefaultLines()
+      : this.createEmptyLines();
     this._activeLineIndex = 0;
     this._shouldClearDefaultsOnInputInteraction = inIsEnabled;
   }
@@ -60,6 +64,8 @@ export class EngravingManager {
         const inLine = inLines[index];
         return {
           font: inLine?.font ?? null,
+          fontName: inLine?.fontName ?? '',
+          isStretched: inLine?.isStretched ?? false,
           text: (inLine?.text ?? '').slice(0, EngravingManager.MAX_CHARACTERS),
         };
       },
@@ -80,17 +86,15 @@ export class EngravingManager {
   }
 
   setLineFont(inIndex: number, inFontId: number) {
-    if (inIndex < 0 || inIndex >= EngravingManager.MAX_LINES) {
-      return;
-    }
+    if (inIndex < 0 || inIndex >= EngravingManager.MAX_LINES) return;
+    if (!this._availableFonts.has(inFontId)) return;
 
-    if (!this._availableFonts.has(inFontId)) {
-      return;
-    }
+    const font = this._availableFonts.get(inFontId);
 
     this._lines[inIndex] = {
       ...this._lines[inIndex],
       font: inFontId,
+      fontName: font?.name ?? '',
     };
   }
 
@@ -104,13 +108,16 @@ export class EngravingManager {
 
   setAvailableFonts(inFonts: Map<number, FontDescription>) {
     this._availableFonts = inFonts;
-    if (!this._isEnabled) {
-      return;
-    }
-    const defaultFont = inFonts.keys().next().value;
-    defaultFont && this.lines.forEach((line) => {
-      line.font = defaultFont;
-    })
+    if (!this._isEnabled) return;
+
+    const firstEntry = inFonts.entries().next().value;
+    if (!firstEntry) return;
+
+    const [defaultFontId, defaultFont] = firstEntry;
+    this._lines.forEach((line) => {
+      line.font = defaultFontId;
+      line.fontName = defaultFont?.name ?? '';
+    });
   }
 
   clearDefaultsOnInputInteraction() {
@@ -128,14 +135,33 @@ export class EngravingManager {
     this._shouldClearDefaultsOnInputInteraction = false;
   }
 
+  getSerializableLines(): SerializedEngravingLine[] {
+    const sendEmpty = this._shouldClearDefaultsOnInputInteraction;
+
+    return this._lines.map((line) => ({
+      font: line.font,
+      fontName: line.fontName,
+      isStretched: line.isStretched,
+      text: sendEmpty ? '' : line.text, // if never touched, send empty
+    }));
+  }
+
   resetSelection() {
     this._lines = this._isEnabled
       ? this.createDefaultLines()
       : this.createEmptyLines();
     this._activeLineIndex = 0;
     this._shouldClearDefaultsOnInputInteraction = this._isEnabled;
-  }
 
+    const firstEntry = this._availableFonts.entries().next().value;
+    if (firstEntry && this._isEnabled) {
+      const [defaultFontId, defaultFont] = firstEntry;
+      this._lines.forEach((line) => {
+        line.font = defaultFontId;
+        line.fontName = defaultFont?.name ?? '';
+      });
+    }
+  }
   reset() {
     this._lines = this._isEnabled
       ? this.createDefaultLines()
@@ -148,15 +174,20 @@ export class EngravingManager {
   private createDefaultLines() {
     return Array.from({ length: EngravingManager.MAX_LINES }, (_, index) => ({
       font: null,
-      text: (
-        EngravingManager.DEFAULT_LINE_TEXTS[index] ?? ''
-      ).slice(0, EngravingManager.MAX_CHARACTERS),
+      fontName: '',
+      isStretched: false,
+      text: (EngravingManager.DEFAULT_LINE_TEXTS[index] ?? '').slice(
+        0,
+        EngravingManager.MAX_CHARACTERS,
+      ),
     }));
   }
 
   private createEmptyLines() {
     return Array.from({ length: EngravingManager.MAX_LINES }, () => ({
       font: null,
+      fontName: '',
+      isStretched: false,
       text: '',
     }));
   }

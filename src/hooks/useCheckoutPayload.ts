@@ -1,6 +1,10 @@
 import { useCallback, useState } from 'react';
 
+import { leashLabelMap } from '../components/Viewer/ConfigurationTabs/shared/fetchSummary';
 import {
+  CartPayload,
+  CartProduct,
+  LeashType,
   ProductType,
   SerializedProductConfiguration,
 } from '../state/product/types';
@@ -14,24 +18,6 @@ type CartType =
   | 'harness'
   | 'leash'
   | 'martingale';
-
-interface CartProduct {
-  name: string;
-  price: string;
-  type: string;
-  properties: Record<string, unknown>;
-}
-
-export interface CartPayload {
-  type: 'ADD_TO_CART';
-  products: CartProduct[];
-  redirectData?: {
-    collectionId: number | undefined;
-    patternId: number | null;
-    patternName: number | null;
-    size: string | undefined;
-  }[];
-}
 
 const PRODUCT_TYPE_MAP: Record<CartType, ProductType> = {
   bandana: ProductType.BANDANA,
@@ -51,64 +37,53 @@ const PRODUCT_LABEL_MAP: Record<CartType, string> = {
   martingale: 'martingale',
 };
 
-// Matches old CollarSize map: fontSize → size label
-const COLLAR_SIZE_MAP: Record<string, string> = {
-  '0.5': 'S',
-  '0.75': 'M',
-  '1': 'L',
+const TEXT_SIZE_MAP: Record<string, string> = {
+  LARGE: 'L',
+  MEDIUM: 'M',
+  SMALL: 'S',
 };
-
 function buildCartPayload(
   config: SerializedProductConfiguration,
   uploadedImageUrl: string,
   cartType: CartType,
   redirectToCollar: boolean,
 ): CartPayload {
-  const { size, texture, buckle, engraving, webbing, price } = config;
+  const { size, leash, texture, buckle, engraving, webbing } = config;
 
-  const isLeash = cartType === 'leash';
   const isMetal = buckle?.material === 'METAL';
 
-  const engravingTextData = (engraving?.lines ?? []).map((line) => ({
-    font: line.font,
-    fontName: line.fontName,
-    isStretched: line.isStretched,
-    text: isMetal ? line.text : '',
-  }));
+  const engravingTextData =
+    engraving?.lines.map((line) => ({
+      fontId: line.font,
+      fontName: line.fontName,
+      isStretched: line.isStretched,
+      text: isMetal ? line.text : '',
+    })) ?? [];
 
   const webbingFontSizeKey = String(webbing?.size ?? '');
-  const COLLAR_SIZE_MAP: Record<string, string> = {
-    '0.5': 'S',
-    '0.75': 'M',
-    '1': 'L',
-  };
 
   const primaryProduct: CartProduct = {
     name: `${size?.size?.size ?? ''}_${texture?.patternName ?? ''}`,
-    price: parseFloat(String(price ?? 0)).toFixed(2),
+    price: parseFloat(String(size?.size?.price ?? 0)).toFixed(2),
     properties: {
       _designName: texture?.patternName ?? '',
       _image: uploadedImageUrl,
       buckleColor: buckle?.colorName ?? '',
-      // leash length e.g. '4'
       engravingDetails: {
         engravingTextData,
+        filePath: null,
       },
-
-      leashSizes: isLeash ? (size?.length ?? null) : null,
-
+      leashSizes: leash?.length ?? null, // ← always, not just when cartType=leash
       materialType: buckle?.material,
-
+      prefix: size?.size?.prefix ?? '',
       selectedPatternItems: texture?.patternName ?? '',
-
       size: size?.size?.size,
-      // collar/harness size e.g. 'MEDIUM'
       types: PRODUCT_TYPE_MAP[cartType],
       webbingTextDetails: {
         collarTextColor: webbing?.color ?? '',
-        selectedCollarFont: webbing?.font,
+        selectedCollarFont: webbing?.fontName ?? '',
         selectedCollarFontSize:
-          COLLAR_SIZE_MAP[webbingFontSizeKey] ?? webbingFontSizeKey,
+          TEXT_SIZE_MAP[webbingFontSizeKey] ?? webbingFontSizeKey ?? '',
         webbingCollarText: webbing?.value ?? '',
       },
     },
@@ -118,23 +93,23 @@ function buildCartPayload(
   // Secondary leash product — only when leash + has a length selected
   const products: CartProduct[] = [primaryProduct];
 
-  if (isLeash && size?.length) {
-    const leashPrice = parseFloat(String(size.lengthPrice ?? 0)).toFixed(2);
+  if (leash?.length) {
+    const leashLabel = leashLabelMap[leash.length] ?? `${leash.length} Foot`;
+    const leashPrice = parseFloat(String(leash.lengthPrice ?? 0)).toFixed(2);
 
     const leashProduct: CartProduct = {
-      name: `${size.length}_${texture?.patternName ?? ''}`,
+      name: `${leashLabel}_${texture?.patternName ?? ''}`,
       price: leashPrice,
       properties: {
         _designName: texture?.patternName ?? '',
-        // leash length '3'|'4'|'5'|'6'
         buckleColor: buckle?.colorName ?? '',
         materialType: buckle?.material,
         prefix: size?.size?.prefix ?? '',
         selectedPatternItems: texture?.patternName ?? '',
-        size: size.length,
-        types: ProductType.LEASH,
+        size: leashLabel,
+        types: LeashType.LEASH,
       },
-      type: 'leash',
+      type: PRODUCT_TYPE_MAP['leash'],
     };
     products.push(leashProduct);
   }
@@ -158,7 +133,7 @@ function buildCartPayload(
   return payload;
 }
 
-export function useCartScreenshot(
+export function useCheckoutPayload(
   onBeforePost?: (payload: CartPayload) => CartPayload,
 ) {
   const mainContext = useMainContext();
@@ -176,7 +151,7 @@ export function useCartScreenshot(
       setError(null);
 
       try {
-        const base64Url = design3DManager.takeScreenshot();
+        const base64Url = await design3DManager.takeScreenshot();
         if (!base64Url) throw new Error('Screenshot failed — canvas not ready');
 
         const res = await fetch(base64Url);
@@ -199,6 +174,7 @@ export function useCartScreenshot(
         const finalPayload = onBeforePost ? onBeforePost(payload) : payload;
 
         window.parent.postMessage(finalPayload, '*');
+        productManager.resetSelections();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Add to cart failed');
       } finally {

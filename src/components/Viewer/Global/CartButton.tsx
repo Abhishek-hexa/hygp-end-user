@@ -1,11 +1,8 @@
 import { observer } from 'mobx-react-lite';
 
-import {
-  CartPayload,
-  useCartScreenshot,
-} from '../../../hooks/useCartScreenshot';
+import { useCheckoutPayload } from '../../../hooks/useCheckoutPayload';
 import { useMainContext } from '../../../hooks/useMainContext';
-import { ProductType } from '../../../state/product/types';
+import { CartPayload, ProductType } from '../../../state/product/types';
 import { CartIcon } from '../../icons/Icons';
 
 type CartType =
@@ -33,7 +30,7 @@ interface CartButtonProps {
 
 export const CartButton = observer(
   ({ type = 'button', onClick, onBeforePost }: CartButtonProps) => {
-    const { takeCartScreenshot, isLoading } = useCartScreenshot(onBeforePost);
+    const { takeCartScreenshot, isLoading } = useCheckoutPayload(onBeforePost);
     const { designManager } = useMainContext();
     const productManager = designManager.productManager;
     const sizeManager = productManager.sizeManager;

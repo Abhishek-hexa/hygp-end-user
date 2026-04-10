@@ -9,6 +9,7 @@ export class SizeManager {
   private _selectedLength: LeashLengthType | null = null;
   private _availableLengths: LeashLengthType[] = [];
   private _lengthPrices: Map<LeashLengthType, string> = new Map();
+  private _selectedSizeKey: ProductSizeType | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -57,12 +58,25 @@ export class SizeManager {
 
   setSelectedSizeData(sizeData: SizeDescription | null) {
     this._selectedSizeData = sizeData;
+    // find the key for this data
+    for (const [key, val] of this._availableSizes.entries()) {
+      if (val === sizeData) {
+        this._selectedSizeKey = key;
+        break;
+      }
+    }
   }
 
   setAvailableSizes(inSizes: Map<ProductSizeType, SizeDescription>) {
     this._availableSizes = inSizes;
-    const firstKey = inSizes.keys().next().value ?? null;
-    this._selectedSizeData = firstKey ? (inSizes.get(firstKey) ?? null) : null;
+    const firstEntry = inSizes.entries().next().value ?? null;
+    if (firstEntry) {
+      this._selectedSizeKey = firstEntry[0];
+      this._selectedSizeData = firstEntry[1];
+    } else {
+      this._selectedSizeKey = null;
+      this._selectedSizeData = null;
+    }
   }
 
   setLength(inLength: LeashLengthType | null) {
@@ -83,8 +97,19 @@ export class SizeManager {
     this._lengthPrices = inLengthPrices;
   }
 
+  get selectedSizeKey() {
+    return this._selectedSizeKey;
+  }
+
   resetSelection() {
-    this._selectedSizeData = this._availableSizes.values().next().value || null;
+    const firstEntry = this._availableSizes.entries().next().value ?? null;
+    if (firstEntry) {
+      this._selectedSizeKey = firstEntry[0];
+      this._selectedSizeData = firstEntry[1];
+    } else {
+      this._selectedSizeKey = null;
+      this._selectedSizeData = null;
+    }
     this._selectedLength = null;
   }
 

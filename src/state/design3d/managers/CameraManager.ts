@@ -1,8 +1,9 @@
-import { makeAutoObservable, reaction } from 'mobx';
-import { StateManager } from '../../StateManager';
 import type CameraControlsImpl from 'camera-controls';
+import { makeAutoObservable, reaction } from 'mobx';
 import * as THREE from 'three';
+
 import { Feature, type Features, ProductType } from '../../product/types';
+import { StateManager } from '../../StateManager';
 import type { MeshManager } from './MeshManager';
 
 type CameraReactionState = {
@@ -57,9 +58,9 @@ export class CameraManager {
 
     return {
       activeFeature: productManager.activeFeature,
+      controlsRef: this.controllRef,
       modelKey: productManager.activeModelKey,
       productId: productManager.productId,
-      controlsRef: this.controllRef,
     };
   }
 
@@ -227,10 +228,10 @@ export class CameraManager {
     padding: number,
   ) {
     void controlsRef.fitToBox(mesh, true, {
-      paddingTop: padding,
-      paddingLeft: padding,
       paddingBottom: padding,
+      paddingLeft: padding,
       paddingRight: padding,
+      paddingTop: padding,
     });
   }
 
@@ -370,5 +371,12 @@ export class CameraManager {
 
   setControllRef(inControllRef: CameraControlsImpl | null) {
     this._controllRef = inControllRef;
+  }
+
+  async rotateToScreenshotAngle(): Promise<void> {
+    const controlsRef = this._controllRef;
+    if (!controlsRef) return;
+
+    await controlsRef.rotateTo(0.2, Math.PI / 2.2, true);
   }
 }

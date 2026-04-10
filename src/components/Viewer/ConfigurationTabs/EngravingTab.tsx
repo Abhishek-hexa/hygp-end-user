@@ -2,9 +2,9 @@ import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
 import { TextIcon } from '../../icons/Icons';
+import SectionHeader from '../Global/SectionHeader';
 import { FontSelectField } from './shared/FontSelectField';
 import { TextInputWithCounter } from './shared/TextInputWithCounter';
-import SectionHeader from '../Global/SectionHeader';
 
 const linePlaceholders = [
   'PET NAME',

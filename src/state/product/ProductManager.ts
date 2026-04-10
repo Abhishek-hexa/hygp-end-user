@@ -116,20 +116,22 @@ export class ProductManager {
         material: this.buckleManager.material,
       },
       engraving: {
-        lines: this.engravingManager.lines.map((line) => ({ ...line })),
+        lines: this.engravingManager.getSerializableLines(),
       },
       key: globalThis.crypto.randomUUID(),
-      price: this.sizeManager.totalPrice,
-      productId: this._productId,
-      qty: 1,
-      size: {
+      leash: {
         length: this.sizeManager.selectedLength,
         lengthPrice: this.sizeManager.selectedLength
           ? (this.sizeManager.lengthPrices.get(
               this.sizeManager.selectedLength,
             ) ?? null)
           : null,
-        size: this.sizeManager.selectedSizeData,
+      },
+      price: this.sizeManager.totalPrice,
+      productId: this._productId,
+      qty: 1,
+      size: {
+        size: this.sizeManager.selectedSizeData, // no more length here
       },
       texture: {
         collections: this.textureManager.selectedCollectionIds[0],
@@ -139,12 +141,11 @@ export class ProductManager {
       webbing: {
         color: this.webbingText.selectedColor,
         font: this.webbingText.selectedFont,
+        fontName: this.webbingText.selectedFontName,
         size: this.webbingText.size,
         value: this.webbingText.value,
       },
     };
-
-    this.resetSelections();
 
     return productConfig;
   }
