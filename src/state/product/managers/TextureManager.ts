@@ -76,10 +76,6 @@ export class TextureManager {
     return null;
   }
 
-  get selectedPatternName(): string | null {
-    return this.selectedPattern?.name ?? null;
-  }
-
   get availablePatterns(): PatternType[] | null {
     if (this._isSearchActive) {
       return this._searchPatterns;
@@ -169,12 +165,12 @@ export class TextureManager {
   setSelectedPattern(inPatternId: number | null) {
     if (inPatternId !== null) {
       let patternCollectionId: number | null = null;
-
+      
       if (this._isSearchActive) {
         const pattern = this._searchPatterns.find((p) => p.id === inPatternId);
         if (pattern) patternCollectionId = pattern.collectionId;
       }
-
+      
       if (!patternCollectionId) {
         for (const patterns of this._availablePatterns.values()) {
           const pattern = patterns.find((p) => p.id === inPatternId);
@@ -187,10 +183,7 @@ export class TextureManager {
 
       if (patternCollectionId) {
         if (!this._selectedCollectionIds.includes(patternCollectionId)) {
-          this._selectedCollectionIds = [
-            ...this._selectedCollectionIds,
-            patternCollectionId,
-          ];
+          this._selectedCollectionIds = [...this._selectedCollectionIds, patternCollectionId];
           if (this._activeCollectionId === null) {
             this._activeCollectionId = patternCollectionId;
           }
