@@ -10,7 +10,9 @@ export const EngravedBuckle = observer(function EngravedBuckle() {
   const { decalTransform, planeMesh } = engraving3Dmanager;
 
   const texture = useMyTexture(engraving3Dmanager.imageUrl, { trackLoading: false });
+  const normalTexture = useMyTexture(engraving3Dmanager.normalUrl, { trackLoading: false });
   const decalTexture = engraving3Dmanager.prepareDecalTexture(texture);
+  const decalNormalTexture = engraving3Dmanager.prepareDecalTexture(normalTexture);
 
   if (!planeMesh) return null;
 
@@ -31,11 +33,14 @@ export const EngravedBuckle = observer(function EngravedBuckle() {
             scale={decalTransform.scale}
             rotation={[0, 0, 0]}
           >
-            <meshBasicMaterial
+            <meshStandardMaterial
               map={decalTexture}
+              normalMap={decalNormalTexture}
               transparent
               polygonOffset
               polygonOffsetFactor={-1}
+              roughness={0.4}
+              metalness={0.7}
             />
           </Decal>
         )}

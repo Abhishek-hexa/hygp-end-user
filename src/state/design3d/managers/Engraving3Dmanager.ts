@@ -53,6 +53,7 @@ export class Engraving3Dmanager {
 
   config: EngravingConfig;
   imageUrl: string | null = null;
+  normalUrl: string | null = null;
   aspect: number;
   loading = false;
   error: string | null = null;
@@ -124,12 +125,15 @@ export class Engraving3Dmanager {
 
       if (id !== this.requestId) {
         URL.revokeObjectURL(result.imageUrl);
+        if (result.normalUrl) URL.revokeObjectURL(result.normalUrl);
         return;
       }
 
       runInAction(() => {
         if (this.imageUrl) URL.revokeObjectURL(this.imageUrl);
+        if (this.normalUrl) URL.revokeObjectURL(this.normalUrl);
         this.imageUrl = result.imageUrl;
+        this.normalUrl = result.normalUrl ?? null;
         this.aspect = result.aspect;
         this.loading = false;
       });

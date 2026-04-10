@@ -36,6 +36,7 @@ export interface EngravingTextureOptions {
 
 export interface TextureResult {
   imageUrl: string;
+  normalUrl?: string;
   aspect: number;
 }
 
@@ -215,7 +216,7 @@ export class FabricCanvasService {
    * Crops a canvas to the bounding box of all non-transparent pixels.
    * Returns the original canvas unchanged if fully transparent.
    */
-  trimTransparentEdges(source: HTMLCanvasElement): HTMLCanvasElement {
+  trimTransparentEdges(source: HTMLCanvasElement, heightOnly: boolean = false, paddingY: number = 0, trimLeft: boolean = false): HTMLCanvasElement {
     const ctx = source.getContext('2d')!;
     const { width, height } = source;
     const { data } = ctx.getImageData(0, 0, width, height);
@@ -230,22 +231,32 @@ export class FabricCanvasService {
         if (data[(y * width + x) * 4 + 3] > 0) {
           if (top === -1) top = y;
           bottom = y;
-          if (x < left) left = x;
-          if (x > right) right = x;
+          if (!heightOnly || trimLeft) {
+            if (x < left) left = x;
+            if (x > right) right = x;
+          }
         }
       }
     }
 
     if (top === -1) return source;
 
+    if (heightOnly) {
+      left = trimLeft ? left : 0;
+      right = width - 1;
+    }
+
+    const paddedTop = Math.max(0, top - paddingY);
+    const paddedBottom = Math.min(height - 1, bottom + paddingY);
+
     const w = right - left + 1;
-    const h = bottom - top + 1;
+    const h = paddedBottom - paddedTop + 1;
     const trimmed = document.createElement('canvas');
     trimmed.width = w;
     trimmed.height = h;
     trimmed
       .getContext('2d')!
-      .putImageData(ctx.getImageData(left, top, w, h), 0, 0);
+      .putImageData(ctx.getImageData(left, paddedTop, w, h), 0, 0);
 
     return trimmed;
   }
@@ -330,11 +341,83 @@ export class FabricCanvasService {
 
       const trimmed = this.trimTransparentEdges(canvas.getElement());
       const imageUrl = await this.htmlCanvasToBlobUrl(trimmed);
+      const normalUrl = await this.generateNormalMap(trimmed);
 
-      return { imageUrl, aspect: trimmed.width / trimmed.height };
+      return { imageUrl, normalUrl, aspect: trimmed.width / trimmed.height };
     } finally {
       await canvas.dispose();
     }
+  }
+
+  // ─── Normal Map Generation ──────────────────────────────────────────────────
+
+  /**
+   * Generates a normal map from the given canvas using height-mapping logic.
+   * `pixelOffsetBytes` controls the gradient step size (default 8 bytes = 2 pixels).
+   */
+  async generateNormalMap(source: HTMLCanvasElement, pixelOffsetBytes: number = 8): Promise<string> {
+    const { width, height } = source;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true })!;
+    context.imageSmoothingEnabled = false;
+    context.imageSmoothingQuality = 'low';
+    context.drawImage(source, 0, 0, width, height);
+
+    const src = context.getImageData(0, 0, width, height);
+    const dst = context.createImageData(width, height);
+
+    for (let i = 0; i < width * height * 4; i += 4) {
+      let x1, x4;
+      if (i % (width * 4) === 0) {
+        x1 = src.data[i];
+        x4 = src.data[i + pixelOffsetBytes];
+      } else if (i % (width * 4) === 4) {
+        x1 = src.data[i - 4];
+        x4 = src.data[i + pixelOffsetBytes];
+      } else if (i % (width * 4) === (width - 2) * 4) {
+        x1 = src.data[i - pixelOffsetBytes];
+        x4 = src.data[i];
+      } else if (i % (width * 4) === (width - 1) * 4) {
+        x1 = src.data[i - pixelOffsetBytes];
+        x4 = src.data[i];
+      } else {
+        x1 = src.data[i - pixelOffsetBytes];
+        x4 = src.data[i + pixelOffsetBytes];
+      }
+
+      let y1, y4;
+      if (i < width * 4) {
+        y1 = src.data[i];
+        y4 = src.data[i + width * pixelOffsetBytes];
+      } else if (i >= (height - 2) * width * 4) {
+        y1 = src.data[i - width * pixelOffsetBytes];
+        y4 = src.data[i];
+      } else if (i >= (height - 1) * width * 4) {
+        y1 = src.data[i - width * pixelOffsetBytes];
+        y4 = src.data[i];
+      } else {
+        y1 = src.data[i - width * pixelOffsetBytes];
+        y4 = src.data[i + width * pixelOffsetBytes];
+      }
+
+      const dx = ((x4 || 0) - (x1 || 0)) / 255;
+      const dy = ((y4 || 0) - (y1 || 0)) / 255;
+      const dz = 1;
+
+      const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      const nx = dx / length;
+      const ny = dy / length;
+
+      dst.data[i] = (nx + 1) * 127;
+      dst.data[i + 1] = (ny + 1) * 127;
+      dst.data[i + 2] = 255;
+      dst.data[i + 3] = 255;
+    }
+
+    context.putImageData(dst, 0, 0);
+    return await this.htmlCanvasToBlobUrl(canvas);
   }
 
   // ─── Webbing Text Texture ──────────────────────────────────────────────────
@@ -362,20 +445,21 @@ export class FabricCanvasService {
     const size = new THREE.Vector3();
     box.getSize(size);
 
-    const canvasW = size.x * 10;
-    const canvasH = size.y * 10;
+    const canvasW = size.x * 15;
+    const canvasH = size.y * 15;
 
     const canvas = this.createCanvas(canvasW, canvasH);
 
     try {
+      const computedFontSize = canvasH * 0.7 * this.config.fontScaleMap[fontSize];
       const textObj = new FabricText(text, {
         fill: color,
         stroke: '#000000',
-        strokeWidth: 5,
+        strokeWidth: computedFontSize * 0.08,
         strokeUniform: true,
         paintFirst: 'stroke',
         fontFamily,
-        fontSize: canvasH * 0.7 * this.config.fontScaleMap[fontSize],
+        fontSize: computedFontSize,
         originX: 'left',
         originY: 'center',
         textAlign: 'left',
@@ -386,8 +470,9 @@ export class FabricCanvasService {
 
       // Fit width to prevent text from overflowing the canvas when using wider fonts
       const currentWidth = textObj.getScaledWidth();
-      if (currentWidth > canvasW) {
-        const fitScale = canvasW / currentWidth;
+      const maxUsableWidth = canvasW ;
+      if (currentWidth > maxUsableWidth) {
+        const fitScale = maxUsableWidth / currentWidth;
         textObj.set({
           scaleX: (textObj.scaleX ?? 1) * fitScale,
           scaleY: (textObj.scaleY ?? 1) * fitScale,
@@ -397,7 +482,9 @@ export class FabricCanvasService {
       canvas.add(textObj);
       canvas.renderAll();
 
-      return await this.canvasToBlobUrl(canvas);
+      const paddingY = Math.floor(canvasH * 0.1);
+      const trimmed = this.trimTransparentEdges(canvas.getElement(), true, paddingY, true);
+      return await this.htmlCanvasToBlobUrl(trimmed);
     } finally {
       await canvas.dispose();
     }
