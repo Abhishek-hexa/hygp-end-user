@@ -18,6 +18,7 @@ export class UiManager {
   private _lastLoadedProductKey: string | null = null;
   private _loadedProductKeys = new Set<string | null>();
   private _bootLoaderCounter = 0;
+  private _isStartAnimationComplete = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -44,7 +45,15 @@ export class UiManager {
   }
 
   get isCanvasVisible() {
-    return this.is3DLoading || this.isDataLoading;
+    return !this.is3DLoading && !this.isDataLoading;
+  }
+
+  get isStartAnimationComplete() {
+    return this._isStartAnimationComplete;
+  }
+
+  setStartAnimationComplete(isComplete: boolean) {
+    this._isStartAnimationComplete = isComplete;
   }
 
   beginProduct3DLoad(productKey?: string | null): Product3DLoadSession {

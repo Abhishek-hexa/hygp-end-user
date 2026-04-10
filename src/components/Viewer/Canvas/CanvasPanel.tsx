@@ -10,20 +10,38 @@ import { CameraFeatureAnimation } from './CameraFeatureAnimation';
 import LoadEnvironment from './EffectObj/LoadEnvironment';
 import RenderModelByComponent from './RenderModelByComponent';
 import { useFitModel } from '../../../hooks/useFitModel';
+import { useModelStartAnimation } from '../../../hooks/useModelStartAnimation';
+import { useHandGestureIntro } from '../../../hooks/useHandGestureIntro';
 
 export const CanvasPanel = observer(() => {
   const { design3DManager, designManager, uiManager } = useMainContext();
   const { cameraManager, meshManager } = design3DManager;
   const controlsRef = useRef<CameraControlsImpl | null>(null);
   const activeModelKey = designManager.productManager.activeModelKey;
-  const activeMesh = activeModelKey
-    ? meshManager.webMesh
-    : undefined;
+  const activeMesh = activeModelKey ? meshManager.webMesh : undefined;
+  const handleStartAnimationComplete = useCallback(
+    (isComplete: boolean) => {
+      uiManager.setStartAnimationComplete(isComplete);
+    },
+    [uiManager],
+  );
 
   useFitModel({
     controlsRef: cameraManager.controllRef,
     mesh: activeMesh,
     key: activeModelKey,
+  });
+
+  useModelStartAnimation({
+    isReady: uiManager.isCanvasVisible,
+    controls: cameraManager.controllRef,
+    isUserControlling: cameraManager.isUserControlling,
+    onComplete: handleStartAnimationComplete,
+  });
+  const { showHand, handStyle } = useHandGestureIntro({
+    isReady: uiManager.isStartAnimationComplete,
+    controls: cameraManager.controllRef,
+    isUserControlling: cameraManager.isUserControlling,
   });
 
   const handleCameraRef = useCallback(
@@ -35,10 +53,10 @@ export const CanvasPanel = observer(() => {
   );
 
   return (
-    <section className="h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
+    <section className="relative h-full border-r border-gray-200 bg-stone-200 max-lg:border-b max-lg:border-r-0">
       <Canvas
         style={{
-          visibility: uiManager.isCanvasVisible ? 'hidden' : 'visible',
+          visibility: uiManager.isCanvasVisible ? 'visible' : 'hidden',
         }}
         camera={{
           position: [0, 0, 300],
@@ -58,7 +76,6 @@ export const CanvasPanel = observer(() => {
         </Suspense>
         <CameraSync />
         <CameraFeatureAnimation />
-
         <CameraControls
           maxPolarAngle={cameraManager.maxPolarAngle}
           minPolarAngle={cameraManager.minPolarAngle}
@@ -70,6 +87,9 @@ export const CanvasPanel = observer(() => {
           ref={handleCameraRef}
         />
       </Canvas>
+
+      {/* Hand gesture overlay — sits over the canvas via absolute positioning */}
+      <img src="/interaction.webp" alt="Interaction Hand" style={handStyle} />
     </section>
   );
 });
