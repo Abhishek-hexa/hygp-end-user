@@ -9,9 +9,7 @@ export const BuckleTab = observer(() => {
   const mainContext = useMainContext();
   const buckleManager = mainContext.designManager.productManager.buckleManager;
   const availableBuckleMaterials = buckleManager.availableBuckleMaterials;
-  const selectedMaterial = buckleManager.material;
   const colors = buckleManager.currentColors;
-
   return (
     <div className="">
       <div className="p-4 lg:p-6">
@@ -19,8 +17,6 @@ export const BuckleTab = observer(() => {
 
         {availableBuckleMaterials.length > 0 && (
           <BuckleMaterialSelector
-            availableBuckleMaterials={availableBuckleMaterials}
-            selectedMaterial={selectedMaterial}
             onSelectMaterial={(type) => buckleManager.setMaterial(type)}
           />
         )}

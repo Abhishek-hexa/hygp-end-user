@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect } from 'react';
 
 import { useMainContext } from '../../hooks/useMainContext';
-import { Features } from '../../state/product/types';
+import { Feature, Features } from '../../state/product/types';
 import { CartIcon } from '../icons/Icons';
 import { FeatureContentRenderer } from './ConfigurationPanel/FeatureContentRenderer';
 import { FeatureTabsHeader } from './ConfigurationPanel/FeatureTabsHeader';
@@ -26,6 +26,10 @@ export const ConfigurationPanel = observer(() => {
       productManager.setActiveFeature(features[0]);
     }
   }, [activeFeature, features, productManager]);
+
+  const handleSelectFeature = (feature: Feature) => {
+    productManager.setActiveFeature(feature);
+  };
 
   const handleAddToBundle = () => {
     const serializedConfiguration = productManager.serializeConfiguration();
@@ -63,11 +67,15 @@ export const ConfigurationPanel = observer(() => {
       <FeatureTabsHeader
         features={features}
         activeFeature={activeFeature}
-        onSelectFeature={(feature) => productManager.setActiveFeature(feature)}
+        onSelectFeature={handleSelectFeature}
         scrollToStartSignal={mainContext.designManager.scrollToStartSignal}
       />
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <FeatureContentRenderer activeFeature={activeFeature} />
+        <FeatureContentRenderer
+          activeFeature={activeFeature}
+          features={features}
+          onNavigateToFeature={handleSelectFeature}
+        />
       </div>
       <div className="hidden border-t border-green bg-white lg:block lg:px-16 lg:py-3">
         {uiManager.isBulkMode ? (

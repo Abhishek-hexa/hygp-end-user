@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 
 import { useMainContext } from '../../../hooks/useMainContext';
-import { Features, ProductType } from '../../../state/product/types';
+import { Feature, ProductType } from '../../../state/product/types';
 import { BuckleTab } from '../ConfigurationTabs/BuckleTab';
 import { BulkFetchTab } from '../ConfigurationTabs/BulkFetchTab';
 import { DesignTab } from '../ConfigurationTabs/DesignTab';
@@ -13,13 +13,26 @@ import { ComingSoon } from '../Global/ComingSoon';
 import { featureLabelMap } from './featureLabelMap';
 
 type FeatureContentRendererProps = {
-  activeFeature: Features | null;
+  activeFeature: Feature | null;
+  features: Feature[];
+  onNavigateToFeature: (feature: Feature) => void;
 };
 
 export const FeatureContentRenderer = observer(
-  ({ activeFeature }: FeatureContentRendererProps) => {
+  ({
+    activeFeature,
+    features,
+    onNavigateToFeature,
+  }: FeatureContentRendererProps) => {
     const { uiManager, designManager } = useMainContext();
     const productManager = designManager.productManager;
+
+    // Tab that comes right after ENGRAVING (for "Keep as Plastic" navigation)
+    const engravingIndex = features.indexOf(Feature.ENGRAVING);
+    const nextFeatureAfterEngraving =
+      engravingIndex !== -1 && engravingIndex < features.length - 1
+        ? features[engravingIndex + 1]
+        : null;
 
     if (!activeFeature) {
       return (
@@ -29,50 +42,53 @@ export const FeatureContentRenderer = observer(
       );
     }
 
-    if (activeFeature === 'SIZE') {
-      return <SizeTab />;
-    }
-    if (activeFeature === 'DESIGN') {
-      return <DesignTab />;
-    }
-    if (activeFeature === 'COLLAR_TEXT') {
+    if (activeFeature === Feature.SIZE) return <SizeTab />;
+
+    if (activeFeature === Feature.DESIGN) return <DesignTab />;
+
+    if (activeFeature === Feature.COLLAR_TEXT) {
       const isComingSoon =
         productManager.productId === ProductType.BANDANA ||
         productManager.productId === ProductType.HARNESS;
-
       return isComingSoon ? (
         <ComingSoon label="Collar Text" />
       ) : (
         <WebbingTextTab target="collar" />
       );
     }
-    if (activeFeature === 'LEASH_TEXT') {
+
+    if (activeFeature === Feature.LEASH_TEXT)
       return <WebbingTextTab target="leash" />;
-    }
-    if (activeFeature === 'HARNESS_TEXT') {
+
+    if (activeFeature === Feature.HARNESS_TEXT) {
       const isComingSoon =
         productManager.productId === ProductType.BANDANA ||
         productManager.productId === ProductType.HARNESS;
-
       return isComingSoon ? (
         <ComingSoon label="Harness Text" />
       ) : (
         <WebbingTextTab target="harness" />
       );
     }
-    if (activeFeature === 'ENGRAVING') {
-      return <EngravingTab />;
+
+    if (activeFeature === Feature.ENGRAVING) {
+      return (
+        <EngravingTab
+          onNavigateToFeature={onNavigateToFeature}
+          nextFeatureAfterEngraving={nextFeatureAfterEngraving}
+        />
+      );
     }
-    if (activeFeature === 'BUCKLE') {
+
+    if (
+      activeFeature === Feature.BUCKLE ||
+      activeFeature === Feature.HARDWARE
+    ) {
       return <BuckleTab />;
     }
-    if (activeFeature === 'HARDWARE') {
-      return <BuckleTab />;
-    }
-    if (activeFeature === 'FETCH' || activeFeature === 'MEOW') {
-      if (uiManager.isBulkMode) {
-        return <BulkFetchTab feature={activeFeature} />;
-      }
+
+    if (activeFeature === Feature.FETCH || activeFeature === Feature.MEOW) {
+      if (uiManager.isBulkMode) return <BulkFetchTab feature={activeFeature} />;
       return <FetchMeowTab feature={activeFeature} />;
     }
 

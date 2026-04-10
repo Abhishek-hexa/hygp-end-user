@@ -11,6 +11,8 @@ export class BuckleManager {
   private _metalColors: ColorDescription[] = [];
   private _plasticColors: ColorDescription[] = [];
   private _breakawayColors: ColorDescription[] = [];
+  private _hasShownPlasticWarning: boolean = false;
+  private _showPlasticWarningModal: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -106,6 +108,26 @@ export class BuckleManager {
 
   get isMetal() {
     return this.material === 'METAL';
+  }
+
+  get hasShownPlasticWarning() {
+    return this._hasShownPlasticWarning;
+  }
+
+  get showPlasticWarningModal() {
+    return this._showPlasticWarningModal;
+  }
+
+  openPlasticWarningModal() {
+    this._hasShownPlasticWarning = true;
+    this._showPlasticWarningModal = true;
+  }
+
+  closePlasticWarningModal() {
+    this._showPlasticWarningModal = false;
+  }
+  setHasShownPlasticWarning() {
+    this._hasShownPlasticWarning = true;
   }
 
   setMaterial(inMaterial: BuckleMaterialType) {
